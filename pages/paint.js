@@ -16,6 +16,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
+  const [brushSize, setBrushSize] = useState(40); // Default brush size
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +28,7 @@ export default function Home() {
 
     const body = {
       prompt: e.target.prompt.value,
-      init_image: userUploadedImage
+      image: userUploadedImage
         ? await readAsDataURL(userUploadedImage)
         : // only use previous prediction as init image if there's a mask
         maskImage
@@ -81,12 +82,32 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Inpainting with Stable Diffusion &amp; Replicate</title>
+        <title>FullJourney.AI Inpainting</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
+      <p className="pb-5 text-xl text-white text-center font-helvetica">
+        <strong>FullJourney.AI Inpainting</strong>
+      </p>
+      <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
+  <strong>Draw over the areas you want replaced...</strong>
+</p>
+<main className="container mx-auto p-2">
+  {error && <div>{error}</div>}
 
-      <main className="container mx-auto p-5">
-        {error && <div>{error}</div>}
+  {/* Brush size slider */}
+  <div className="brush-slider-container text-white flex items-center justify-center mx-auto" style={{ width: '30%' }}>
+  <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
+  <input
+    type="range"
+    id="brushSize"
+    name="brushSize"
+    min="1"
+    max="100"
+    value={brushSize}
+    onChange={(e) => setBrushSize(Number(e.target.value))}
+    className="brush-slider flex-grow"
+  />
+</div>
 
         <div className="border-hairline max-w-[512px] mx-auto relative">
           <Dropzone
@@ -95,10 +116,11 @@ export default function Home() {
             userUploadedImage={userUploadedImage}
           />
           <div
-            className="bg-gray-50 relative max-h-[512px] w-full flex items-stretch"
+            className="bg-black relative max-h-[512px] w-full flex items-stretch  border-4 border-pink-400 rounded-xl"
             // style={{ height: 0, paddingBottom: "100%" }}
           >
             <Canvas
+              brushSize={brushSize}
               predictions={predictions}
               userUploadedImage={userUploadedImage}
               onDraw={setMaskImage}
@@ -121,22 +143,6 @@ export default function Home() {
             )}
 
             <Download predictions={predictions} />
-            <Link href="https://replicate.com/stability-ai/stable-diffusion">
-              <a target="_blank" className="lil-button">
-                <RocketIcon className="icon" />
-                Run with an API
-              </a>
-            </Link>
-            <Link href="https://github.com/zeke/inpainter">
-              <a
-                className="lil-button"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <CodeIcon className="icon" />
-                View on GitHub
-              </a>
-            </Link>
           </div>
         </div>
       </main>

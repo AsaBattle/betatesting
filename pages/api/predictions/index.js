@@ -1,6 +1,14 @@
 const API_HOST = process.env.REPLICATE_API_HOST || "https://api.replicate.com";
 const addBackgroundToPNG = require("lib/add-background-to-png");
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '30mb', // Set the size limit to 10MB or any other size you need
+    },
+  },
+}
+
 export default async function handler(req, res) {
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
@@ -15,7 +23,7 @@ export default async function handler(req, res) {
   const body = JSON.stringify({
     // Pinned to a specific version of Stable Diffusion, fetched from:
     // https://replicate.com/stability-ai/stable-diffusion
-    version: "be04660a5b93ef2aff61e3668dedb4cbeb14941e62a3fd5998364a32d613e35e",
+    version: "39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
     input: req.body,
   });
 

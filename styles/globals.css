@@ -7,8 +7,9 @@ input {
   @apply border-solid;
   @apply border-gray-300;
   /* @apply rounded-md; */
-  @apply px-4;
-  @apply py-2;
+  @apply px-10;
+  @apply py-5;
+  @apply rounded-xl;
 }
 
 .border-hairline {
@@ -20,7 +21,7 @@ input {
   /* @apply border-hairline; */
   @apply text-sm;
   @apply text-gray-500;
-  @apply rounded-md;
+  @apply rounded-xl;
   @apply py-2;
   @apply mx-3;
 }
@@ -30,4 +31,8 @@ input {
   top: -0.1em;
   width: 1.1em;
   height: 1.1em;
+}
+
+body {
+  background-color: rgb(11, 0, 59);
 }
