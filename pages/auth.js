@@ -10,12 +10,14 @@ export default function Auth() {
     const code = router.query.code;
 
     if (user && code) {
+        console.log("Setting local storage to user: " + user + " and code: " + code);
+
       // Save the user object and the code in the local storage
       localStorage.setItem('user', user);
       localStorage.setItem('code', code);
 
       // Redirect the user to the dashboard page
-      router.push('/paint');
+      //router.push('/paint');
     }
   }, [router]);
 
