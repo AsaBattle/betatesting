@@ -26,10 +26,12 @@ export default function Home() {
     // Check if the user is authenticated
     const user = localStorage.getItem('user');
 
-    if (!user) {
+    console.log("User is: " + user);
+
+    /*if (!user) {
       // If the user is not authenticated, redirect them to the login page
       router.push('/login');
-    }
+    }*/
   }, []);
 
   const handleSubmit = async (e) => {
