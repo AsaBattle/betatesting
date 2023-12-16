@@ -166,6 +166,7 @@ export default function Home() {
   );
 }
 
+/*
 export async function getServerSideProps(context) {
   // Check if the user is authenticated
   const user = context.req.cookies.user;
@@ -184,7 +185,7 @@ export async function getServerSideProps(context) {
   return {
     props: {}, // will be passed to the page component as props
   };
-}
+}*/
 function readAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
