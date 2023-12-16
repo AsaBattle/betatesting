@@ -1,5 +1,6 @@
 // Asa was also here too, making his first new branch! Amazing
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 import Head from "next/head";
 import Link from "next/link";
 import Canvas from "components/canvas";
@@ -18,6 +19,18 @@ export default function Home() {
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const [brushSize, setBrushSize] = useState(40); // Default brush size
+
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the user is authenticated
+    const user = localStorage.getItem('user');
+
+    if (!user) {
+      // If the user is not authenticated, redirect them to the login page
+      router.push('/login');
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -151,6 +164,25 @@ export default function Home() {
   );
 }
 
+export async function getServerSideProps(context) {
+  // Check if the user is authenticated
+  const user = context.req.cookies.user;
+
+  if (!user) {
+    // If the user is not authenticated, redirect them to the login page
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  // If the user is authenticated, return the initial props
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
 function readAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
