@@ -1,15 +1,11 @@
-// Asa was also here too, making his first new branch! Amazing
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from 'next/router';
 import Head from "next/head";
-import Link from "next/link";
 import Canvas from "components/canvas";
 import PromptForm from "components/prompt-form";
 import Dropzone from "components/dropzone";
 import Download from "components/download";
 import { XCircle as StartOverIcon } from "lucide-react";
-import { Code as CodeIcon } from "lucide-react";
-import { Rocket as RocketIcon } from "lucide-react";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -21,18 +17,6 @@ export default function Home() {
   const [brushSize, setBrushSize] = useState(40); // Default brush size
 
   const router = useRouter();
-
-  useEffect(() => {
-    // Check if the user is authenticated
-    const user = localStorage.getItem('user');
-
-    console.log("User is: " + user);
-
-    /*if (!user) {
-      // If the user is not authenticated, redirect them to the login page
-      router.push('/login');
-    }*/
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,10 +30,7 @@ export default function Home() {
       prompt: e.target.prompt.value,
       image: userUploadedImage
         ? await readAsDataURL(userUploadedImage)
-        : // only use previous prediction as init image if there's a mask
-        maskImage
-        ? prevPredictionOutput
-        : null,
+        : maskImage ? prevPredictionOutput : null,
       mask: maskImage,
     };
 
@@ -60,35 +41,33 @@ export default function Home() {
       },
       body: JSON.stringify(body),
     });
+
     const prediction = await response.json();
 
     if (response.status !== 201) {
       setError(prediction.detail);
       return;
     }
+
     setPredictions(predictions.concat([prediction]));
 
-    while (
-      prediction.status !== "succeeded" &&
-      prediction.status !== "failed"
-    ) {
+    while (prediction.status !== "succeeded" && prediction.status !== "failed") {
       await sleep(1000);
       const response = await fetch("/api/predictions/" + prediction.id);
-      prediction = await response.json();
+      const updatedPrediction = await response.json();
       if (response.status !== 200) {
-        setError(prediction.detail);
+        setError(updatedPrediction.detail);
         return;
       }
-      setPredictions(predictions.concat([prediction]));
+      setPredictions(currentPredictions => currentPredictions.concat([updatedPrediction]));
 
-      if (prediction.status === "succeeded") {
+      if (updatedPrediction.status === "succeeded") {
         setUserUploadedImage(null);
       }
     }
   };
 
-  const startOver = async (e) => {
-    e.preventDefault();
+  const startOver = () => {
     setPredictions([]);
     setError(null);
     setMaskImage(null);
@@ -105,25 +84,25 @@ export default function Home() {
         <strong>FullJourney.AI Inpainting Greatness</strong>
       </p>
       <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
-  <strong>Draw over the areas you want replaced...</strong>
-</p>
-<main className="container mx-auto p-2">
-  {error && <div>{error}</div>}
+        <strong>Draw over the areas you want replaced...</strong>
+      </p>
+      <main className="container mx-auto p-2">
+        {error && <div>{error}</div>}
 
-  {/* Brush size slider */}
-  <div className="brush-slider-container text-white flex items-center justify-center mx-auto" style={{ width: '30%' }}>
-  <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
-  <input
-    type="range"
-    id="brushSize"
-    name="brushSize"
-    min="1"
-    max="100"
-    value={brushSize}
-    onChange={(e) => setBrushSize(Number(e.target.value))}
-    className="brush-slider flex-grow"
-  />
-</div>
+        {/* Brush size slider */}
+        <div className="brush-slider-container text-white flex items-center justify-center mx-auto" style={{ width: '30%' }}>
+        <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
+        <input
+          type="range"
+          id="brushSize"
+          name="brushSize"
+          min="1"
+          max="100"
+          value={brushSize}
+          onChange={(e) => setBrushSize(Number(e.target.value))}
+          className="brush-slider flex-grow"
+        />
+      </div>
 
         <div className="border-hairline max-w-[512px] mx-auto relative">
           <Dropzone
@@ -166,26 +145,6 @@ export default function Home() {
   );
 }
 
-/*
-export async function getServerSideProps(context) {
-  // Check if the user is authenticated
-  const user = context.req.cookies.user;
-
-  if (!user) {
-    // If the user is not authenticated, redirect them to the login page
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  // If the user is authenticated, return the initial props
-  return {
-    props: {}, // will be passed to the page component as props
-  };
-}*/
 function readAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
@@ -195,4 +154,22 @@ function readAsDataURL(file) {
     };
     fr.readAsDataURL(file);
   });
+}
+
+export async function getServerSideProps(context) {
+  const { req } = context;
+  const userSessionCookie = req.cookies['discord.oauth2']; // Replace with your actual session cookie name
+
+  if (!userSessionCookie) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {}, // No props needed at the moment
+  };
 }

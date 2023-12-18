@@ -1,25 +1,38 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-export default function Auth() {
+export default function Auth({ isAuthenticated }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Get the user object from the query parameters
-    const user = router.query.user;
-    const code = router.query.code;
-
-    if (user && code) {
-        console.log("Setting local storage to user: " + user + " and code: " + code);
-
-      // Save the user object and the code in the local storage
-      localStorage.setItem('user', 'TempUserName');
-      localStorage.setItem('code', code);
-
-      // Redirect the user to the dashboard page
+    // Redirect based on the authentication status
+    if (isAuthenticated) {
       router.push('/paint');
+    } else {
+      router.push('/login');
     }
-  }, [router]);
+  }, [router, isAuthenticated]);
 
   return null;
+}
+
+export async function getServerSideProps(context) {
+  const { req } = context;
+  const userSessionCookie = req.cookies['name-of-your-session-cookie']; // Replace with your actual session cookie name
+
+  if (userSessionCookie) {
+    // If there is a session cookie, consider the user as authenticated
+    return {
+      props: {
+        isAuthenticated: true,
+      },
+    };
+  }
+
+  // If there is no session cookie, consider the user as not authenticated
+  return {
+    props: {
+      isAuthenticated: false,
+    },
+  };
 }
