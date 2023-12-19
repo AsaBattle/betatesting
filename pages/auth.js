@@ -35,7 +35,7 @@ export async function getServerSideProps(context) {
   // If there is no session cookie, consider the user as not authenticated
   return {
     props: {
-      isAuthenticated: true,
+      isAuthenticated: false,
     },
   };
 }
