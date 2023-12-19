@@ -155,14 +155,15 @@ function readAsDataURL(file) {
     fr.readAsDataURL(file);
   });
 }
+
 export async function getServerSideProps(context) {
   const { req } = context;
   const userSessionCookie = req.cookies['discord.oauth2'];
 
   console.log("Here here with the userSessionCookie: " + userSessionCookie);
-  
-  /*
+
   if (!userSessionCookie) {
+    console.log("They did not have the required cookie set!!!")
     // If there's no session cookie, redirect to the login page
     return {
       redirect: {
@@ -171,7 +172,8 @@ export async function getServerSideProps(context) {
       },
     };
   }
-*/
+
+  console.log("They did have the required cookie set!!!");
   // If the session cookie is found, just continue loading the paint page
   // You could pass user data or other props here if needed
   return {
