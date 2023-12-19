@@ -159,11 +159,21 @@ function readAsDataURL(file) {
 export async function getServerSideProps(context) {
   const { req } = context;
   const userSessionCookie = req.cookies['discord.oauth2']; // Replace with your actual session cookie name
+  console.log("Getting server side props for paint.js");
 
   if (!userSessionCookie) {
+    console.log("No user session cookie found, redirecting to login");
     return {
       redirect: {
         destination: '/login',
+        permanent: false,
+      },
+    };
+  } else {
+    console.log("User session cookie found, redirecting to paint");
+    return {
+      redirect: {
+        destination: '/paint',
         permanent: false,
       },
     };
