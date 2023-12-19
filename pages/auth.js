@@ -18,7 +18,7 @@ export default function Auth({ isAuthenticated }) {
 
 export async function getServerSideProps(context) {
   const { req } = context;
-  const userSessionCookie = req.cookies['name-of-your-session-cookie']; // Replace with your actual session cookie name
+  const userSessionCookie = req.cookies['discord.oauth2']; // Replace with your actual session cookie name
 
   if (userSessionCookie) {
     // If there is a session cookie, consider the user as authenticated
