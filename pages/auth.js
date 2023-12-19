@@ -22,6 +22,7 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const userSessionCookie = req.cookies['discord.oauth2']; // Replace with your actual session cookie name
 
+  console.log("Inside getServerSideProps in Auth.js userSessionCookie: " + userSessionCookie);
   if (userSessionCookie) {
     // If there is a session cookie, consider the user as authenticated
     return {
