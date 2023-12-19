@@ -155,31 +155,23 @@ function readAsDataURL(file) {
     fr.readAsDataURL(file);
   });
 }
-
 export async function getServerSideProps(context) {
   const { req } = context;
-  const userSessionCookie = req.cookies['discord.oauth2']; // Replace with your actual session cookie name
-  console.log("Getting server side props for paint.js");
+  const userSessionCookie = req.cookies['discord.oauth2'];
 
   if (!userSessionCookie) {
-    console.log("No user session cookie found, redirecting to login");
+    // If there's no session cookie, redirect to the login page
     return {
       redirect: {
         destination: '/login',
         permanent: false,
       },
     };
-  } else {
-    console.log("User session cookie found, redirecting to paint");
-    return {
-      redirect: {
-        destination: '/paint',
-        permanent: false,
-      },
-    };
   }
 
+  // If the session cookie is found, just continue loading the paint page
+  // You could pass user data or other props here if needed
   return {
-    props: {}, // No props needed at the moment
+    props: {},
   };
 }
