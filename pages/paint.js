@@ -159,7 +159,8 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const userSessionCookie = req.cookies['discord.oauth2'];
 
-  console.log("Here here");
+  console.log("Here here with the userSessionCookie: " + userSessionCookie);
+  
   /*
   if (!userSessionCookie) {
     // If there's no session cookie, redirect to the login page

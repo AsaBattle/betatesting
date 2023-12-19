@@ -5,6 +5,8 @@ export default function Auth({ isAuthenticated }) {
   const router = useRouter();
 
   useEffect(() => {
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+
     // Redirect based on the authentication status
     if (isAuthenticated) {
       router.push('/paint');
