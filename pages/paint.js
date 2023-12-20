@@ -16,7 +16,24 @@ export default function Home() {
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const [brushSize, setBrushSize] = useState(40); // Default brush size
 
+  
   const router = useRouter();
+
+  useEffect(() => {
+    // Check user login status on component mount
+    checkUserLogin();
+  }, []);
+
+  const checkUserLogin = async () => {
+    try {
+      const response = await axios.get("https://www.fulljourney.ai/api/auth/", { withCredentials: true });
+      setUser(response.data);
+      console.log('User authenticated', response.data);
+    } catch (error) {
+      console.error('User not authenticated', error);
+      router.push('/login'); // Redirect to login
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
