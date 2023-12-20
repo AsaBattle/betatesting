@@ -156,27 +156,35 @@ function readAsDataURL(file) {
   });
 }
 
+// Server-side authentication check in getServerSideProps
 export async function getServerSideProps(context) {
-  const { req } = context;
-  const userSessionCookie = req.cookies['discord.oauth2'];
+  try {
+    // Replace 'fetch' with your preferred HTTP library if necessary
+    const res = await fetch('https://www.fulljourney.ai/api/auth/', {
+      headers: {
+        Cookie: context.req.headers.cookie || '',
+      },
+      credentials: 'include',
+    });
 
-  console.log("Here here with the userSessionCookie: " + userSessionCookie);
+    if (!res.ok) {
+      throw new Error('Not authenticated');
+    }
 
-  if (!userSessionCookie) {
-    console.log("They did not have the required cookie set!!!")
-    // If there's no session cookie, redirect to the login page
+    const user = await res.json();
+
+    // Continue rendering the page if authenticated
+    return {
+      props: { user },
+    };
+  } catch (error) {
+    console.error('Authentication error: ', error);
+    // Redirect to Discord OAuth login if not authenticated
     return {
       redirect: {
-        destination: '/login',
+        destination: '/api/auth/discord',
         permanent: false,
       },
     };
   }
-
-  console.log("They did have the required cookie set!!!");
-  // If the session cookie is found, just continue loading the paint page
-  // You could pass user data or other props here if needed
-  return {
-    props: {},
-  };
 }
