@@ -15,8 +15,25 @@ export default function Home() {
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const [brushSize, setBrushSize] = useState(40); // Default brush size
+  const [user, setUser] = useState(null);
 
   const router = useRouter();
+
+  useEffect(() => {
+    // Check user login status on component mount
+    checkUserLogin();
+  }, []);
+
+  const checkUserLogin = async () => {
+    try {
+      const response = await axios.get("https://www.fulljourney.ai/api/auth/", { withCredentials: true });
+      setUser(response.data);
+    } catch (error) {
+      console.error('User not authenticated', error);
+      router.push('/login'); // Redirect to login
+    }
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -156,26 +173,22 @@ function readAsDataURL(file) {
   });
 }
 
+// Updated getServerSideProps function
 export async function getServerSideProps(context) {
   const { req } = context;
   const userSessionCookie = req.cookies['discord.oauth2'];
 
-  console.log("Here here with the userSessionCookie: " + userSessionCookie);
-
   if (!userSessionCookie) {
-    console.log("They did not have the required cookie set!!!")
-    // If there's no session cookie, redirect to the login page
+    // Redirect to Discord OAuth login if not authenticated
     return {
       redirect: {
-        destination: '/login',
+        destination: '/api/auth/discord',
         permanent: false,
       },
     };
   }
 
-  console.log("They did have the required cookie set!!!");
-  // If the session cookie is found, just continue loading the paint page
-  // You could pass user data or other props here if needed
+  // Continue loading the page if authenticated
   return {
     props: {},
   };
