@@ -28,6 +28,7 @@ export default function Home() {
     try {
       const response = await axios.get("https://www.fulljourney.ai/api/auth/", { withCredentials: true });
       setUser(response.data);
+      console.log('User authenticated', response.data);
     } catch (error) {
       console.error('User not authenticated', error);
       router.push('/login'); // Redirect to login
@@ -173,23 +174,35 @@ function readAsDataURL(file) {
   });
 }
 
-// Updated getServerSideProps function
+// Server-side authentication check in getServerSideProps
 export async function getServerSideProps(context) {
-  const { req } = context;
-  const userSessionCookie = req.cookies['discord.oauth2'];
+  try {
+    // Replace 'fetch' with your preferred HTTP library if necessary
+    const res = await fetch('https://www.fulljourney.ai/api/auth/', {
+      headers: {
+        Cookie: context.req.headers.cookie || '',
+      },
+      credentials: 'include',
+    });
 
-  if (!userSessionCookie) {
+    if (!res.ok) {
+      throw new Error('Not authenticated');
+    }
+
+    const user = await res.json();
+
+    // Continue rendering the page if authenticated
+    return {
+      props: { user },
+    };
+  } catch (error) {
+    console.error('Authentication error: ', error);
     // Redirect to Discord OAuth login if not authenticated
     return {
       redirect: {
-        destination: '/api/auth/discord',
+        destination: 'http://www.fulljourney.ai/api/auth/nextjs',
         permanent: false,
       },
     };
   }
-
-  // Continue loading the page if authenticated
-  return {
-    props: {},
-  };
 }
