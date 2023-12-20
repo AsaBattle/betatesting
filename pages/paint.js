@@ -182,7 +182,7 @@ export async function getServerSideProps(context) {
     // Redirect to Discord OAuth login if not authenticated
     return {
       redirect: {
-        destination: '/api/auth/discord',
+        destination: 'http://www.fulljourney.ai/api/auth/nextjs',
         permanent: false,
       },
     };
