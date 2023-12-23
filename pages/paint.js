@@ -20,6 +20,12 @@ export default function Home( theUserData ) {
   
   const router = useRouter();
 
+    // Add a logout function
+    const handleLogout = () => {
+      // Redirect to the logout URL
+      window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+    };
+
   useEffect(() => {
     // Check user login status on component mount
     checkUserLogin();
@@ -181,6 +187,15 @@ export default function Home( theUserData ) {
           </div>
         </div>
       </main>
+       {/* Add a logout button at the bottom of the page */}
+       <footer className="text-center my-4">
+        <button 
+          onClick={handleLogout} 
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Logout
+        </button>
+      </footer>
     </div>
   );
 }
@@ -200,6 +215,7 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const cookies = req.headers.cookie || '';
 
+  // Try grabbing the users data. IF we can get it, it means they've logged in successfully
   try {
     const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
       headers: { Cookie: cookies },
@@ -229,31 +245,3 @@ export async function getServerSideProps(context) {
 }
 
 
-
-/* old one
-export async function getServerSideProps(context) {
-  const { req } = context;
-  //
-  const userSessionCookie = req.cookies['discord.oauth2'];
-
-  console.log("Here here with the userSessionCookie: " + userSessionCookie);
-
-  if (!userSessionCookie) {
-    console.log("They did not have the required cookie set!!!")
-    // If there's no session cookie, redirect to the login page
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  console.log("They did have the required cookie set!!!");
-  // If the session cookie is found, just continue loading the paint page
-  // You could pass user data or other props here if needed
-  return {
-    props: {},
-  };
-}
-*/
