@@ -26,6 +26,7 @@ export default function Home( theUserData ) {
   }, []);
 
   const checkUserLogin = async () => {
+    /*
     const response = await axios.get("https://www.fulljourney.ai/api/auth/set-test", { withCredentials: true }); 
     const response2 = await axios.get("https://www.fulljourney.ai/api/auth/get-test", { withCredentials: true }); 
     
@@ -40,8 +41,21 @@ export default function Home( theUserData ) {
       //setUser(response.data);
       for (var i=1;i<30;++i)
        console.log("11111111111111111111111111111111");
-      console.log("theUserData is: ",theUserData);
+      */
     //  console.log('User authenticated', response.data);
+    if (theUserData)       
+    {
+      console.log("theUserData is: ",theUserData);
+      if (theUserData.userData)
+      {
+        console.log("theUserData.userData is: ",theUserData.userData);
+        setUserData(theUserData.userData);
+      }
+      else
+      {
+        console.log("theUserData.userData is null");
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
