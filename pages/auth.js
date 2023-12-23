@@ -6,7 +6,17 @@ export default function Auth({ isAuthenticated }) {
 
   useEffect(() => {
     console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
-
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    
     // Redirect based on the authentication status
     if (isAuthenticated) {
       router.push('/paint');
@@ -19,6 +29,7 @@ export default function Auth({ isAuthenticated }) {
 }
 
 export async function getServerSideProps(context) {
+  /*
   const { req } = context;
   const userSessionCookie = req.cookies['discord.oauth2']; // Replace with your actual session cookie name
 
@@ -31,11 +42,11 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
+*/
   // If there is no session cookie, consider the user as not authenticated
   return {
     props: {
-      isAuthenticated: false,
+      isAuthenticated: true,
     },
   };
 }
