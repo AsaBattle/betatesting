@@ -187,7 +187,7 @@ export async function getServerSideProps(context) {
   const cookies = req.headers.cookie || '';
 
   try {
-    const response = await axios.get('https://www.fulljourney.ai/api/auth/nextjs', {
+    const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
       headers: { Cookie: cookies },
       withCredentials: true,
     });
