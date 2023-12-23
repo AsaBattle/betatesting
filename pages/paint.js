@@ -10,7 +10,7 @@ import { XCircle as StartOverIcon } from "lucide-react";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function Home() {
+export default function Home( theUserData ) {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [maskImage, setMaskImage] = useState(null);
@@ -40,7 +40,7 @@ export default function Home() {
       //setUser(response.data);
       for (var i=1;i<30;++i)
        console.log("11111111111111111111111111111111");
-      console.log("user data is: ",userData);
+      console.log("theUserData is: ",theUserData);
     //  console.log('User authenticated', response.data);
   };
 
