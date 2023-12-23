@@ -10,6 +10,7 @@
     "speed-up-video": "ffmpeg -i cherries-oranges-bananas.mov -filter:v 'setpts=PTS/3' cherries-oranges-bananas.mp4"
   },
   "dependencies": {
+    "axios": "^1.6.2",
     "body-parser": "^1.20.2",
     "buffer-to-data-url": "^1.0.0",
     "lodash": "^4.17.21",
