@@ -29,23 +29,41 @@ export default function Home({ userData }) {
   const handleLogout = () => {
     window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const promptValue = e.target.prompt.value;
-
+  
     try {
+      // Get the last successful prediction's output, if it exists
+      const lastOutput = predictions.length > 0 && predictions[predictions.length - 1].status === 'succeeded'
+        ? predictions[predictions.length - 1].output
+        : null;
+  
+      // Determine the image to use: if there's a mask, use the last successful output; otherwise, use the user uploaded image
+      const imageToUse = maskImage && lastOutput ? lastOutput : userUploadedImage;
+  
+      // If there's no image to use, don't proceed
+      if (!imageToUse) {
+        setError('No image to process.');
+        return;
+      }
+  
+      // If userUploadedImage is in use, convert it to Data URL
+      const imageForProcessing = userUploadedImage === imageToUse
+        ? await readAsDataURL(userUploadedImage)
+        : imageToUse;
+  
       const body = {
         prompt: promptValue,
-        image: userUploadedImage ? await readAsDataURL(userUploadedImage) : null,
+        image: imageForProcessing,
         mask: maskImage,
       };
-
+  
       const response = await axios.post("/api/predictions", body);
       const newPrediction = response.data;
-
+  
       setPredictions((prevPredictions) => [...prevPredictions, newPrediction]);
-
+  
       let statusCheck = newPrediction.status;
       while (statusCheck !== "succeeded" && statusCheck !== "failed") {
         await sleep(1000);
@@ -54,14 +72,16 @@ export default function Home({ userData }) {
         statusCheck = updatedPrediction.status;
         setPredictions((prevPredictions) => prevPredictions.map(p => p.id === updatedPrediction.id ? updatedPrediction : p));
       }
-
+  
+      // After a successful prediction, clear the mask to prepare for potential new masked areas
       if (statusCheck === "succeeded") {
-        setUserUploadedImage(null);
+        setMaskImage(null);
       }
     } catch (err) {
       setError(err.response?.data.detail || "An error occurred");
     }
   };
+  
 
   const startOver = () => {
     setPredictions([]);
