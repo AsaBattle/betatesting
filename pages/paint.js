@@ -48,7 +48,7 @@ export default function Home( theUserData ) {
       for (var i=1;i<30;++i)
        console.log("11111111111111111111111111111111");
       */
-    //  console.log('User authenticated', response.data);
+      console.log('User authenticated', response.data);
     if (theUserData)       
     {
       console.log("theUserData is: ",theUserData);
