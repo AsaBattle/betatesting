@@ -70,12 +70,17 @@ export default function Home({ userData }) {
         const statusResponse = await axios.get(`/api/predictions/${newPrediction.id}`);
         const updatedPrediction = statusResponse.data;
         statusCheck = updatedPrediction.status;
-        setPredictions((prevPredictions) => prevPredictions.map(p => p.id === updatedPrediction.id ? updatedPrediction : p));
-      }
   
-      // After a successful prediction, clear the mask to prepare for potential new masked areas
-      if (statusCheck === "succeeded") {
-        setMaskImage(null);
+        if (statusCheck === "succeeded" || statusCheck === "failed") {
+          setPredictions((prevPredictions) =>
+            prevPredictions.map(p => (p.id === updatedPrediction.id ? updatedPrediction : p))
+          );
+          if (statusCheck === "succeeded") {
+            // Clear the mask and set the uploaded image to the last successful output
+            setMaskImage(null);
+            setUserUploadedImage(updatedPrediction.output);
+          }
+        }
       }
     } catch (err) {
       setError(err.response?.data.detail || "An error occurred");
