@@ -33,35 +33,49 @@ export default function Home({ userData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const promptValue = e.target.prompt.value;
-
+  
     try {
+      // Determine if there's a previous prediction and output to use as the base image
+      const prevPredictionOutput = predictions.length > 0
+        ? predictions[predictions.length - 1].output
+        : null;
+  
+      // Use the previous output as the image if it exists and there's a mask, otherwise use the user uploaded image
+      const imageToUse = maskImage && prevPredictionOutput
+        ? prevPredictionOutput
+        : userUploadedImage ? await readAsDataURL(userUploadedImage) : null;
+  
       const body = {
         prompt: promptValue,
-        image: userUploadedImage ? await readAsDataURL(userUploadedImage) : null,
+        image: imageToUse,
         mask: maskImage,
       };
-
+  
       const response = await axios.post("/api/predictions", body);
       const newPrediction = response.data;
-
+  
       setPredictions((prevPredictions) => [...prevPredictions, newPrediction]);
-
+  
       let statusCheck = newPrediction.status;
       while (statusCheck !== "succeeded" && statusCheck !== "failed") {
         await sleep(1000);
         const statusResponse = await axios.get(`/api/predictions/${newPrediction.id}`);
         const updatedPrediction = statusResponse.data;
         statusCheck = updatedPrediction.status;
-        setPredictions((prevPredictions) => prevPredictions.map(p => p.id === updatedPrediction.id ? updatedPrediction : p));
+        setPredictions((prevPredictions) =>
+          prevPredictions.map(p => (p.id === updatedPrediction.id ? updatedPrediction : p))
+        );
       }
-
+  
+      // After a successful prediction, clear the mask to prepare for potential new masked areas
       if (statusCheck === "succeeded") {
-        setUserUploadedImage(null);
+        setMaskImage(null);
       }
     } catch (err) {
       setError(err.response?.data.detail || "An error occurred");
     }
   };
+  
 
   const startOver = () => {
     setPredictions([]);
