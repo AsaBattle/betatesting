@@ -222,7 +222,6 @@ export async function getServerSideProps(context) {
       withCredentials: true,
     });
 
-
     // Assuming the response contains the user data you need
     const userData = response.data;
 
