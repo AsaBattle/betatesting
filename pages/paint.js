@@ -27,6 +27,7 @@ export default function Home( theUserData ) {
     };
 
   useEffect(() => {
+    console.log("Checking User Login");
     // Check user login status on component mount
     checkUserLogin();
   }, []);
