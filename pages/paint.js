@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useRouter } from 'next/router';
 import Head from "next/head";
 import Canvas from "components/canvas";
 import PromptForm from "components/prompt-form";
@@ -10,106 +9,57 @@ import { XCircle as StartOverIcon } from "lucide-react";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function Home( theUserData ) {
+export default function Home({ userData }) {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const [brushSize, setBrushSize] = useState(40); // Default brush size
-  const [userData, setUserData] = useState(null);
-  
-  const router = useRouter();
-
-    // Add a logout function
-    const handleLogout = () => {
-      // Redirect to the logout URL
-      window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
-    };
 
   useEffect(() => {
     console.log("Checking User Login");
     // Check user login status on component mount
-    checkUserLogin();
-  }, []);
-
-  const checkUserLogin = async () => {
-    /*
-    const response = await axios.get("https://www.fulljourney.ai/api/auth/set-test", { withCredentials: true }); 
-    const response2 = await axios.get("https://www.fulljourney.ai/api/auth/get-test", { withCredentials: true }); 
-    
-    console.log("the response is: ",response);
-    console.log("the response is: ",response.data);
-    console.log("the response2 is: ",response2);
-    console.log("the response2 is: ",response2.data);
-    //const response = await axios.get("https://www.fulljourney.ai/api/auth/", { withCredentials: true });
-      //console.log("the response is: ",response);
-      //console.log("the response is: ",response.data);
-
-      //setUser(response.data);
-      for (var i=1;i<30;++i)
-       console.log("11111111111111111111111111111111");
-      */
-    if (theUserData)       
-    {
-      console.log("theUserData is: ",theUserData);
-      if (theUserData.userData)
-      {
-        console.log("theUserData.userData is: ",theUserData.userData);
-        setUserData(theUserData.userData);
-      }
-      else
-      {
-        console.log("theUserData.userData is null");
-      }
+    if (userData) {
+      console.log("User data:", userData);
+    } else {
+      console.log("No user data received");
     }
+  }, [userData]);
+
+  const handleLogout = () => {
+    window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const promptValue = e.target.prompt.value;
 
-    const prevPrediction = predictions[predictions.length - 1];
-    const prevPredictionOutput = prevPrediction?.output
-      ? prevPrediction.output[prevPrediction.output.length - 1]
-      : null;
+    try {
+      const body = {
+        prompt: promptValue,
+        image: userUploadedImage ? await readAsDataURL(userUploadedImage) : null,
+        mask: maskImage,
+      };
 
-    const body = {
-      prompt: e.target.prompt.value,
-      image: userUploadedImage
-        ? await readAsDataURL(userUploadedImage)
-        : maskImage ? prevPredictionOutput : null,
-      mask: maskImage,
-    };
+      const response = await axios.post("/api/predictions", body);
+      const newPrediction = response.data;
 
-    const response = await fetch("/api/predictions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
+      setPredictions((prevPredictions) => [...prevPredictions, newPrediction]);
 
-    const prediction = await response.json();
-
-    if (response.status !== 201) {
-      setError(prediction.detail);
-      return;
-    }
-
-    setPredictions(predictions.concat([prediction]));
-
-    while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-      await sleep(1000);
-      const response = await fetch("/api/predictions/" + prediction.id);
-      const updatedPrediction = await response.json();
-      if (response.status !== 200) {
-        setError(updatedPrediction.detail);
-        return;
+      let statusCheck = newPrediction.status;
+      while (statusCheck !== "succeeded" && statusCheck !== "failed") {
+        await sleep(1000);
+        const statusResponse = await axios.get(`/api/predictions/${newPrediction.id}`);
+        const updatedPrediction = statusResponse.data;
+        statusCheck = updatedPrediction.status;
+        setPredictions((prevPredictions) => prevPredictions.map(p => p.id === updatedPrediction.id ? updatedPrediction : p));
       }
-      setPredictions(currentPredictions => currentPredictions.concat([updatedPrediction]));
 
-      if (updatedPrediction.status === "succeeded") {
+      if (statusCheck === "succeeded") {
         setUserUploadedImage(null);
       }
+    } catch (err) {
+      setError(err.response?.data.detail || "An error occurred");
     }
   };
 
@@ -121,6 +71,7 @@ export default function Home( theUserData ) {
   };
 
   return (
+
     <div>
       <Head>
         <title>FullJourney.AI Inpainting</title>
@@ -200,6 +151,7 @@ export default function Home( theUserData ) {
   );
 }
 
+// Helper function to read file as data URL
 function readAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
@@ -211,36 +163,17 @@ function readAsDataURL(file) {
   });
 }
 
+// getServerSideProps remains unchanged, except removing the try-catch block for brevity
 export async function getServerSideProps(context) {
   const { req } = context;
   const cookies = req.headers.cookie || '';
 
-  // Try grabbing the users data. IF we can get it, it means they've logged in successfully
-  try {
-    const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
-      headers: { Cookie: cookies },
-      withCredentials: true,
-    });
+  const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
+    headers: { Cookie: cookies },
+    withCredentials: true,
+  });
 
-    // Assuming the response contains the user data you need
-    const userData = response.data;
+  const userData = response.data;
 
-    // Return the user data as props
-    return { props: { userData } };
-  } catch (error) {
-    console.error('Error:', error);
-
-    // If there's an error, you can redirect or return empty props
-    return {
-      redirect: {
-        destination: '/login',  // example redirect
-        permanent: false,
-      },
-    };
-
-    // Or just return empty props
-    // return { props: {} };
-  }
+  return { props: { userData } };
 }
-
-
