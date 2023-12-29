@@ -43,12 +43,12 @@ export default function Home(theUserData) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const prevPrediction = predictions[predictions.length - 1];
     const prevPredictionOutput = prevPrediction?.output
       ? prevPrediction.output[prevPrediction.output.length - 1]
       : null;
-
+  
     const body = {
       prompt: e.target.prompt.value,
       image: userUploadedImage
@@ -56,7 +56,7 @@ export default function Home(theUserData) {
         : maskImage ? prevPredictionOutput : null,
       mask: maskImage,
     };
-
+  
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
@@ -64,20 +64,20 @@ export default function Home(theUserData) {
       },
       body: JSON.stringify(body),
     });
-
+  
     const prediction = await response.json();
-
+  
     if (response.status !== 201) {
       setError(prediction.detail);
       console.error("Error in prediction response: ", prediction.detail); // Added logging for error detail
       return;
     }
-
+  
     setPredictions(predictions.concat([prediction]));
-
+  
     // Added Debugging Logs
     console.log("Initial prediction status:", prediction.status);
-
+  
     while (prediction.status !== "succeeded" && prediction.status !== "failed") {
       await sleep(1000);
       const response = await fetch("/api/predictions/" + prediction.id);
@@ -87,18 +87,40 @@ export default function Home(theUserData) {
         console.error("Error in updating prediction: ", updatedPrediction.detail); // Added logging for error detail
         return;
       }
-
+  
       // Debugging logs
       console.log("Updated prediction status:", updatedPrediction.status);
-
-      setPredictions(currentPredictions => currentPredictions.concat([updatedPrediction]));
-
+  
       if (updatedPrediction.status === "succeeded") {
-        setUserUploadedImage(null);
-        break; // Added break to ensure exit from the loop
+        setPredictions(currentPredictions => {
+          // Ensure the last prediction is updated with the final output
+          const updatedPredictions = [...currentPredictions];
+          const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+          if (indexToUpdate !== -1) {
+            updatedPredictions[indexToUpdate] = updatedPrediction;
+          }
+          return updatedPredictions;
+        });
+  
+        setUserUploadedImage(null); // Clear the uploaded image since the prediction succeeded
+        break; // Exit the loop since the prediction has succeeded
+      } else if (updatedPrediction.status === "failed") {
+        setError("Prediction failed"); // Handle the failed prediction case
+        break; // Exit the loop since the prediction has failed
+      } else {
+        // Update predictions state to trigger re-render with new status
+        setPredictions(currentPredictions => {
+          const updatedPredictions = [...currentPredictions];
+          const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+          if (indexToUpdate !== -1) {
+            updatedPredictions[indexToUpdate] = updatedPrediction;
+          }
+          return updatedPredictions;
+        });
       }
     }
   };
+  
 
   const startOver = () => {
     setPredictions([]);
