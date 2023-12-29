@@ -29,39 +29,66 @@ export default function Home({ userData }) {
   const handleLogout = () => {
     window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const promptValue = e.target.prompt.value;
-
+  
     try {
+      // Get the last successful prediction's output, if it exists
+      const lastOutput = predictions.length > 0 && predictions[predictions.length - 1].status === 'succeeded'
+        ? predictions[predictions.length - 1].output
+        : null;
+  
+      // Determine the image to use: if there's a mask, use the last successful output; otherwise, use the user uploaded image
+      const imageToUse = maskImage && lastOutput ? lastOutput : userUploadedImage;
+  
+      // If there's no image to use, don't proceed
+      if (!imageToUse) {
+        setError('No image to process.');
+        return;
+      }
+  
+      // If userUploadedImage is in use, convert it to Data URL
+      const imageForProcessing = userUploadedImage === imageToUse
+        ? await readAsDataURL(userUploadedImage)
+        : imageToUse;
+  
       const body = {
         prompt: promptValue,
-        image: userUploadedImage ? await readAsDataURL(userUploadedImage) : null,
+        image: imageForProcessing,
         mask: maskImage,
       };
-
+  
       const response = await axios.post("/api/predictions", body);
       const newPrediction = response.data;
-
+  
       setPredictions((prevPredictions) => [...prevPredictions, newPrediction]);
-
+  
       let statusCheck = newPrediction.status;
       while (statusCheck !== "succeeded" && statusCheck !== "failed") {
         await sleep(1000);
         const statusResponse = await axios.get(`/api/predictions/${newPrediction.id}`);
         const updatedPrediction = statusResponse.data;
         statusCheck = updatedPrediction.status;
-        setPredictions((prevPredictions) => prevPredictions.map(p => p.id === updatedPrediction.id ? updatedPrediction : p));
-      }
-
-      if (statusCheck === "succeeded") {
-        setUserUploadedImage(null);
+  
+        if (statusCheck === "succeeded" || statusCheck === "failed") {
+          setPredictions((prevPredictions) =>
+            prevPredictions.map(p => (p.id === updatedPrediction.id ? updatedPrediction : p))
+          );
+          if (statusCheck === "succeeded") {
+            // Clear the mask and set the uploaded image to the last successful output
+            setMaskImage(null);
+            setUserUploadedImage(updatedPrediction.output);
+          }
+        }
       }
     } catch (err) {
       setError(err.response?.data.detail || "An error occurred");
     }
   };
+  
+
+
 
   const startOver = () => {
     setPredictions([]);
@@ -144,7 +171,7 @@ export default function Home({ userData }) {
           onClick={handleLogout} 
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
         >
-          Logout
+          Logout(env)
         </button>
       </footer>
     </div>
