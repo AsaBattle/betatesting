@@ -10,55 +10,32 @@ import { XCircle as StartOverIcon } from "lucide-react";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function Home( theUserData ) {
+export default function Home(theUserData) {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const [brushSize, setBrushSize] = useState(40); // Default brush size
   const [userData, setUserData] = useState(null);
-  
+
   const router = useRouter();
 
-    // Add a logout function
-    const handleLogout = () => {
-      // Redirect to the logout URL
-      window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
-    };
+  // Add a logout function
+  const handleLogout = () => {
+    window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+  };
 
   useEffect(() => {
-    // Check user login status on component mount
     checkUserLogin();
   }, []);
 
   const checkUserLogin = async () => {
-    /*
-    const response = await axios.get("https://www.fulljourney.ai/api/auth/set-test", { withCredentials: true }); 
-    const response2 = await axios.get("https://www.fulljourney.ai/api/auth/get-test", { withCredentials: true }); 
-    
-    console.log("the response is: ",response);
-    console.log("the response is: ",response.data);
-    console.log("the response2 is: ",response2);
-    console.log("the response2 is: ",response2.data);
-    //const response = await axios.get("https://www.fulljourney.ai/api/auth/", { withCredentials: true });
-      //console.log("the response is: ",response);
-      //console.log("the response is: ",response.data);
-
-      //setUser(response.data);
-      for (var i=1;i<30;++i)
-       console.log("11111111111111111111111111111111");
-      */
-    //  console.log('User authenticated', response.data);
-    if (theUserData)       
-    {
-      console.log("theUserData is: ",theUserData);
-      if (theUserData.userData)
-      {
-        console.log("theUserData.userData is: ",theUserData.userData);
+    if (theUserData) {
+      console.log("theUserData is: ", theUserData);
+      if (theUserData.userData) {
+        console.log("theUserData.userData is: ", theUserData.userData);
         setUserData(theUserData.userData);
-      }
-      else
-      {
+      } else {
         console.log("theUserData.userData is null");
       }
     }
@@ -92,10 +69,14 @@ export default function Home( theUserData ) {
 
     if (response.status !== 201) {
       setError(prediction.detail);
+      console.error("Error in prediction response: ", prediction.detail); // Added logging for error detail
       return;
     }
 
     setPredictions(predictions.concat([prediction]));
+
+    // Added Debugging Logs
+    console.log("Initial prediction status:", prediction.status);
 
     while (prediction.status !== "succeeded" && prediction.status !== "failed") {
       await sleep(1000);
@@ -103,12 +84,18 @@ export default function Home( theUserData ) {
       const updatedPrediction = await response.json();
       if (response.status !== 200) {
         setError(updatedPrediction.detail);
+        console.error("Error in updating prediction: ", updatedPrediction.detail); // Added logging for error detail
         return;
       }
+
+      // Debugging logs
+      console.log("Updated prediction status:", updatedPrediction.status);
+
       setPredictions(currentPredictions => currentPredictions.concat([updatedPrediction]));
 
       if (updatedPrediction.status === "succeeded") {
         setUserUploadedImage(null);
+        break; // Added break to ensure exit from the loop
       }
     }
   };
@@ -135,20 +122,19 @@ export default function Home( theUserData ) {
       <main className="container mx-auto p-2">
         {error && <div>{error}</div>}
 
-        {/* Brush size slider */}
         <div className="brush-slider-container text-white flex items-center justify-center mx-auto" style={{ width: '30%' }}>
-        <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
-        <input
-          type="range"
-          id="brushSize"
-          name="brushSize"
-          min="1"
-          max="100"
-          value={brushSize}
-          onChange={(e) => setBrushSize(Number(e.target.value))}
-          className="brush-slider flex-grow"
-        />
-      </div>
+          <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
+          <input
+            type="range"
+            id="brushSize"
+            name="brushSize"
+            min="1"
+            max="100"
+            value={brushSize}
+            onChange={(e) => setBrushSize(Number(e.target.value))}
+            className="brush-slider flex-grow"
+          />
+        </div>
 
         <div className="border-hairline max-w-[512px] mx-auto relative">
           <Dropzone
@@ -158,7 +144,6 @@ export default function Home( theUserData ) {
           />
           <div
             className="bg-black relative max-h-[512px] w-full flex items-stretch  border-4 border-pink-400 rounded-xl"
-            // style={{ height: 0, paddingBottom: "100%" }}
           >
             <Canvas
               brushSize={brushSize}
@@ -187,8 +172,7 @@ export default function Home( theUserData ) {
           </div>
         </div>
       </main>
-       {/* Add a logout button at the bottom of the page */}
-       <footer className="text-center my-4">
+      <footer className="text-center my-4">
         <button 
           onClick={handleLogout} 
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -215,32 +199,21 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const cookies = req.headers.cookie || '';
 
-  // Try grabbing the users data. IF we can get it, it means they've logged in successfully
   try {
     const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
       headers: { Cookie: cookies },
       withCredentials: true,
     });
 
-    // Assuming the response contains the user data you need
     const userData = response.data;
-
-    // Return the user data as props
     return { props: { userData } };
   } catch (error) {
     console.error('Error:', error);
-
-    // If there's an error, you can redirect or return empty props
     return {
       redirect: {
-        destination: '/login',  // example redirect
+        destination: '/login',
         permanent: false,
       },
     };
-
-    // Or just return empty props
-    // return { props: {} };
   }
 }
-
-
