@@ -22,7 +22,7 @@ export default class Canvas extends React.Component {
   };
 
   handleMouseMove = (event) => {
-    const canvasRect = this.canvas.current.wrapper.getBoundingClientRect();
+    const canvasRect = event.currentTarget.getBoundingClientRect();
     this.setState({
       brushPreviewPosition: {
         x: event.clientX - canvasRect.left,
@@ -30,6 +30,7 @@ export default class Canvas extends React.Component {
       },
     });
   };
+  
 
   handleMouseEnter = () => {
     this.setState({ showBrushPreview: true });
@@ -54,14 +55,14 @@ export default class Canvas extends React.Component {
 
     return (
       <div
-        className="relative w-full aspect-square"
-        onMouseMove={this.handleMouseMove}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        style={{
-          cursor: `url('/pen-cursor.png'), auto`
-        }}
-      >
+      className="relative w-full aspect-square"
+      onMouseMove={this.handleMouseMove} // This should be attached to the same div that receives the onMouseEnter and onMouseLeave
+      onMouseEnter={this.handleMouseEnter}
+      onMouseLeave={this.handleMouseLeave}
+      style={{
+        cursor: `url('/pencil-cursor(w)2.png'), auto` // Make sure to have a 'pencil-cursor.png' in your public folder
+      }}
+    >
         {/* PREDICTION IMAGES */}
         {!this.props.userUploadedImage && predictions.filter((prediction) => prediction.output).map((prediction, index) => (
           <Image
