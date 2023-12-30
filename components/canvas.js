@@ -7,6 +7,10 @@ export default class Canvas extends React.Component {
   constructor(props) {
     super(props);
     this.canvas = React.createRef();
+    this.state = {
+      brushPreviewPosition: { x: 0, y: 0 },
+      showBrushPreview: false,
+    };
   }
 
   onChange = async () => {
@@ -17,7 +21,27 @@ export default class Canvas extends React.Component {
     }
   };
 
+  handleMouseMove = (event) => {
+    const canvasRect = this.canvas.current.wrapper.getBoundingClientRect();
+    this.setState({
+      brushPreviewPosition: {
+        x: event.clientX - canvasRect.left,
+        y: event.clientY - canvasRect.top,
+      },
+    });
+  };
+
+  handleMouseEnter = () => {
+    this.setState({ showBrushPreview: true });
+  };
+
+  handleMouseLeave = () => {
+    this.setState({ showBrushPreview: false });
+  };
+
   render() {
+    const { brushPreviewPosition, showBrushPreview } = this.state;
+
     const predictions = this.props.predictions.map((prediction) => {
       prediction.lastImage = prediction.output
         ? prediction.output[prediction.output.length - 1]
@@ -29,7 +53,15 @@ export default class Canvas extends React.Component {
     const lastPrediction = predictions[predictions.length - 1];
 
     return (
-      <div className="relative w-full aspect-square">
+      <div
+        className="relative w-full aspect-square"
+        onMouseMove={this.handleMouseMove}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+        style={{
+          cursor: `url('/pen-cursor.png'), auto`
+        }}
+      >
         {/* PREDICTION IMAGES */}
         {!this.props.userUploadedImage && predictions.filter((prediction) => prediction.output).map((prediction, index) => (
           <Image
@@ -64,6 +96,23 @@ export default class Canvas extends React.Component {
               </p>
             </div>
           </div>
+        )}
+
+        {/* Brush Preview */}
+        {showBrushPreview && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${brushPreviewPosition.x}px`,
+              top: `${brushPreviewPosition.y}px`,
+              width: `${this.props.brushSize}px`,
+              height: `${this.props.brushSize}px`,
+              borderRadius: '50%',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)', // Semi-transparent white circle
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+            }}
+          />
         )}
 
         {/* CANVAS FOR DRAWING */}
