@@ -7,12 +7,6 @@ export default class Canvas extends React.Component {
   constructor(props) {
     super(props);
     this.canvas = React.createRef();
-    this.state = {
-      brushPreviewPosition: { x: 0, y: 0 },
-      showBrushPreview: false,
-    };
-    // Throttle the handleMouseMove method to only execute once every 10 milliseconds
-    this.handleMouseMove = throttle(this.handleMouseMove.bind(this), 10);
   }
 
   onChange = async () => {
@@ -23,28 +17,7 @@ export default class Canvas extends React.Component {
     }
   };
 
-  handleMouseMove(event) {
-    const canvasRect = this.canvas.current.wrapper.getBoundingClientRect();
-    this.setState({
-      brushPreviewPosition: {
-        x: event.clientX - canvasRect.left,
-        y: event.clientY - canvasRect.top,
-      },
-    });
-  };
-  
-
-  handleMouseEnter = () => {
-    this.setState({ showBrushPreview: true });
-  };
-
-  handleMouseLeave = () => {
-    this.setState({ showBrushPreview: false });
-  };
-
   render() {
-    const { brushPreviewPosition, showBrushPreview } = this.state;
-
     const predictions = this.props.predictions.map((prediction) => {
       prediction.lastImage = prediction.output
         ? prediction.output[prediction.output.length - 1]
@@ -56,15 +29,11 @@ export default class Canvas extends React.Component {
     const lastPrediction = predictions[predictions.length - 1];
 
     return (
-      <div
-      className="relative w-full aspect-square"
-      onMouseMove={this.handleMouseMove} // This should be attached to the same div that receives the onMouseEnter and onMouseLeave
-      onMouseEnter={this.handleMouseEnter}
-      onMouseLeave={this.handleMouseLeave}
-      style={{
-        cursor: `url('/pen-cursor(w)2.png'), auto` // Make sure to have a 'pencil-cursor.png' in your public folder
-      }}
-    >
+         <div className="relative w-full aspect-square"
+        style={{
+          cursor: `url('/pen-cursor(w)2.png'), auto` // Ensure the cursor image file is in the public directory
+        }}
+      >
         {/* PREDICTION IMAGES */}
         {!this.props.userUploadedImage && predictions.filter((prediction) => prediction.output).map((prediction, index) => (
           <Image
@@ -101,37 +70,17 @@ export default class Canvas extends React.Component {
           </div>
         )}
 
-        {/* Brush Preview */}
-        {showBrushPreview && (
-          <div
-            style={{
-              position: 'absolute',
-              left: `${brushPreviewPosition.x}px`,
-              top: `${brushPreviewPosition.y}px`,
-              width: `${this.props.brushSize}px`,
-              height: `${this.props.brushSize}px`,
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.5)', // Semi-transparent white circle
-              transform: 'translate(-50%, -50%)',
-              pointerEvents: 'none',
-            }}
-          />
-        )}
-
         {/* CANVAS FOR DRAWING */}
         {(predictions.length > 0 || this.props.userUploadedImage) && !predicting && (
-          <div
+          <ReactSketchCanvas
+            ref={this.canvas}
+            strokeWidth={this.props.brushSize}
+            strokeColor="white"
+            canvasColor="transparent"
+            onChange={this.onChange}
             className="absolute top-0 left-0 w-full h-full"
             style={{ zIndex: predictions.length + 100 }}
-          >
-            <ReactSketchCanvas
-              ref={this.canvas}
-              strokeWidth={this.props.brushSize}
-              strokeColor="white"
-              canvasColor="transparent"
-              onChange={this.onChange}
-            />
-          </div>
+          />
         )}
       </div>
     );

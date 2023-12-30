@@ -221,7 +221,6 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const cookies = req.headers.cookie || '';
 
-  /*
   try {
     const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
       headers: { Cookie: cookies },
@@ -238,11 +237,11 @@ export async function getServerSideProps(context) {
         permanent: false,
       },
     };
-  }*/
+  }
 
-  return {
+  /*return {
     props: {
       isAuthenticated: true,
     },
-  };
+  };*/
 }
