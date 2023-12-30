@@ -59,7 +59,7 @@ export default class Canvas extends React.Component {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         style={{
-          cursor: `url('/pencil-cursor.png'), auto`
+          cursor: `url('/pen-cursor.png'), auto`
         }}
       >
         {/* PREDICTION IMAGES */}
