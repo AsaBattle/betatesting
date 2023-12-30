@@ -11,6 +11,8 @@ export default class Canvas extends React.Component {
       brushPreviewPosition: { x: 0, y: 0 },
       showBrushPreview: false,
     };
+    // Throttle the handleMouseMove method to only execute once every 10 milliseconds
+    this.handleMouseMove = throttle(this.handleMouseMove.bind(this), 10);
   }
 
   onChange = async () => {
@@ -21,8 +23,8 @@ export default class Canvas extends React.Component {
     }
   };
 
-  handleMouseMove = (event) => {
-    const canvasRect = event.currentTarget.getBoundingClientRect();
+  handleMouseMove(event) {
+    const canvasRect = this.canvas.current.wrapper.getBoundingClientRect();
     this.setState({
       brushPreviewPosition: {
         x: event.clientX - canvasRect.left,
