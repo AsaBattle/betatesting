@@ -7,7 +7,7 @@ export default function Auth({ isAuthenticated }) {
   useEffect(() => {
     console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
     console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
-    console.log("Working locally: " + process.env.WORKING_LOCALLY);
+    console.log("Working locally: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
     
     // Redirect based on the authentication status
     if (isAuthenticated || process.env.NEXT_PUBLIC_WORKING_LOCALLY) {

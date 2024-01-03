@@ -226,6 +226,7 @@ export async function getServerSideProps(context) {
   // otherwise, we do the login stuff
   if (!process.env.NEXT_PUBLIC_WORKING_LOCALLY)
     {
+      console.log("Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
       try {
         const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
           headers: { Cookie: cookies },
@@ -246,6 +247,8 @@ export async function getServerSideProps(context) {
     }
   else
     {
+      console.log("Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+
       return {
         props: {
           isAuthenticated: true,
