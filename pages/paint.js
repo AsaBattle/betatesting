@@ -30,6 +30,9 @@ export default function Home(theUserData) {
   }, []);
 
   const checkUserLogin = async () => {
+    console.log("Working locally: " + process.env.WORKING_LOCALLY);
+
+
     if (theUserData) {
       console.log("theUserData is: ", theUserData);
       if (theUserData.userData) {
