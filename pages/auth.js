@@ -10,9 +10,16 @@ export default function Auth({ isAuthenticated }) {
     console.log("Working locally: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
     
     // Redirect based on the authentication status
-    if (isAuthenticated || process.env.NEXT_PUBLIC_WORKING_LOCALLY !== 'false') {
+    if (isAuthenticated) {
+      console.log("Going to /paint because isAuthenticated is true: " + isAuthenticated);
       router.push('/paint');
-    } else {
+    } else 
+    if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'true')
+    {
+      console.log("Going to /paint because process.env.NEXT_PUBLIC_WORKING_LOCALLY is true: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+      router.push('/paint');
+    }
+    else {
       router.push('/login');
     }
   }, [router, isAuthenticated]);
