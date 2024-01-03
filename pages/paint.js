@@ -222,7 +222,7 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const cookies = req.headers.cookie || '';
 
-  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === false)
+  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false')
     {
       console.log("false Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
       console.log("Logging in!...")
