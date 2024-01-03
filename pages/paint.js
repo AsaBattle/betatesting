@@ -227,12 +227,14 @@ export async function getServerSideProps(context) {
   if (!process.env.NEXT_PUBLIC_WORKING_LOCALLY)
     {
       console.log("Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-      try {
+      console.log("Logging in!...")
+     try {
         const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
           headers: { Cookie: cookies },
           withCredentials: true,
         });
 
+        console.log("response.data is: ", response.data);
         const userData = response.data;
         return { props: { userData } };
       } catch (error) {
