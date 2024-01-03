@@ -51,12 +51,10 @@ export default function Home(theUserData) {
   
     const body = {
       prompt: e.target.prompt.value,
-      image: userUploadedImage
-        ? await readAsDataURL(userUploadedImage)
-        : maskImage ? prevPredictionOutput : null,
+      image: userUploadedImage || (maskImage ? prevPredictionOutput : null),
       mask: maskImage,
     };
-  
+
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
@@ -221,27 +219,35 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const cookies = req.headers.cookie || '';
 
-  try {
-    const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
-      headers: { Cookie: cookies },
-      withCredentials: true,
-    });
+  // If we are  working locally, then we ignore the login code
+  // otherwise, we do the login stuff
+  if (!process.env.WORKING_LOCALLY)
+    {
+      try {
+        const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
+          headers: { Cookie: cookies },
+          withCredentials: true,
+        });
 
-    const userData = response.data;
-    return { props: { userData } };
-  } catch (error) {
-    console.error('Error:', error);
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  /*return {
-    props: {
-      isAuthenticated: true,
-    },
-  };*/
+        const userData = response.data;
+        return { props: { userData } };
+      } catch (error) {
+        console.error('Error:', error);
+        return {
+          redirect: {
+            destination: '/login',
+            permanent: false,
+          },
+        };
+      }
+    }
+ 
+  else
+    {
+      return {
+        props: {
+          isAuthenticated: true,
+        },
+      };
+    }
 }
