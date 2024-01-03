@@ -9,6 +9,7 @@ export const config = {
   },
 }
 
+
 export default async function handler(req, res) {
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
@@ -23,10 +24,14 @@ export default async function handler(req, res) {
   const body = JSON.stringify({
     // Pinned to a specific version of Stable Diffusion, fetched from:
     // https://replicate.com/stability-ai/stable-diffusion
-    version: "39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
-    input: req.body,
+    // This one(startes with 1c7d4c8d) is using DALLE
+    version: "1c7d4c8dec39c7306df7794b28419078cb9d18b9213ab1c21fdc46a1deca0144",
+    input: { 
+      ...req.body, // Spread the properties of req.body here
+      scheduler: "DDIM", // Add the scheduler property
+    },
   });
-
+  
   const response = await fetch(`${API_HOST}/v1/predictions`, {
     method: "POST",
     headers: {
