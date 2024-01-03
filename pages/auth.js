@@ -10,7 +10,7 @@ export default function Auth({ isAuthenticated }) {
     console.log("Working locally: " + process.env.WORKING_LOCALLY);
     
     // Redirect based on the authentication status
-    if (isAuthenticated || process.env.WORKING_LOCALLY) {
+    if (isAuthenticated || process.env.NEXT_PUBLIC_WORKING_LOCALLY) {
       router.push('/paint');
     } else {
       router.push('/login');

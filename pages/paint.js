@@ -30,7 +30,7 @@ export default function Home(theUserData) {
   }, []);
 
   const checkUserLogin = async () => {
-    console.log("Working locally: " + process.env.WORKING_LOCALLY);
+    console.log("Working locally: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
 
 
     if (theUserData) {
@@ -224,7 +224,7 @@ export async function getServerSideProps(context) {
 
   // If we are  working locally, then we ignore the login code
   // otherwise, we do the login stuff
-  if (!process.env.WORKING_LOCALLY)
+  if (!process.env.NEXT_PUBLIC_WORKING_LOCALLY)
     {
       try {
         const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
