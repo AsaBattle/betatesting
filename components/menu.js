@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import styles from './Menu.module.css'; // Import your CSS module here
+import styles from './menu.module.css'; // Import your CSS module here
 
 const Menu = () => {
   const [dropdown, setDropdown] = useState(null);
