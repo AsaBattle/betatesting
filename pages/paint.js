@@ -7,6 +7,7 @@ import Dropzone from "components/dropzone";
 import Download from "components/download";
 import axios from "axios";
 import { XCircle as StartOverIcon } from "lucide-react";
+import Menu from '../components/menu';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -19,6 +20,8 @@ export default function Home(theUserData) {
   const [userData, setUserData] = useState(null);
 
   const router = useRouter();
+
+  const placeholderHandler = () => console.log('Handler not implemented yet.');
 
   // Add a logout function
   const handleLogout = () => {
@@ -132,6 +135,14 @@ export default function Home(theUserData) {
 
   return (
     <div>
+      <Menu
+        onModeChange={placeholderHandler}
+        onProfileClick={placeholderHandler}
+        onSave={placeholderHandler}
+        onLoad={placeholderHandler}
+        onUndo={placeholderHandler}
+        onRedo={placeholderHandler}
+      />
       <Head>
         <title>FullJourney.AI Inpainting</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
