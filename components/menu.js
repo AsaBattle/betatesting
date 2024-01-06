@@ -59,9 +59,10 @@ const Menu = () => {
             </ul>
           )}
         </li>
-        <li className={styles.menuItem} onClick={() => navigateTo('/about')}>
-          About
+        <li className={`${styles.menuItem} ${styles.aboutItem}`} onClick={() => navigateTo('/about')}>
+        About
         </li>
+
       </ul>
     </nav>
   );
