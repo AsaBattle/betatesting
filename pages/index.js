@@ -13,13 +13,13 @@ export default function About() {
         <strong>FullJourney.AI Inpainting</strong>
       </p>
 
-      <Link href="/paint">
+      <Link href="/ImageMode">
         <video autoPlay loop muted playsInline className="w-full cursor-pointer">
           <source src="/cherries-oranges-bananas.mp4" />
         </video>
       </Link>
 
-      <Link href="/paint">
+      <Link href="/ImageMode">
         <a className="py-3 block text-center bg-black text-white rounded-md mt-10">
           Start painting
         </a>
