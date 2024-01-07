@@ -9,8 +9,16 @@ const Toolbar = ({ mode }) => {
   // Tools based on mode
   const tools = getToolsForMode(mode);
 
+  
+  const handleStop = (e, data) => {
+    console.log('Draggable onStop event:', data);
+  };
+
+  // Set initial position
+  const defaultPosition = {x: 460, y: 147}; // Replace with your desired coordinates
+
   return (
-    <Draggable>
+    <Draggable defaultPosition={defaultPosition} onStop={handleStop}>
       <div className={styles.toolbar}>
         {tools.map((ToolComponent, index) => (
           <ToolComponent key={index} />
