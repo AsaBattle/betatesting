@@ -7,7 +7,10 @@ import Dropzone from "components/dropzone";
 import Download from "components/download";
 import axios from "axios";
 import { XCircle as StartOverIcon } from "lucide-react";
+
 import Menu from '../components/menu';
+import Toolbar from '../components/Toolbar';
+import styles from './ImageMode.module.css';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -134,86 +137,84 @@ export default function Home(theUserData) {
   };
 
   return (
-    <div>
-      <Menu
-        onModeChange={placeholderHandler}
-        onProfileClick={placeholderHandler}
-        onSave={placeholderHandler}
-        onLoad={placeholderHandler}
-        onUndo={placeholderHandler}
-        onRedo={placeholderHandler}
-      />
-      <Head>
-        <title>FullJourney.AI Inpainting</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <p className="pb-5 text-xl text-white text-center font-helvetica">
-        <strong>FullJourney.AI Inpainting Greatness</strong>
-      </p>
-      <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
-        <strong>Draw over the areas you want replaced...</strong>
-      </p>
-      <main className="container mx-auto p-2">
-        {error && <div>{error}</div>}
-
-        <div className="brush-slider-container text-white flex items-center justify-center mx-auto" style={{ width: '30%' }}>
-          <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
-          <input
-            type="range"
-            id="brushSize"
-            name="brushSize"
-            min="1"
-            max="100"
-            value={brushSize}
-            onChange={(e) => setBrushSize(Number(e.target.value))}
-            className="brush-slider flex-grow"
-          />
-        </div>
-
-        <div className="border-hairline max-w-[512px] mx-auto relative">
-          <Dropzone
-            onImageDropped={setUserUploadedImage}
-            predictions={predictions}
-            userUploadedImage={userUploadedImage}
-          />
-          <div
-            className="bg-black relative max-h-[512px] w-full flex items-stretch  border-4 border-pink-400 rounded-xl"
-          >
-            <Canvas
-              brushSize={brushSize}
-              predictions={predictions}
-              userUploadedImage={userUploadedImage}
-              onDraw={setMaskImage}
+    <div className={styles.layout}>
+      <Toolbar mode="Image" />
+      <div className={styles.content}>
+        <Head>
+          <title>FullJourney.AI Inpainting</title>
+          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        </Head>
+        <Menu
+          onModeChange={placeholderHandler}
+          onProfileClick={placeholderHandler}
+          onSave={placeholderHandler}
+          onLoad={placeholderHandler}
+          onUndo={placeholderHandler}
+          onRedo={placeholderHandler}
+        />
+        <p className="pb-5 text-xl text-white text-center font-helvetica">
+          <strong>FullJourney.AI Inpainting Greatness</strong>
+        </p>
+        <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
+          <strong>Draw over the areas you want replaced...</strong>
+        </p>
+        <main className="container mx-auto p-2">
+          {error && <div>{error}</div>}
+          <div className="brush-slider-container text-white flex items-center justify-center mx-auto" style={{ width: '30%' }}>
+            <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
+            <input
+              type="range"
+              id="brushSize"
+              name="brushSize"
+              min="1"
+              max="100"
+              value={brushSize}
+              onChange={(e) => setBrushSize(Number(e.target.value))}
+              className="brush-slider flex-grow"
             />
           </div>
-        </div>
-
-        <div className="max-w-[512px] mx-auto">
-          <PromptForm onSubmit={handleSubmit} />
-
-          <div className="text-center">
-            {((predictions.length > 0 &&
-              predictions[predictions.length - 1].output) ||
-              maskImage ||
-              userUploadedImage) && (
-              <button className="lil-button" onClick={startOver}>
-                <StartOverIcon className="icon" />
-                Start over
-              </button>
-            )}
-
-            <Download predictions={predictions} />
+          <div className="border-hairline max-w-[512px] mx-auto relative">
+            <Dropzone
+              onImageDropped={setUserUploadedImage}
+              predictions={predictions}
+              userUploadedImage={userUploadedImage}
+            />
+            <div
+              className="bg-black relative max-h-[512px] w-full flex items-stretch  border-4 border-pink-400 rounded-xl"
+            >
+              <Canvas
+                brushSize={brushSize}
+                predictions={predictions}
+                userUploadedImage={userUploadedImage}
+                onDraw={setMaskImage}
+              />
+            </div>
           </div>
-        </div>
-      </main>
-      <footer className="text-center my-4">
-        <button 
-          onClick={handleLogout} 
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Logout
-        </button>
-      </footer>
+          <div className="max-w-[512px] mx-auto">
+            <PromptForm onSubmit={handleSubmit} />
+            <div className="text-center">
+              {((predictions.length > 0 &&
+                predictions[predictions.length - 1].output) ||
+                maskImage ||
+                userUploadedImage) && (
+                <button className="lil-button" onClick={startOver}>
+                  <StartOverIcon className="icon" />
+                  Start over
+                </button>
+              )}
+              <Download predictions={predictions} />
+            </div>
+          </div>
+        </main>
+        <footer className="text-center my-4">
+          <button 
+            onClick={handleLogout} 
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Logout
+          </button>
+        </footer>
+      </div>
     </div>
   );
 }

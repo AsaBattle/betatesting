@@ -1,0 +1,27 @@
+.layout {
+    position: relative; /* Set the main layout as relative for absolute positioning of children */
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding-left: 200px; /* Add padding to ensure content does not overlap the toolbar */
+  }
+  
+  .toolbar {
+    position: absolute; /* Position the toolbar absolutely within the .layout container */
+    top: 50%; /* Start at half the height of the viewport */
+    transform: translateY(-50%); /* Adjust the position to center the toolbar vertically */
+    left: 0;
+    width: 150px; /* Adjust width as needed */
+    background-color: #2e2e2e;
+    /* ... other styles ... */
+    z-index: 1000; /* Ensure the toolbar is above other content */
+    border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
+  }
+
+
+  

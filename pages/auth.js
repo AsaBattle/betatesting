@@ -11,12 +11,12 @@ export default function Auth({ isAuthenticated }) {
     
     // Redirect based on the authentication status
     if (isAuthenticated) {
-      console.log("Going too /paint because isAuthenticated is true: " + isAuthenticated);
-      router.push('/paint');
+      console.log("Going too /ImageMode because isAuthenticated is true: " + isAuthenticated);
+      router.push('/ImageMode');
     } else 
     if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'true') {
-      console.log("Going to /paint because process.env.NEXT_PUBLIC_WORKING_LOCALLY is true: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-      router.push('/paint');
+      console.log("Going to /ImageMode because process.env.NEXT_PUBLIC_WORKING_LOCALLY is true: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+      router.push('/ImageMode');
     }
     else {
       router.push('/login');

@@ -1,0 +1,16 @@
+.toolIcon {
+    width: 30px; /* Adjust as needed */
+    height: 30px; /* Adjust as needed */
+    background-color: blue; /* Your specific blue color */
+    border: 2px solid #B26DF6; /* Your specific pink color */
+    margin-bottom: 10px; /* Space between tools */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  
+.icon {
+    width: 20px; /* Adjust as needed */
+    height: 20px; /* Adjust as needed */
+  }
