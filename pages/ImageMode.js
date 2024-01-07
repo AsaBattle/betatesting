@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import Head from "next/head";
 import Canvas from "components/canvas";
@@ -21,10 +21,45 @@ export default function Home(theUserData) {
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const [brushSize, setBrushSize] = useState(40); // Default brush size
   const [userData, setUserData] = useState(null);
-
   const router = useRouter();
-
   const placeholderHandler = () => console.log('Handler not implemented yet.');
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const [toolbarPosition, setToolbarPosition] = useState({ top: 0, left: 0 });
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const updatePositions = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const canvasRect = canvas.getBoundingClientRect();
+        
+        // Assuming the menu and toolbar have a known height and width
+        const menuHeight = 50; // Change as per actual menu height
+        const toolbarWidth = 150; // Change as per actual toolbar width
+        
+        // Center menu above canvas
+        setMenuPosition({
+          top: canvasRect.top - menuHeight - 10, // 10 pixels above canvas
+          left: canvasRect.left + (canvasRect.width / 2) - (menuWidth / 2), // Centered
+        });
+        
+        // Center toolbar to the left of canvas
+        setToolbarPosition({
+          top: canvasRect.top + (canvasRect.height / 2) - (toolbarHeight / 2), // Centered
+          left: canvasRect.left - toolbarWidth - 10, // 10 pixels to the left of canvas
+        });
+      }
+    };
+
+    window.addEventListener('resize', updatePositions);
+    updatePositions(); // Initial position update
+
+    return () => {
+      window.removeEventListener('resize', updatePositions);
+    };
+  }, []);
+
+
 
   // Add a logout function
   const handleLogout = () => {
@@ -138,7 +173,7 @@ export default function Home(theUserData) {
 
   return (
     <div className={styles.layout}>
-      <Toolbar mode="Image" />
+     <Toolbar mode="Image"/>
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Inpainting</title>

@@ -17,8 +17,15 @@ const Menu = () => {
     setDropdown(null); // Close dropdown after navigation
   };
 
+  const handleStop = (e, data) => {
+    console.log('Draggable onStop event:', data);
+  };
+
+  // Set initial position
+  const defaultPosition = {x: 280, y: 5}; // Replace with your desired coordinates
+
   return (
-    <Draggable>
+    <Draggable defaultPosition={defaultPosition} onStop={handleStop}>
       <nav className={styles.menuBar}>
         <ul className={styles.menuList}>
           <li className={styles.menuItem} onClick={() => toggleDropdown('file')}>
