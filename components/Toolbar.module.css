@@ -1,6 +1,6 @@
 /* components/Toolbar.module.css */
 .toolbar {
-    width: 75px; /* Adjust width as needed */
+    width: 175px; /* Adjust width as needed */
     height: 600px; /* Example fixed height */
     overflow-y: auto; /* Add vertical scroll bar if content overflows */
     background-color: #2e2e2e;
