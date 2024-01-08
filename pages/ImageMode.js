@@ -9,10 +9,22 @@ import axios from "axios";
 import { XCircle as StartOverIcon } from "lucide-react";
 
 import Menu from '../components/menu';
-import Toolbar from '../components/Toolbar';
+//import Toolbar from '../components/Toolbar';
 import styles from './ImageMode.module.css';
 
+import VerticalToolbar from '../components/VerticalToolbar';
+import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Custom styling for the toolbar
+const StyledToolbar = styled(Toolbar)({
+  backgroundColor: '#4A90E2', // Change the background color
+  justifyContent: 'space-between', // Space out the items
+});
 
 export default function Home(theUserData) {
   const [predictions, setPredictions] = useState([]);
@@ -23,41 +35,6 @@ export default function Home(theUserData) {
   const [userData, setUserData] = useState(null);
   const router = useRouter();
   const placeholderHandler = () => console.log('Handler not implemented yet.');
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
-  const [toolbarPosition, setToolbarPosition] = useState({ top: 0, left: 0 });
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const updatePositions = () => {
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const canvasRect = canvas.getBoundingClientRect();
-        
-        // Assuming the menu and toolbar have a known height and width
-        const menuHeight = 50; // Change as per actual menu height
-        const toolbarWidth = 150; // Change as per actual toolbar width
-        
-        // Center menu above canvas
-        setMenuPosition({
-          top: canvasRect.top - menuHeight - 10, // 10 pixels above canvas
-          left: canvasRect.left + (canvasRect.width / 2) - (menuWidth / 2), // Centered
-        });
-        
-        // Center toolbar to the left of canvas
-        setToolbarPosition({
-          top: canvasRect.top + (canvasRect.height / 2) - (toolbarHeight / 2), // Centered
-          left: canvasRect.left - toolbarWidth - 10, // 10 pixels to the left of canvas
-        });
-      }
-    };
-
-    window.addEventListener('resize', updatePositions);
-    updatePositions(); // Initial position update
-
-    return () => {
-      window.removeEventListener('resize', updatePositions);
-    };
-  }, []);
 
 
 
@@ -173,7 +150,8 @@ export default function Home(theUserData) {
 
   return (
     <div className={styles.layout}>
-     <Toolbar mode="Image"/>
+
+      <VerticalToolbar/>
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Inpainting</title>
@@ -264,6 +242,9 @@ function readAsDataURL(file) {
     fr.readAsDataURL(file);
   });
 }
+
+
+
 
 export async function getServerSideProps(context) {
   const { req } = context;
