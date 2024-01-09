@@ -1,30 +1,30 @@
 .layout {
-    display: flex;
-    min-height: 100vh; /* Fills at least the full height of the viewport */
-    /* Make sure no extra margin or padding is applied here */
-  }
+  display: flex;
+  min-height: 100vh; /* Fills at least the full height of the viewport */
+  /* Make sure no extra margin or padding is applied here */
+}
   
-  .toolbar {
-    position: fixed; /* Stays put on scroll */
-    top: 0; /* At the top of the viewport */
-    left: 0; /* At the left of the viewport */
-    width: 150px; /* Adjust width as needed */
-    background-color: #2e2e2e; /* Toolbar background color */
-    z-index: 1000; /* Above other content */
-    max-height: 300px; /* Or whatever maximum height you want */
-    overflow-y: auto; /* Enables scrolling if content exceeds max-height */
-    /* Remove any padding or margin if it's not necessary */
-    padding: 0; /* Adjust or remove padding as necessary */
-    box-sizing: border-box; /* Include padding in the width and height if padding is used */
-  }
+.toolbar {
+  position: absolute; /* Stays put on scroll */
+  top: 0; /* At the top of the viewport */
+  left: 110px; /* At the left of the viewport */
+  background-color: #2e2e2e; /* Toolbar background color */
+  z-index: 1000; /* Above other content */
+  max-height: 300px; /* Or whatever maximum height you want */
+  overflow-y: auto; /* Enables scrolling if content exceeds max-height */
+  /* Remove any padding or margin if it's not necessary */
+  padding: 0; /* Adjust or remove padding as necessary */
+  box-sizing: border-box; /* Include padding in the width and height if padding is used */
+}
   
-  
+
 .content {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    margin-left: 150px; /* Offset content to the right, by the width of the toolbar */
     align-items: center; /* Center content horizontally */
     /* Ensure no extra margin or padding is pushing content around */
     padding: 0; /* Adjust or remove padding as necessary */
+    background-color: #2e2e2e; /* Content background color */
   }
+  

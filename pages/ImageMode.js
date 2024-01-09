@@ -20,11 +20,6 @@ import { styled } from '@mui/material/styles';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// Custom styling for the toolbar
-const StyledToolbar = styled(Toolbar)({
-  backgroundColor: '#4A90E2', // Change the background color
-  justifyContent: 'space-between', // Space out the items
-});
 
 export default function Home(theUserData) {
   const [predictions, setPredictions] = useState([]);
@@ -36,6 +31,37 @@ export default function Home(theUserData) {
   const router = useRouter();
   const placeholderHandler = () => console.log('Handler not implemented yet.');
 
+  const canvasContainerRef = useRef(null);
+  const toolbarRef = useRef(null);
+
+ // Define the function to update the canvas position
+const updateCanvasPosition = () => {
+  if (canvasContainerRef.current && toolbarRef.current) {
+    const canvasRect = canvasContainerRef.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Adjust the 'top' by adding the current scroll position to the canvas's client rect top.
+    // Since your toolbar is fixed, this will align it with the canvas accounting for scroll.
+    toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
+    toolbarRef.current.style.left = `${canvasRect.left - 155}px`;
+    console.log(`Canvas X: ${canvasRect.left}, Canvas Y: ${canvasRect.top}`);
+  }
+};
+  // Set up the event listener for window resize, so we can position the toolbars correctly
+  useEffect(() => {
+    const handleScroll = () => {
+      updateCanvasPosition();
+    };
+
+    updateCanvasPosition();
+    window.addEventListener('resize', updateCanvasPosition);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('resize', updateCanvasPosition);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
 
   // Add a logout function
@@ -150,8 +176,9 @@ export default function Home(theUserData) {
 
   return (
     <div className={styles.layout}>
-
-      <VerticalToolbar/>
+       <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
+        <VerticalToolbar/>
+      </div>
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Inpainting</title>
@@ -186,7 +213,7 @@ export default function Home(theUserData) {
               className="brush-slider flex-grow"
             />
           </div>
-          <div className="border-hairline max-w-[512px] mx-auto relative">
+          <div className="border-hairline max-w-[512px] mx-auto relative" ref={canvasContainerRef}>
             <Dropzone
               onImageDropped={setUserUploadedImage}
               predictions={predictions}
@@ -226,7 +253,7 @@ export default function Home(theUserData) {
           >
             Logout
           </button>
-        </footer>
+          </footer>
       </div>
     </div>
   );
