@@ -13,6 +13,7 @@ import Menu from '../components/menu';
 import styles from './ImageMode.module.css';
 
 import VerticalToolbar from '../components/VerticalToolbar';
+import ToolbarOptions from '../components/ToolbarOptions';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -26,19 +27,24 @@ export default function Home(theUserData) {
   const [error, setError] = useState(null);
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
-  const [brushSize, setBrushSize] = useState(40); // Default brush size
+  const [brushSize, setBrushSize] = useState(40);
+  const [currentTool, setCurrentTool] = useState('maskPainting');
   const [userData, setUserData] = useState(null);
   const router = useRouter();
   const placeholderHandler = () => console.log('Handler not implemented yet.');
 
+  
   const canvasContainerRef = useRef(null);
   const toolbarRef = useRef(null);
+
+
+
 
  // Define the function to update the canvas position
 const updateCanvasPosition = () => {
   if (canvasContainerRef.current && toolbarRef.current) {
     const canvasRect = canvasContainerRef.current.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
     
     // Adjust the 'top' by adding the current scroll position to the canvas's client rect top.
     // Since your toolbar is fixed, this will align it with the canvas accounting for scroll.
@@ -177,7 +183,7 @@ const updateCanvasPosition = () => {
   return (
     <div className={styles.layout}>
        <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
-        <VerticalToolbar/>
+       <VerticalToolbar currentTool={currentTool} setCurrentTool={setCurrentTool} />
       </div>
       <div className={styles.content}>
         <Head>
@@ -200,19 +206,7 @@ const updateCanvasPosition = () => {
         </p>
         <main className="container mx-auto p-2">
           {error && <div>{error}</div>}
-          <div className="brush-slider-container text-white flex items-center justify-center mx-auto" style={{ width: '30%' }}>
-            <label htmlFor="brushSize" className="flex-shrink-0 mr-2">Brush Size: {brushSize}</label>
-            <input
-              type="range"
-              id="brushSize"
-              name="brushSize"
-              min="1"
-              max="100"
-              value={brushSize}
-              onChange={(e) => setBrushSize(Number(e.target.value))}
-              className="brush-slider flex-grow"
-            />
-          </div>
+          <ToolbarOptions currentTool={currentTool} brushSize={brushSize} setBrushSize={setBrushSize} />
           <div className="border-hairline max-w-[512px] mx-auto relative" ref={canvasContainerRef}>
             <Dropzone
               onImageDropped={setUserUploadedImage}
