@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const samplePrompts = [
   "a whimsical cat astronaut exploring Mars",
@@ -41,10 +41,31 @@ const samplePrompts = [
   "a cybernetic jungle with robotic wildlife",
 ];
 import sample from "lodash/sample";
+import { Eraser } from "lucide-react";
 
 export default function PromptForm(props) {
-  const [prompt] = useState(sample(samplePrompts));
+  const [prompt, setPrompt] = useState(sample(samplePrompts));
   const [image, setImage] = useState(null);
+
+  // Handler for the clear button
+  const handleClear = () => {
+    setPrompt('');  // Set the prompt state to an empty string
+  };
+
+  // Handler to update prompt state when input changes
+  const handleInputChange = (event) => {
+    setPrompt(event.target.value);
+  };
+
+  // Function to set a random prompt
+  const setRandomPrompt = () => {
+    setPrompt(sample(samplePrompts));
+  };
+
+  // Set an initial random prompt when the component mounts
+  useEffect(() => {
+    setRandomPrompt();
+  }, []);
 
   return (
     <form
@@ -52,14 +73,26 @@ export default function PromptForm(props) {
       className="py-5 animate-in fade-in duration-700"
     >
       <div className="flex max-w-[512px]">
+        {/* Clear button */}
+        <button
+          type="button"
+          onClick={handleClear}
+          className="bg-gray-200 text-gray-700 rounded-l-md p-2 inline-block flex-none"
+        >
+          <Eraser size={16} />
+        </button>
+
+        {/* Input field */}
         <input
           type="text"
-          defaultValue={prompt}
+          value={prompt}  // Bind the input value to the prompt state
+          onChange={handleInputChange}  // Update state when input changes
           name="prompt"
           placeholder="Enter a prompt..."
           className="block w-full flex-grow rounded-l-md"
         />
 
+        {/* Generate button */}
         <button
           className="bg-black text-white rounded-r-md text-small inline-block px-3 flex-none"
           type="submit"

@@ -15,7 +15,7 @@ const StyledButton = styled(Button)({
 });
 
 // Styled vertical toolbar using a Stack
-const VerticalToolbar = () => {
+const VerticalToolbar = ({ currentTool, setCurrentTool }) => {
   return (
     <Stack
       direction="column"
