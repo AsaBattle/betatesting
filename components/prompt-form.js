@@ -41,7 +41,7 @@ const samplePrompts = [
   "a cybernetic jungle with robotic wildlife",
 ];
 import sample from "lodash/sample";
-import { Eraser } from "lucide-react";
+import { Eraser, Dice5, DivideSquare } from "lucide-react";
 
 export default function PromptForm(props) {
   const [prompt, setPrompt] = useState(sample(samplePrompts));
@@ -73,15 +73,24 @@ export default function PromptForm(props) {
       className="py-5 animate-in fade-in duration-700"
     >
       <div className="flex max-w-[512px]">
-        {/* Clear button */}
-        <button
-          type="button"
-          onClick={handleClear}
-          className="bg-gray-200 text-gray-700 rounded-l-md p-2 inline-block flex-none"
-        >
-          <Eraser size={16} />
-        </button>
-
+        <div className="flex flex-col w-12"> {/* Adjust width as needed for the buttons */}
+          {/* Eraser button */}
+          <button
+            type="button"
+            onClick={handleClear}
+            className="bg-gray-200 text-gray-700 rounded-t-md p-2 h-1/2 border-b border-black" // Tailwind class for half height
+          >
+            <Eraser size={16} />
+          </button>
+          {/* Random prompt button */}
+          <button
+            type="button"
+            onClick={setRandomPrompt}
+            className="bg-gray-200 text-gray-700 rounded-b-md p-2 h-1/2" // Tailwind class for half height
+          >
+            <Dice5 size={16} /> {/* Dice icon */}
+          </button>
+        </div>
         {/* Input field */}
         <input
           type="text"
