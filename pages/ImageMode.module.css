@@ -7,7 +7,7 @@
 .toolbar {
   position: absolute; /* Stays put on scroll */
   top: 0; /* At the top of the viewport */
-  left: 110px; /* At the left of the viewport */
+  left: 0; /* At the left of the viewport */
   background-color: #2e2e2e; /* Toolbar background color */
   z-index: 1000; /* Above other content */
   max-height: 300px; /* Or whatever maximum height you want */

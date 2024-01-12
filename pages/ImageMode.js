@@ -1,3 +1,9 @@
+/*
+OK, I just commented out the old menu.js stuff and asked gpt to write me a new one in the style of the vertical toolbar.
+Next I need to follow gpt's instructions to get the new toolbar working
+*/
+
+
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import Head from "next/head";
@@ -8,16 +14,17 @@ import Download from "components/download";
 import axios from "axios";
 import { XCircle as StartOverIcon } from "lucide-react";
 
-import Menu from '../components/menu';
-//import Toolbar from '../components/Toolbar';
+//import Menu from '../components/menu';
 import styles from './ImageMode.module.css';
 
-import VerticalToolbar from '../components/VerticalToolbar';
-import ToolbarOptions from '../components/ToolbarOptions';
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
+import VerticalToolbar from '../components/tools/VerticalToolbar';
+import ToolbarOptions from '../components/tools/ToolbarOptions';
+import {tools} from '../components/tools/Tools';
 import { styled } from '@mui/material/styles';
 
+
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentTool, setBrushSize } from '../redux/slices/toolSlice';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -27,8 +34,10 @@ export default function Home(theUserData) {
   const [error, setError] = useState(null);
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
-  const [brushSize, setBrushSize] = useState(40);
-  const [currentTool, setCurrentTool] = useState('maskPainting');
+  const currentTool = useSelector((state) => state.toolbar.currentTool);
+  const brushSize = useSelector((state) => state.toolbar.brushSize);
+
+  const dispatch = useDispatch();
   const [userData, setUserData] = useState(null);
   const router = useRouter();
   const placeholderHandler = () => console.log('Handler not implemented yet.');
@@ -37,7 +46,13 @@ export default function Home(theUserData) {
   const canvasContainerRef = useRef(null);
   const toolbarRef = useRef(null);
 
+  const handleToolChange = (tool) => {
+    dispatch(setCurrentTool(tool));
+  };
 
+  const handleBrushSizeChange = (size) => {
+    dispatch(setBrushSize(size));
+  };
 
 
  // Define the function to update the canvas position
@@ -49,7 +64,7 @@ const updateCanvasPosition = () => {
     // Adjust the 'top' by adding the current scroll position to the canvas's client rect top.
     // Since your toolbar is fixed, this will align it with the canvas accounting for scroll.
     toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
-    toolbarRef.current.style.left = `${canvasRect.left - 155}px`;
+    toolbarRef.current.style.left = `${canvasRect.left - 90}px`;
     console.log(`Canvas X: ${canvasRect.left}, Canvas Y: ${canvasRect.top}`);
   }
 };
@@ -183,21 +198,21 @@ const updateCanvasPosition = () => {
   return (
     <div className={styles.layout}>
        <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
-       <VerticalToolbar currentTool={currentTool} setCurrentTool={setCurrentTool} />
+       <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} />
       </div>
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Inpainting</title>
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         </Head>
-        <Menu
+        {/*<Menu
           onModeChange={placeholderHandler}
           onProfileClick={placeholderHandler}
           onSave={placeholderHandler}
           onLoad={placeholderHandler}
           onUndo={placeholderHandler}
           onRedo={placeholderHandler}
-        />
+        />*/}
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>FullJourney.AI Inpainting Greatness</strong>
         </p>
@@ -206,7 +221,7 @@ const updateCanvasPosition = () => {
         </p>
         <main className="container mx-auto p-2">
           {error && <div>{error}</div>}
-          <ToolbarOptions currentTool={currentTool} brushSize={brushSize} setBrushSize={setBrushSize} />
+          <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
           <div className="border-hairline max-w-[512px] mx-auto relative" ref={canvasContainerRef}>
             <Dropzone
               onImageDropped={setUserUploadedImage}
