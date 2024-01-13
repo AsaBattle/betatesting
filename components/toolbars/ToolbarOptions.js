@@ -14,7 +14,7 @@ const ToolbarOptions = () => {
   const handleBrushSizeChange = (e) => {
     dispatch(setBrushSize(Number(e.target.value)));
   };
-
+  
   // Render options based on the current tool
   switch (currentTool.name) {
     case 'MaskPainter':

@@ -1,0 +1,37 @@
+.toolbarStack {
+    background-color: #4A90E2;
+    padding: 10px;
+    border-radius: 10px;
+    width: fit-content;
+    height: fit-content;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.8); /* Horizontal offset, Vertical offset, Blur radius, Shadow color with opacity */
+    position: relative; /* if not already positioned */
+    margin-bottom: 25px; /* This creates space below the toolbar for the shadow */
+    margin-right: 8px; /* Adjust right margin to even out the space */
+    z-index: 100; /* adjust as needed */  
+}
+  
+  .button {
+    background-color: #757de8;
+    color: white;
+    padding: 15px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .buttonHover:hover {
+    background-color: #5a6abf;
+  }
+  
+  .selectedButton {
+    background-color: #5a6abf;
+  }
+
+  .icon {
+    margin-right: -8px; /* Adjust right margin to even out the space */
+    margin-left:  4px; /* Adjust left margin if necessary */
+  }
