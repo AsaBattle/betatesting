@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setBrushSize } from '../../redux/slices/toolSlice'; // Adjust the import path as necessary
+import { Plus, Minus } from 'lucide-react';
 
 const ToolbarOptions = () => {
   // Use useSelector to get the current state from the store
@@ -39,19 +40,23 @@ const ToolbarOptions = () => {
         </div>
       );
 
-      case 'Zoom':
-        return (  
-          <div className="options-container text-black flex items-center justify-center mx-auto"> {/* Ensure this matches your CSS class */}
-            <button onClick={decrementZoom}>-</button>
-            <input
-              type="number"
-              value={zoomLevel}
-              onChange={(e) => setZoomLevel(Number(e.target.value))}
-              className="zoom-input"
-            />
-            <button onClick={incrementZoom}>+</button>
-          </div>
-        );
+    case 'Zoom':
+      return (  
+        <div className="options-container text-black flex items-center justify-center mx-auto">
+          <button onClick={decrementZoom} className="zoom-button">
+          <Minus />
+        </button>
+        <input
+          type="number"
+          value={zoomLevel}
+          onChange={(e) => setZoomLevel(Number(e.target.value))}
+        className="zoom-input"
+        />
+        <button onClick={incrementZoom} className="zoom-button">
+        <Plus />
+        </button>
+        </div>
+      );
     
     // Add cases for other tools as needed
     default:
