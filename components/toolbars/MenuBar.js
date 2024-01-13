@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOption } from '../../redux/slices/optionSlice'; // Adjust the path as necessary
 import Button from '@mui/material/Button';
-import styles from './Menubar.module.css'; // Import your CSS module here, adjust the path as necessary
+import styles from './M.module.css'; // Import your CSS module here, adjust the path as necessary
 
 const MenuBar = () => {
   const [dropdown, setDropdown] = useState(null);
