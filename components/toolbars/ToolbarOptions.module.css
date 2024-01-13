@@ -1,0 +1,32 @@
+options-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    margin: 10px 0; /* Add vertical margin if needed */
+  }
+  
+  .zoom-input {
+    width: 80px; /* Adjust based on the space needed for arrows */
+    text-align: center;
+    -webkit-appearance: textfield; /* Removes default webkit styles */
+    margin: 0 5px; /* Space around the input field */
+  }
+  
+  .zoom-input::-webkit-inner-spin-button,
+  .zoom-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Style for buttons in the options container */
+  .options-container button {
+    background-color: #eaeaea; /* Light grey background for buttons */
+    border: none; /* No border for buttons */
+    padding: 5px 10px; /* Padding inside buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 2px; /* Slightly rounded corners for buttons */
+  }
+  
+  .options-container button:hover {
+    background-color: #dcdcdc; /* Slightly darker grey on hover */
+  }
