@@ -1,9 +1,3 @@
-/*
-OK, I just commented out the old menu.js stuff and asked gpt to write me a new one in the style of the vertical toolbar.
-Next I need to follow gpt's instructions to get the new toolbar working
-*/
-
-
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import Head from "next/head";
@@ -17,8 +11,10 @@ import { XCircle as StartOverIcon } from "lucide-react";
 //import Menu from '../components/menu';
 import styles from './ImageMode.module.css';
 
-import VerticalToolbar from '../components/tools/VerticalToolbar';
-import ToolbarOptions from '../components/tools/ToolbarOptions';
+import MenuBar from '../components/toolbars/MenuBar';
+import VerticalToolbar from '../components/toolbars/VerticalToolbar';
+import ToolbarOptions from '../components/toolbars/ToolbarOptions';
+
 import {tools} from '../components/tools/Tools';
 import { styled } from '@mui/material/styles';
 
@@ -64,7 +60,7 @@ const updateCanvasPosition = () => {
     // Adjust the 'top' by adding the current scroll position to the canvas's client rect top.
     // Since your toolbar is fixed, this will align it with the canvas accounting for scroll.
     toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
-    toolbarRef.current.style.left = `${canvasRect.left - 90}px`;
+    toolbarRef.current.style.left = `${canvasRect.left - 95}px`;
     console.log(`Canvas X: ${canvasRect.left}, Canvas Y: ${canvasRect.top}`);
   }
 };
@@ -212,13 +208,14 @@ const updateCanvasPosition = () => {
           onLoad={placeholderHandler}
           onUndo={placeholderHandler}
           onRedo={placeholderHandler}
-        />*/}
+        />
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>FullJourney.AI Inpainting Greatness</strong>
         </p>
         <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
           <strong>Draw over the areas you want replaced...</strong>
-        </p>
+        </p>*/}
+        <MenuBar/>
         <main className="container mx-auto p-2">
           {error && <div>{error}</div>}
           <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
