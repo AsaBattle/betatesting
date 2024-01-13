@@ -31,7 +31,7 @@ const MenuBar = () => {
     file: [
       { name: 'New', path: '/new' },
       { name: 'Load', path: '/load' },
-      { name: 'Saves', path: '/save' },
+      { name: 'Save', path: '/save' },
       // ... other file options
     ],
     edit: [
