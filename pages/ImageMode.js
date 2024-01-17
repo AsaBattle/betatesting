@@ -214,7 +214,7 @@ export default function Home(theUserData) {
                 userUploadedImage) && (
                 <button className="lil-button" onClick={startOver}>
                   <StartOverIcon className="icon" />
-                  Start over
+                  Start over1
                 </button>
               )}
               <Download predictions={predictions} />
