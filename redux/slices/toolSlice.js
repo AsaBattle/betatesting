@@ -4,13 +4,13 @@ import { tools } from '../../components/tools/Tools';
 export const toolbarSlice = createSlice({
   name: 'toolbar',
   initialState: {
-    currentTool: tools[0], 
+    currentToolName: tools[0].name, 
     brushSize: 40,
     // ... other toolbar state
   },
   reducers: {
     setCurrentTool: (state, action) => {
-      state.currentTool = action.payload;
+      state.currentToolName = action.payload;
     },
     setBrushSize: (state, action) => {
       state.brushSize = action.payload;

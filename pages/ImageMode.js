@@ -7,215 +7,183 @@ import Dropzone from "components/dropzone";
 import Download from "components/download";
 import axios from "axios";
 import { XCircle as StartOverIcon } from "lucide-react";
-
-//import Menu from '../components/menu';
 import styles from './ImageMode.module.css';
-
 import MenuBar from '../components/toolbars/MenuBar';
 import VerticalToolbar from '../components/toolbars/VerticalToolbar';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
-
-import {tools} from '../components/tools/Tools';
-import { styled } from '@mui/material/styles';
-
-
+import { tools } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize } from '../redux/slices/toolSlice';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-
 export default function Home(theUserData) {
-  const [predictions, setPredictions] = useState([]);
-  const [error, setError] = useState(null);
-  const [maskImage, setMaskImage] = useState(null);
-  const [userUploadedImage, setUserUploadedImage] = useState(null);
-  const currentTool = useSelector((state) => state.toolbar.currentTool);
-  const brushSize = useSelector((state) => state.toolbar.brushSize);
+    const [predictions, setPredictions] = useState([]);
+    const [error, setError] = useState(null);
+    const [maskImage, setMaskImage] = useState(null);
+    const [userUploadedImage, setUserUploadedImage] = useState(null);
+    const currentToolName = useSelector((state) => state.toolbar.currentToolName);
+    const brushSize = useSelector((state) => state.toolbar.brushSize);
+    const dispatch = useDispatch();
+    const [userData, setUserData] = useState(null);
+    const router = useRouter();
+    const placeholderHandler = () => console.log('Handler not implemented yet.');
 
-  const dispatch = useDispatch();
-  const [userData, setUserData] = useState(null);
-  const router = useRouter();
-  const placeholderHandler = () => console.log('Handler not implemented yet.');
+    const canvasContainerRef = useRef(null);
+    const toolbarRef = useRef(null);
 
-  
-  const canvasContainerRef = useRef(null);
-  const toolbarRef = useRef(null);
-
-  const handleToolChange = (tool) => {
-    dispatch(setCurrentTool(tool));
-  };
-
-  const handleBrushSizeChange = (size) => {
-    dispatch(setBrushSize(size));
-  };
-
-
- // Define the function to update the canvas position
-const updateCanvasPosition = () => {
-  if (canvasContainerRef.current && toolbarRef.current) {
-    const canvasRect = canvasContainerRef.current.getBoundingClientRect();
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    
-    // Adjust the 'top' by adding the current scroll position to the canvas's client rect top.
-    // Since your toolbar is fixed, this will align it with the canvas accounting for scroll.
-    toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
-    toolbarRef.current.style.left = `${canvasRect.left - 95}px`;
-    console.log(`Canvas X: ${canvasRect.left}, Canvas Y: ${canvasRect.top}`);
-  }
-};
-  // Set up the event listener for window resize, so we can position the toolbars correctly
-  useEffect(() => {
-    const handleScroll = () => {
-      updateCanvasPosition();
+    const handleToolChange = (tool) => {
+        dispatch(setCurrentTool(tool));
     };
 
-    updateCanvasPosition();
-    window.addEventListener('resize', updateCanvasPosition);
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('resize', updateCanvasPosition);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-
-  // Add a logout function
-  const handleLogout = () => {
-    window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
-  };
-
-  useEffect(() => {
-    checkUserLogin();
-  }, []);
-
-  const checkUserLogin = async () => {
-    console.log("Working locally: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-
-
-    if (theUserData) {
-      console.log("theUserData is: ", theUserData);
-      if (theUserData.userData) {
-        console.log("theUserData.userData is: ", theUserData.userData);
-        setUserData(theUserData.userData);
-      } else {
-        console.log("theUserData.userData is null");
-      }
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const prevPrediction = predictions[predictions.length - 1];
-    const prevPredictionOutput = prevPrediction?.output
-      ? prevPrediction.output[prevPrediction.output.length - 1]
-      : null;
-  
-    const body = {
-      prompt: e.target.prompt.value,
-      image: userUploadedImage || (maskImage ? prevPredictionOutput : null),
-      mask: maskImage,
+    const handleBrushSizeChange = (size) => {
+        dispatch(setBrushSize(size));
     };
 
-    const response = await fetch("/api/predictions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-  
-    const prediction = await response.json();
-  
-    if (response.status !== 201) {
-      setError(prediction.detail);
-      console.error("Error in prediction response: ", prediction.detail); // Added logging for error detail
-      return;
-    }
-  
-    setPredictions(predictions.concat([prediction]));
-  
-    // Added Debugging Logs
-    console.log("Initial prediction status:", prediction.status);
-  
-    while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-      await sleep(1000);
-      const response = await fetch("/api/predictions/" + prediction.id);
-      const updatedPrediction = await response.json();
-      if (response.status !== 200) {
-        setError(updatedPrediction.detail);
-        console.error("Error in updating prediction: ", updatedPrediction.detail); // Added logging for error detail
-        return;
-      }
-  
-      // Debugging logs
-      console.log("Updated prediction status:", updatedPrediction.status);
-  
-      if (updatedPrediction.status === "succeeded") {
-        setPredictions(currentPredictions => {
-          // Ensure the last prediction is updated with the final output
-          const updatedPredictions = [...currentPredictions];
-          const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-          if (indexToUpdate !== -1) {
-            updatedPredictions[indexToUpdate] = updatedPrediction;
-          }
-          return updatedPredictions;
+    const updateCanvasPosition = () => {
+        if (canvasContainerRef.current && toolbarRef.current) {
+            const canvasRect = canvasContainerRef.current.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - 95}px`;
+        }
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            updateCanvasPosition();
+        };
+
+        updateCanvasPosition();
+        window.addEventListener('resize', updateCanvasPosition);
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('resize', updateCanvasPosition);
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+    };
+
+    useEffect(() => {
+        checkUserLogin();
+    }, []);
+
+    const checkUserLogin = async () => {
+        if (theUserData) {
+            if (theUserData.userData) {
+                setUserData(theUserData.userData);
+            }
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const prevPrediction = predictions[predictions.length - 1];
+        const prevPredictionOutput = prevPrediction?.output ? prevPrediction.output[prevPrediction.output.length - 1] : null;
+        const body = {
+            prompt: e.target.prompt.value,
+            image: userUploadedImage || (maskImage ? prevPredictionOutput : null),
+            mask: maskImage,
+        };
+
+        const response = await fetch("/api/predictions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", },
+            body: JSON.stringify(body),
         });
-  
-        setUserUploadedImage(null); // Clear the uploaded image since the prediction succeeded
-        break; // Exit the loop since the prediction has succeeded
-      } else if (updatedPrediction.status === "failed") {
-        setError("Prediction failed"); // Handle the failed prediction case
-        break; // Exit the loop since the prediction has failed
-      } else {
-        // Update predictions state to trigger re-render with new status
-        setPredictions(currentPredictions => {
-          const updatedPredictions = [...currentPredictions];
-          const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-          if (indexToUpdate !== -1) {
-            updatedPredictions[indexToUpdate] = updatedPrediction;
-          }
-          return updatedPredictions;
-        });
-      }
-    }
-  };
-  
 
-  const startOver = () => {
-    setPredictions([]);
-    setError(null);
-    setMaskImage(null);
-    setUserUploadedImage(null);
+        const prediction = await response.json();
+
+        if (response.status !== 201) {
+            setError(prediction.detail);
+            return;
+        }
+
+        setPredictions(predictions.concat([prediction]));
+
+        while (prediction.status !== "succeeded" && prediction.status !== "failed") {
+            await sleep(1000);
+            const response = await fetch("/api/predictions/" + prediction.id);
+            const updatedPrediction = await response.json();
+            if (response.status !== 200) {
+                setError(updatedPrediction.detail);
+                return;
+            }
+
+            if (updatedPrediction.status === "succeeded") {
+                setPredictions(currentPredictions => {
+                    const updatedPredictions = [...currentPredictions];
+                    const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+                    if (indexToUpdate !== -1) {
+                        updatedPredictions[indexToUpdate] = updatedPrediction;
+                    }
+                    return updatedPredictions;
+                });
+
+                setUserUploadedImage(null);
+                break;
+            } else if (updatedPrediction.status === "failed") {
+                setError("Prediction failed");
+                break;
+            } else {
+                setPredictions(currentPredictions => {
+                    const updatedPredictions = [...currentPredictions];
+                    const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+                    if (indexToUpdate !== -1) {
+                        updatedPredictions[indexToUpdate] = updatedPrediction;
+                    }
+                    return updatedPredictions;
+                });
+            }
+        }
+    };
+
+    const startOver = () => {
+        setPredictions([]);
+        setError(null);
+        setMaskImage(null);
+        setUserUploadedImage(null);
+    };
+
+    // Find the full tool object using the current tool's name
+    const currentTool = tools.find(tool => tool.name === currentToolName);
+
+
+    const onToolSelected = (tool) => {
+      switch (tool.name) {
+          case 'MaskPainter':
+              // Logic for MaskPainter tool
+              break;
+          case 'Zoom':
+              // Logic for Zoom tool
+              break;
+          // Add cases for other tools
+          default:
+              break;
+      }
   };
 
   return (
     <div className={styles.layout}>
        <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
-       <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} />
+       <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} onToolSelected={onToolSelected} />
       </div>
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Inpainting</title>
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         </Head>
-        {/*<Menu
-          onModeChange={placeholderHandler}
-          onProfileClick={placeholderHandler}
-          onSave={placeholderHandler}
-          onLoad={placeholderHandler}
-          onUndo={placeholderHandler}
-          onRedo={placeholderHandler}
-        />
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>FullJourney.AI Inpainting Greatness</strong>
         </p>
         <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
           <strong>Draw over the areas you want replaced...</strong>
-        </p>*/}
-        <MenuBar/>
+        </p>
+        {/*<MenuBar/>*/}
         <main className="container mx-auto p-2">
           {error && <div>{error}</div>}
           <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
@@ -233,6 +201,7 @@ const updateCanvasPosition = () => {
                 predictions={predictions}
                 userUploadedImage={userUploadedImage}
                 onDraw={setMaskImage}
+                currentTool={currentTool} // Pass the current tool as a prop
               />
             </div>
           </div>

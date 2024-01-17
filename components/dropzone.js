@@ -4,12 +4,49 @@ import { useDropzone } from "react-dropzone";
 export default function Dropzone(props) {
   const onImageDropped = props.onImageDropped;
 
+  const resizeImage = (image, targetWidth, targetHeight) => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
+      canvas.toBlob(resolve, 'image/jpeg');
+    });
+  };
+
   const preloadImage = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         const img = new Image();
-        img.onload = () => resolve(reader.result);
+        img.onload = async () => {
+          let width = img.width;
+          let height = img.height;
+          const maxSide = 1024;
+          
+          console.log("Inside preloadImage width: " + width + " height: " + height);
+          if (width > maxSide || height > maxSide) {
+            console.log("Inside preloadImage width > maxSide || height > maxSide, so resizing");
+            const ratio = width / height;
+            if (ratio > 1) { // wider
+              width = maxSide;
+              height = maxSide / ratio;
+            } else { // taller or square
+              height = maxSide;
+              width = maxSide * ratio;
+            }
+  
+            const resizedBlob = await resizeImage(img, width, height);
+            const blobReader = new FileReader();
+            blobReader.onloadend = function() {
+              resolve(blobReader.result); // This is the Data URL
+            };
+            blobReader.readAsDataURL(resizedBlob);
+          } else {
+            resolve(reader.result); // Original Data URL for smaller images
+          }
+        };
         img.onerror = reject;
         img.src = reader.result;
       };
