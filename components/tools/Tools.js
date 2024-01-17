@@ -9,12 +9,12 @@ export const tools = [
       console.log('Processing MaskPainter');
     }
   },
-  { 
+  /*{ 
     name: 'Zoom',
     label: 'Zoom In/Out',
     icon: <ZoomIn />, 
     processTool: () => {
       console.log('Processing tool2');
     }
-  },
+  },*/
 ]; 

@@ -4,7 +4,7 @@ const addBackgroundToPNG = require("lib/add-background-to-png");
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '30mb', // Set the size limit to 10MB or any other size you need
+      sizeLimit: '30mb',
     },
   },
 }
@@ -28,10 +28,12 @@ export default async function handler(req, res) {
     version: "1c7d4c8dec39c7306df7794b28419078cb9d18b9213ab1c21fdc46a1deca0144",
     input: { 
       ...req.body, // Spread the properties of req.body here
+      disable_safety_checker: true,
       scheduler: "DDIM", // Add the scheduler property
     },
   });
-  
+// if it's square 1024x1024
+
   const response = await fetch(`${API_HOST}/v1/predictions`, {
     method: "POST",
     headers: {
