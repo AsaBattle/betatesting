@@ -11,7 +11,10 @@ const VerticalToolbar = ({ onToolSelected }) => {
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
 
   const handleButtonClick = (tool) => {
+
     dispatch(setCurrentTool(tool.name));  // Dispatch only the tool's name
+
+    tool.processTool(dispatch); // Call the tool's process function
     if (onToolSelected) {
       onToolSelected(tool);  // Continue passing the full tool object to the callback
     }
@@ -23,6 +26,7 @@ const VerticalToolbar = ({ onToolSelected }) => {
       direction="column"
       spacing={2}
       className={styles.toolbarStack}
+      style={{ overflowY: 'hidden' }}  // inline style for overflow
     >
       {tools.map((tool) => (
         <Button

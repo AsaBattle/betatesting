@@ -1,7 +1,11 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { pushToUndo } from '../redux/slices/historySlice'; // Adjust the import path as necessary
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function Dropzone(props) {
+  const dispatch = useDispatch();
+
   const onImageDropped = props.onImageDropped;
 
   const resizeImage = (image, targetWidth, targetHeight) => {
@@ -59,6 +63,7 @@ export default function Dropzone(props) {
     async (acceptedFiles) => {
       try {
         const preloadedImage = await preloadImage(acceptedFiles[0]);
+        dispatch(pushToUndo(preloadedImage)); // Save the current image before changing it
         onImageDropped(preloadedImage);
       } catch (error) {
         console.error("Error preloading image: ", error);

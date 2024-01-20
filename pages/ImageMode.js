@@ -14,10 +14,12 @@ import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize } from '../redux/slices/toolSlice';
+import { pushToUndo, undo, redo, setCurrentImage } from '../redux/slices/historySlice'; // Adjust the import path
+import ImageNavigation from '../components/ImageNavigation';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function Home(theUserData) {
+export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
     const [error, setError] = useState(null);
     const [maskImage, setMaskImage] = useState(null);
@@ -25,12 +27,19 @@ export default function Home(theUserData) {
     const currentToolName = useSelector((state) => state.toolbar.currentToolName);
     const brushSize = useSelector((state) => state.toolbar.brushSize);
     const dispatch = useDispatch();
+    const currentImage = useSelector((state) => state.history.currentImage);
     const [userData, setUserData] = useState(null);
     const router = useRouter();
     const placeholderHandler = () => console.log('Handler not implemented yet.');
+    const undoStack = useSelector((state) => state.history.undoStack);
 
+    // The next line exports the value of the number of images stored inside of predictions
+    
     const canvasContainerRef = useRef(null);
     const toolbarRef = useRef(null);
+    const index = useSelector((state) => state.history.index); // Access index from history slice
+
+    // just put the above index in, but it's not changing in the display below
 
     const handleToolChange = (tool) => {
         dispatch(setCurrentTool(tool));
@@ -40,12 +49,14 @@ export default function Home(theUserData) {
         dispatch(setBrushSize(size));
     };
 
+      
+
     const updateCanvasPosition = () => {
         if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
             toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - 95}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - 100}px`;
         }
     };
 
@@ -103,6 +114,7 @@ export default function Home(theUserData) {
             return;
         }
 
+        //dispatch(pushToUndo(currentImage)); // Save the current image before changing it
         setPredictions(predictions.concat([prediction]));
 
         while (prediction.status !== "succeeded" && prediction.status !== "failed") {
@@ -167,6 +179,28 @@ export default function Home(theUserData) {
       }
   };
 
+
+
+  const PerformUndo = () => {
+    dispatch(undo());
+    // Apply the image from the undo stack to the canvas
+    // This might involve updating the state or props that determine the canvas image
+    setUserUploadedImage(currentImage);
+  };
+
+  const PerformRedo = () => {
+    dispatch(redo());
+    // Apply the image from the redo stack to the canvas
+    // Similar to undo, but using the next image
+  };
+
+  // Function to handle new image (from Dropzone or after generation)
+  const handleNewImage = (newImage) => {
+    dispatch(setCurrentImage(newImage));
+    // Additional logic to display the new image on the canvas
+  };
+
+
   return (
     <div className={styles.layout}>
        <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
@@ -181,7 +215,7 @@ export default function Home(theUserData) {
           <strong>FullJourney.AI Inpainting Greatness</strong>
         </p>
         <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
-          <strong>Draw over the areas you want replaced...</strong>
+          <strong>Draw over the areas you want replaced...{predictions.length}{index}</strong>
         </p>
         {/*<MenuBar/>*/}
         <main className="container mx-auto p-2">
@@ -206,20 +240,28 @@ export default function Home(theUserData) {
             </div>
           </div>
           <div className="max-w-[512px] mx-auto">
-            <PromptForm onSubmit={handleSubmit} />
-            <div className="text-center">
-              {((predictions.length > 0 &&
-                predictions[predictions.length - 1].output) ||
-                maskImage ||
-                userUploadedImage) && (
-                <button className="lil-button" onClick={startOver}>
-                  <StartOverIcon className="icon" />
-                  Start over1
-                </button>
-              )}
-              <Download predictions={predictions} />
-            </div>
+          <ImageNavigation imageTotal = {predictions.length}/>
+
+          <PromptForm onSubmit={handleSubmit} />
+          <div className="text-center">
+            {undoStack.length > 0 && ( // Only show the Undo button if there are items in the undo stack
+              <button className="lil-button" onClick={PerformUndo}>
+                <StartOverIcon className="icon" />
+                Undo
+              </button>
+            )}
+            {((predictions.length > 0 &&
+              predictions[predictions.length - 1].output) ||
+              maskImage ||
+              userUploadedImage) && (
+              <button className="lil-button" onClick={startOver}>
+                <StartOverIcon className="icon" />
+                Start over1
+              </button>
+            )}
+            <Download predictions={predictions} />
           </div>
+        </div>
         </main>
         <footer className="text-center my-4">
           <button 
