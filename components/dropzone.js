@@ -59,7 +59,7 @@ export default function Dropzone(props) {
     });
   };
 
-  const onDrop = useCallback(
+  const onDropOld = useCallback(
     async (acceptedFiles) => {
       try {
         const preloadedImage = await preloadImage(acceptedFiles[0]);
@@ -73,10 +73,25 @@ export default function Dropzone(props) {
     [onImageDropped]
   );
 
+  const onDrop = useCallback(
+    async (acceptedFiles) => {
+      try {
+        const preloadedImage = await preloadImage(acceptedFiles[0]);
+        // Call a new prop function here that will handle the image as the first prediction
+        props.onImageAsFirstPrediction(preloadedImage);
+      } catch (error) {
+        console.error("Error preloading image: ", error);
+        // Handle the error as needed
+      }
+    },
+    [props.onImageAsFirstPrediction]
+  );
+  
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   if (props.predictions.length) return null;
-  if (props.userUploadedImage) return null;
+  //if (props.userUploadedImage) return null;
 
   return (
     <div

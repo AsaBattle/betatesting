@@ -14,7 +14,7 @@ import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize } from '../redux/slices/toolSlice';
-import { pushToUndo, undo, redo, setCurrentImage } from '../redux/slices/historySlice'; // Adjust the import path
+import { pushToUndo, undo, redo, setIndex, setCurrentImage } from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -91,67 +91,74 @@ export default function Home(theUserData) {
         }
     };
 
+    const handleImageAsFirstPrediction = (imageDataUrl) => {
+      const newPrediction = {
+        // Structure this object to match the prediction objects you receive from your API
+        id: 'local-image', // or generate a unique ID as needed
+        output: [imageDataUrl],
+        status: 'succeeded', // or the appropriate status
+        // ... any other necessary properties
+      };
+      
+      setPredictions([newPrediction, ...predictions]);
+      console.log("setting index to predictions.length: " + predictions.length);
+      dispatch(setIndex(predictions.length+1));
+    };
+
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const prevPrediction = predictions[predictions.length - 1];
-        const prevPredictionOutput = prevPrediction?.output ? prevPrediction.output[prevPrediction.output.length - 1] : null;
-        const body = {
-            prompt: e.target.prompt.value,
-            image: userUploadedImage || (maskImage ? prevPredictionOutput : null),
-            mask: maskImage,
-        };
-
-        const response = await fetch("/api/predictions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", },
-            body: JSON.stringify(body),
-        });
-
-        const prediction = await response.json();
-
-        if (response.status !== 201) {
-            setError(prediction.detail);
-            return;
-        }
-
-        //dispatch(pushToUndo(currentImage)); // Save the current image before changing it
-        setPredictions(predictions.concat([prediction]));
-
-        while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-            await sleep(1000);
-            const response = await fetch("/api/predictions/" + prediction.id);
-            const updatedPrediction = await response.json();
-            if (response.status !== 200) {
-                setError(updatedPrediction.detail);
-                return;
-            }
-
-            if (updatedPrediction.status === "succeeded") {
-                setPredictions(currentPredictions => {
-                    const updatedPredictions = [...currentPredictions];
-                    const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-                    if (indexToUpdate !== -1) {
-                        updatedPredictions[indexToUpdate] = updatedPrediction;
-                    }
-                    return updatedPredictions;
-                });
-
-                setUserUploadedImage(null);
-                break;
-            } else if (updatedPrediction.status === "failed") {
-                setError("Prediction failed");
-                break;
-            } else {
-                setPredictions(currentPredictions => {
-                    const updatedPredictions = [...currentPredictions];
-                    const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-                    if (indexToUpdate !== -1) {
-                        updatedPredictions[indexToUpdate] = updatedPrediction;
-                    }
-                    return updatedPredictions;
-                });
-            }
-        }
+      e.preventDefault();
+      const prevPrediction = predictions[predictions.length - 1];
+      const prevPredictionOutput = prevPrediction?.output ? prevPrediction.output[prevPrediction.output.length - 1] : null;
+      const body = {
+          prompt: e.target.prompt.value,
+          image: maskImage ? prevPredictionOutput : null,
+          mask: maskImage,
+      };
+    
+      const response = await fetch("/api/predictions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", },
+          body: JSON.stringify(body),
+      });
+    
+      const prediction = await response.json();
+    
+      if (response.status !== 201) {
+          setError(prediction.detail);
+          return;
+      }
+    
+      // Add the new prediction to the predictions state
+      setPredictions(predictions.concat([prediction]));
+      // Set the history index to the last element of the predictions array, which will be the new prediction
+      dispatch(setIndex(predictions.length+1));
+    
+      while (prediction.status !== "succeeded" && prediction.status !== "failed") {
+          await sleep(1000);
+          const response = await fetch("/api/predictions/" + prediction.id);
+          const updatedPrediction = await response.json();
+          if (response.status !== 200) {
+              setError(updatedPrediction.detail);
+              return;
+          }
+    
+          if (updatedPrediction.status === "succeeded") {
+              setPredictions(currentPredictions => {
+                  const updatedPredictions = [...currentPredictions];
+                  const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+                  if (indexToUpdate !== -1) {
+                      updatedPredictions[indexToUpdate] = updatedPrediction;
+                  }
+                  // Update the history index here as well, after the prediction has been updated
+                  dispatch(setIndex(updatedPredictions.length));
+                  return updatedPredictions;
+              });
+              break;
+          } else if (updatedPrediction.status === "failed") {
+              setError("Prediction failed");
+              break;
+          }
+      }
     };
 
     const startOver = () => {
@@ -222,11 +229,10 @@ export default function Home(theUserData) {
           {error && <div>{error}</div>}
           <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
           <div className="border-hairline max-w-[512px] mx-auto relative" ref={canvasContainerRef}>
-            <Dropzone
-              onImageDropped={setUserUploadedImage}
-              predictions={predictions}
-              userUploadedImage={userUploadedImage}
-            />
+          <Dropzone
+            onImageAsFirstPrediction={handleImageAsFirstPrediction}
+            predictions={predictions}
+          />
             <div
               className="bg-black relative max-h-[512px] w-full flex items-stretch  border-4 border-pink-400 rounded-xl"
             >
