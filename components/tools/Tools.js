@@ -2,6 +2,8 @@ import { Brush, ZoomIn } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { incIndex,decIndex } from '../../redux/slices/historySlice';
 
+
+
 export const tools = [
   { 
     name: 'MaskPainter',
@@ -12,7 +14,7 @@ export const tools = [
       console.log('Processing MaskPainter');
     }
   },
-  { 
+ /* { 
     name: 'Zoom',
     label: 'Zoom In/Out',
     icon: <ZoomIn />, 
@@ -20,5 +22,5 @@ export const tools = [
     processTool: (dispatch) => {
       console.log('Processing tool2');
     }
-  },  
+  }, */ 
 ]; 
