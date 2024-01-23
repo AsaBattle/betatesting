@@ -34,7 +34,25 @@ const ImageNavigation = (props) => {
           <div className="text-center font-helvetica text-xl text-white">
             <div className="flex flex-col items-center justify-center">
          
-              <Pagination count={props.imageTotal} page={index} onChange={handleChange} />
+              <Pagination 
+                    count={props.imageTotal} 
+                    page={index}
+                    onChange={handleChange} 
+                    sx={{
+                        "& .MuiPaginationItem-root": {
+                        color: 'pink', // Color of all items
+                        },
+                        "& .MuiPaginationItem-root.Mui-selected": {
+                        color: 'yellow', // Color of the selected item
+                        },
+                        "& .MuiPaginationItem-ellipsis": {
+                        color: 'white', // Color of the ellipsis (...)
+                        },
+                        "& .MuiPaginationItem-icon": {
+                        color: 'white', // Color of the icons
+                        },
+                    }}
+                />
             </div>
           </div>
         )}

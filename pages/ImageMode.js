@@ -32,6 +32,7 @@ export default function Home(theUserData) {
     const router = useRouter();
     const placeholderHandler = () => console.log('Handler not implemented yet.');
     const undoStack = useSelector((state) => state.history.undoStack);
+    const [isLoading, setIsLoading] = useState(false);
 
     // The next line exports the value of the number of images stored inside of predictions
     
@@ -106,6 +107,7 @@ export default function Home(theUserData) {
     };
 
     const handleSubmit = async (e) => {
+      setIsLoading(true);
       e.preventDefault();
       const prevPrediction = predictions[predictions.length - 1];
       const prevPredictionOutput = prevPrediction?.output ? prevPrediction.output[prevPrediction.output.length - 1] : null;
@@ -125,11 +127,13 @@ export default function Home(theUserData) {
     
       if (response.status !== 201) {
           setError(prediction.detail);
+          setIsLoading(false);
           return;
       }
     
       // Add the new prediction to the predictions state
       setPredictions(predictions.concat([prediction]));
+
       // Set the history index to the last element of the predictions array, which will be the new prediction
       dispatch(setIndex(predictions.length+1));
     
@@ -151,11 +155,13 @@ export default function Home(theUserData) {
                   }
                   // Update the history index here as well, after the prediction has been updated
                   dispatch(setIndex(updatedPredictions.length));
+                  setIsLoading(false);
                   return updatedPredictions;
               });
               break;
           } else if (updatedPrediction.status === "failed") {
               setError("Prediction failed");
+              setIsLoading(false);
               break;
           }
       }
@@ -222,7 +228,7 @@ export default function Home(theUserData) {
           <strong>FullJourney.AI Inpainting Greatness</strong>
         </p>
         <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
-          <strong>Draw over the areas you want replaced...{predictions.length}{index}</strong>
+          <strong>Draw over the areas you want replaced...</strong>
         </p>
         {/*<MenuBar/>*/}
         <main className="container mx-auto p-2">
@@ -237,6 +243,7 @@ export default function Home(theUserData) {
               className="bg-black relative max-h-[512px] w-full flex items-stretch  border-4 border-pink-400 rounded-xl"
             >
               <Canvas
+                isLoading={isLoading}
                 brushSize={brushSize}
                 predictions={predictions}
                 userUploadedImage={userUploadedImage}
