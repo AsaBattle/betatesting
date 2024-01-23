@@ -53,8 +53,11 @@ const onChange = async () => {
   }
 };
 
-  const predicting = processedPredictions.some(prediction => !prediction.output);
+ // changed the following code: const predicting = processedPredictions.some(prediction => !prediction.output);
+ // to the following code: 
+ const predicting = props.isLoading;
   const lastPrediction = processedPredictions[processedPredictions.length - 1];
+  console.log('predicting', predicting);
 
   return (
     <div className="relative w-full aspect-square" id="canvasContainer" style={{
@@ -89,7 +92,7 @@ const onChange = async () => {
                 <div className="p-4 w-40 bg-white text-center rounded-lg animate-in zoom-in">
                     <Spinner />
                     <p className="pt-3 opacity-30 text-center text-sm">
-                        {lastPrediction.status}
+                    {lastPrediction ? lastPrediction.status : 'Starting...'}
                     </p>
                 </div>
             </div>
