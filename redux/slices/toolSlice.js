@@ -23,5 +23,5 @@ export const toolbarSlice = createSlice({
   },
 });
 
-export const { setCurrentTool, setBrushSize } = toolbarSlice.actions;
+export const { setCurrentTool, setBrushSize, setAspectRatio } = toolbarSlice.actions;
 export default toolbarSlice.reducer;

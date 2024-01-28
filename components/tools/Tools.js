@@ -2,7 +2,20 @@ import { Brush, ZoomIn, SplitSquareVertical } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { incIndex,decIndex } from '../../redux/slices/historySlice';
 
-
+export function getResolution(aspectRatioName) {
+  switch (aspectRatioName) {
+    case 'wide':
+      return { width: 1024, height: 512 };
+    case 'tall':
+      return { width: 512, height: 1024 };
+    case '43':
+      return { width: 1024, height: 768 };
+    case '34':
+      return { width: 768, height: 1024 };
+    default:
+      return { width: 1024, height: 1024 }; // Default square aspect ratio
+  }
+}
 
 export const tools = [
   { 

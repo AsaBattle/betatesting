@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setBrushSize } from '../../redux/slices/toolSlice';
+import { setBrushSize, setAspectRatio } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { Plus, Minus, Square, RectangleHorizontal, RectangleVertical } from 'lucide-react';
@@ -20,7 +20,7 @@ const ToolbarOptions = () => {
 
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
-    // You can add more functionality here as needed
+      dispatch(setAspectRatio(aspectRatio)); 
   };
 
   useEffect(() => {
@@ -30,6 +30,7 @@ const ToolbarOptions = () => {
   const handleSliderChange = (value) => {
     dispatch(setBrushSize(value));
   };
+
 
   const incrementZoom = () => setZoomLevel(zoomLevel + 10);
   const decrementZoom = () => setZoomLevel(zoomLevel - 10);

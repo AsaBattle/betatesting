@@ -15,7 +15,7 @@ export default function Download(props) {
     ? prediction.output[prediction.output.length - 1]
     : null;
 
-  console.log('imageUrl', imageUrl);
+  //console.log('imageUrl', imageUrl);
 
   if (!imageUrl) return null;
 
