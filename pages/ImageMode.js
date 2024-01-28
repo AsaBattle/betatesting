@@ -38,7 +38,7 @@ export default function Home(theUserData) {
     
     const canvasContainerRef = useRef(null);
     const toolbarRef = useRef(null);
-    const index = useSelector((state) => state.history.index); // Access index from history slice
+    const index = useSelector((state) => state.history.index - 1); // Access index from history slice
 
     // just put the above index in, but it's not changing in the display below
 
@@ -109,17 +109,21 @@ export default function Home(theUserData) {
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
-      const prevPrediction = predictions[predictions.length - 1];
-      const prevPredictionOutput = prevPrediction?.output ? prevPrediction.output[prevPrediction.output.length - 1] : null;
+    
+      console.log("handleSubmit is using index: " + index);
+      // Use the index to get the correct prediction
+      const currentPrediction = predictions[index];
+      const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
+    
       const body = {
           prompt: e.target.prompt.value,
-          image: maskImage ? prevPredictionOutput : null,
+          image: maskImage ? currentPredictionOutput : null,
           mask: maskImage,
       };
     
       const response = await fetch("/api/predictions", {
           method: "POST",
-          headers: { "Content-Type": "application/json", },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
       });
     
@@ -133,9 +137,9 @@ export default function Home(theUserData) {
     
       // Add the new prediction to the predictions state
       setPredictions(predictions.concat([prediction]));
-
+    
       // Set the history index to the last element of the predictions array, which will be the new prediction
-      dispatch(setIndex(predictions.length+1));
+      dispatch(setIndex(predictions.length));
     
       while (prediction.status !== "succeeded" && prediction.status !== "failed") {
           await sleep(1000);
@@ -143,6 +147,7 @@ export default function Home(theUserData) {
           const updatedPrediction = await response.json();
           if (response.status !== 200) {
               setError(updatedPrediction.detail);
+              setIsLoading(false);
               return;
           }
     
@@ -166,6 +171,7 @@ export default function Home(theUserData) {
           }
       }
     };
+    
 
     const startOver = () => {
         setPredictions([]);

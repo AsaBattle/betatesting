@@ -9,6 +9,7 @@ export default async function handler(req, res) {
       "Content-Type": "application/json",
     },
   });
+  
   if (response.status !== 200) {
     let error = await response.json();
     res.statusCode = 500;

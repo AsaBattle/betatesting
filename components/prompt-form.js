@@ -67,24 +67,18 @@ const samplePrompts = [
 ];
 import sample from "lodash/sample";
 import { Eraser, Dice5, DivideSquare } from "lucide-react";
+import { useDispatch, useSelector } from 'react-redux';
+import { setCurrentTool } from '../redux/slices/toolSlice';
 
 export default function PromptForm(props) {
   const [prompt, setPrompt] = useState(sample(samplePrompts));
-  const [image, setImage] = useState(null);
+  const dispatch = useDispatch();
 
-  // Handler for the clear button
-  const handleClear = () => {
-    setPrompt('');  // Set the prompt state to an empty string
-  };
-
-  // Handler to update prompt state when input changes
-  const handleInputChange = (event) => {
-    setPrompt(event.target.value);
-  };
-
-  // Function to set a random prompt
-  const setRandomPrompt = () => {
-    setPrompt(sample(samplePrompts));
+  const handleClear = () => setPrompt("");
+  const handleInputChange = (e) => setPrompt(e.target.value);
+  const setRandomPrompt = () => setPrompt(sample(samplePrompts));
+  const handleAspectRatio = () => {
+    dispatch(setCurrentTool('AspectRatio'));
   };
 
   // Set an initial random prompt when the component mounts
@@ -97,41 +91,37 @@ export default function PromptForm(props) {
       onSubmit={props.onSubmit}
       className="py-5 animate-in fade-in duration-700"
     >
-      <div className="flex max-w-[512px]">
-        <div className="flex flex-col w-12"> {/* Adjust width as needed for the buttons */}
-          {/* Eraser button */}
-          <button
-            type="button"
-            onClick={handleClear}
-            className="bg-gray-200 text-gray-700 rounded-t-md p-2 h-1/2 border-b border-black" // Tailwind class for half height
-          >
-            <Eraser size={16} />
-          </button>
-          {/* Random prompt button */}
-          <button
-            type="button"
-            onClick={setRandomPrompt}
-            className="bg-gray-200 text-gray-700 rounded-b-md p-2 h-1/2" // Tailwind class for half height
-          >
-            <Dice5 size={16} /> {/* Dice icon */}
-          </button>
-        </div>
-        {/* Input field */}
+    <div className="mb-2">
         <input
           type="text"
-          value={prompt}  // Bind the input value to the prompt state
-          onChange={handleInputChange}  // Update state when input changes
+          value={prompt}
+          onChange={handleInputChange}
           name="prompt"
           placeholder="Enter a prompt..."
-          className="block w-full flex-grow rounded-l-md"
+          className="w-full rounded-md py-2 px-3"
         />
+      </div>
+
+      {/* Row 2: Control Buttons */}
+      <div className="flex items-center space-x-2">
+        {/* Eraser and Randomize buttons */}
+        <div className="flex space-x-2">
+          <button type="button" onClick={handleClear} className="bg-gray-200 text-gray-700 rounded-md p-2">
+            <Eraser size={24} />
+          </button>
+          <button type="button" onClick={setRandomPrompt} className="bg-gray-200 text-gray-700 rounded-md p-2">
+            <Dice5 size={24} />
+          </button>
+        </div>
 
         {/* Generate button */}
-        <button
-          className="bg-black text-white rounded-r-md text-small inline-block px-3 flex-none"
-          type="submit"
-        >
+        <button type="submit" className="bg-black text-white rounded-md px-6 py-2 flex-grow">
           Generate
+        </button>
+
+        {/* Aspect Ratio button */}
+        <button type="button" onClick={handleAspectRatio} className="bg-gray-200 text-gray-700 rounded-md px-1 py-2">
+          Aspect Ratio
         </button>
       </div>
     </form>
