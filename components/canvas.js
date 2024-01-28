@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ReactSketchCanvas } from 'react-sketch-canvas';
 import { useSelector } from 'react-redux';
 import Spinner from 'components/spinner';
-import { tools } from './tools/Tools'; // Adjust the import path as necessary
+import { tools, getResolution } from './tools/Tools'; // Adjust the import path as necessary
 import Cursor from './cursor';
 
 
@@ -12,7 +12,40 @@ const Canvas = (props) => {
   const canvasRef = useRef(null);
   const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
   const [allowDrawing, setAllowDrawing] = useState(true);
+ 
+  const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
+  const { width, height } = getResolution(aspectRatioName);
+  
+  // Decide if the aspect ratio is 'tall' (height is greater than width)
+  const isTall = height > width;
 
+  // Styles for the container that maintains aspect ratio
+  const canvasContainerStyle = isTall ? {
+    height: '80vh',  // Limit the height for tall images to viewport height
+    width: `${(width / height) * 80}vh`, // Calculate width based on aspect ratio
+    position: 'relative',
+  } : {
+    width: '100%', // For wide images, use 100% of the width
+    paddingTop: `${(height / width) * 100}%`, // Padding-top trick maintains aspect ratio
+    position: 'relative',
+  };
+
+  // Cursor style should be applied only to the ReactSketchCanvas for drawing
+  const canvasStyle = {
+    cursor: allowDrawing ? `url('/pen-cursor(w)2.png'), auto` : 'default',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  };
+  
+  // Set the aspect ratio of the canvas container
+  const aspectRatioPercentage = (height / width) * 100;
+  const canvasAspectRatioStyle = {
+    paddingTop: `${aspectRatioPercentage}%` // This creates the aspect ratio
+  };
+  
   // Retrieve the current image from Redux store
   const currentImage = useSelector((state) => state.history.currentImage);
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
@@ -37,7 +70,7 @@ const Canvas = (props) => {
   }, [index, props.predictions, currentPredictionImage]);
 
 
-  
+
   // Process predictions to add lastImage property
   const processedPredictions = props.predictions.map(prediction => ({
     ...prediction,
@@ -62,12 +95,10 @@ const onChange = async () => {
  // to the following code: 
  const predicting = props.isLoading;
   const lastPrediction = processedPredictions[processedPredictions.length - 1];
-  console.log('predicting', predicting);
+//  console.log('predicting', predicting);
 
   return (
-    <div className="relative w-full aspect-square" id="canvasContainer" style={{
-      cursor: `url('/pen-cursor(w)2.png'), auto`
-    }}>
+    <div className="canvasContainer" style={canvasContainerStyle} id="canvasContainer">
         {/* PREDICTION IMAGE */}
         {currentPredictionImage && (
             <Image

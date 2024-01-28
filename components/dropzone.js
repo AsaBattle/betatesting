@@ -1,12 +1,38 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { pushToUndo } from '../redux/slices/historySlice'; // Adjust the import path as necessary
+import { pushToUndo } from '../redux/slices/historySlice';
 import { useSelector, useDispatch } from 'react-redux';
+import { setAspectRatio } from '../redux/slices/toolSlice'; // Adjust the import path as necessary
 
 export default function Dropzone(props) {
   const dispatch = useDispatch();
 
-  const onImageDropped = props.onImageDropped;
+  const onImageDropped = props.onImageAsFirstPrediction;
+
+  const calculateAspectRatio = (width, height) => {
+    // Define your aspect ratios and names here
+    const aspectRatios = {
+      'square': 1,
+      'wide': 16 / 9,
+      'tall': 9 / 16,
+      '43': 4 / 3,
+      '34': 3 / 4,
+    };
+
+    let closestAspectRatioName = 'square';
+    let smallestDifference = Infinity;
+    const imageAspectRatio = width / height;
+
+    Object.entries(aspectRatios).forEach(([name, ratio]) => {
+      const difference = Math.abs(ratio - imageAspectRatio);
+      if (difference < smallestDifference) {
+        smallestDifference = difference;
+        closestAspectRatioName = name;
+      }
+    });
+
+    return closestAspectRatioName;
+  };
 
   const resizeImage = (image, targetWidth, targetHeight) => {
     return new Promise((resolve, reject) => {
@@ -28,10 +54,14 @@ export default function Dropzone(props) {
           let width = img.width;
           let height = img.height;
           const maxSide = 1024;
-          
-          console.log("Inside preloadImage width: " + width + " height: " + height);
+
+          // Update Redux store with the closest aspect ratio
+          const aspectRatioName = calculateAspectRatio(width, height);
+
+          console.log('Setting aspect ratio to: ', aspectRatioName);
+          dispatch(setAspectRatio(aspectRatioName));
+
           if (width > maxSide || height > maxSide) {
-            console.log("Inside preloadImage width > maxSide || height > maxSide, so resizing");
             const ratio = width / height;
             if (ratio > 1) { // wider
               width = maxSide;
@@ -44,11 +74,11 @@ export default function Dropzone(props) {
             const resizedBlob = await resizeImage(img, width, height);
             const blobReader = new FileReader();
             blobReader.onloadend = function() {
-              resolve(blobReader.result); // This is the Data URL
+              resolve(blobReader.result);
             };
             blobReader.readAsDataURL(resizedBlob);
           } else {
-            resolve(reader.result); // Original Data URL for smaller images
+            resolve(reader.result);
           }
         };
         img.onerror = reject;
@@ -59,39 +89,21 @@ export default function Dropzone(props) {
     });
   };
 
-  const onDropOld = useCallback(
-    async (acceptedFiles) => {
-      try {
-        const preloadedImage = await preloadImage(acceptedFiles[0]);
-        dispatch(pushToUndo(preloadedImage)); // Save the current image before changing it
-        onImageDropped(preloadedImage);
-      } catch (error) {
-        console.error("Error preloading image: ", error);
-        // Handle the error as needed
-      }
-    },
-    [onImageDropped]
-  );
-
   const onDrop = useCallback(
     async (acceptedFiles) => {
       try {
         const preloadedImage = await preloadImage(acceptedFiles[0]);
-        // Call a new prop function here that will handle the image as the first prediction
-        props.onImageAsFirstPrediction(preloadedImage);
+        onImageDropped(preloadedImage);
       } catch (error) {
         console.error("Error preloading image: ", error);
-        // Handle the error as needed
       }
     },
-    [props.onImageAsFirstPrediction]
+    [onImageDropped, dispatch]
   );
-  
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   if (props.predictions.length) return null;
-  //if (props.userUploadedImage) return null;
 
   return (
     <div

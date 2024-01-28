@@ -11,7 +11,7 @@ import styles from './ImageMode.module.css';
 import MenuBar from '../components/toolbars/MenuBar';
 import VerticalToolbar from '../components/toolbars/VerticalToolbar';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
-import { tools } from '../components/tools/Tools';
+import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize } from '../redux/slices/toolSlice';
 import { pushToUndo, undo, redo, setIndex, setCurrentImage } from '../redux/slices/historySlice'; // Adjust the import path
@@ -34,6 +34,9 @@ export default function Home(theUserData) {
     const undoStack = useSelector((state) => state.history.undoStack);
     const [isLoading, setIsLoading] = useState(false);
 
+   // Get the current aspect ratio's width and height
+   const aspectRatio = useSelector((state) => state.toolbar.aspectRatioName); 
+    
     // The next line exports the value of the number of images stored inside of predictions
     
     const canvasContainerRef = useRef(null);
@@ -111,28 +114,31 @@ export default function Home(theUserData) {
       e.preventDefault();
     
       console.log("handleSubmit is using index: " + index);
-      // Use the index to get the correct prediction
       const currentPrediction = predictions[index];
       const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
     
+       const { width, height } = getResolution(aspectRatio); // Use the getResolution function
+     
       const body = {
-          prompt: e.target.prompt.value,
-          image: maskImage ? currentPredictionOutput : null,
-          mask: maskImage,
+        prompt: e.target.prompt.value,
+        image: maskImage ? currentPredictionOutput : null,
+        mask: maskImage,
+        width,  // Include width
+        height, // Include height
       };
     
       const response = await fetch("/api/predictions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
     
       const prediction = await response.json();
     
       if (response.status !== 201) {
-          setError(prediction.detail);
-          setIsLoading(false);
-          return;
+        setError(prediction.detail);
+        setIsLoading(false);
+        return;
       }
     
       // Add the new prediction to the predictions state
@@ -142,36 +148,34 @@ export default function Home(theUserData) {
       dispatch(setIndex(predictions.length));
     
       while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-          await sleep(1000);
-          const response = await fetch("/api/predictions/" + prediction.id);
-          const updatedPrediction = await response.json();
-          if (response.status !== 200) {
-              setError(updatedPrediction.detail);
-              setIsLoading(false);
-              return;
-          }
+        await sleep(1000);
+        const response = await fetch("/api/predictions/" + prediction.id);
+        const updatedPrediction = await response.json();
+        if (response.status !== 200) {
+          setError(updatedPrediction.detail);
+          setIsLoading(false);
+          return;
+        }
     
-          if (updatedPrediction.status === "succeeded") {
-              setPredictions(currentPredictions => {
-                  const updatedPredictions = [...currentPredictions];
-                  const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-                  if (indexToUpdate !== -1) {
-                      updatedPredictions[indexToUpdate] = updatedPrediction;
-                  }
-                  // Update the history index here as well, after the prediction has been updated
-                  dispatch(setIndex(updatedPredictions.length));
-                  setIsLoading(false);
-                  return updatedPredictions;
-              });
-              break;
-          } else if (updatedPrediction.status === "failed") {
-              setError("Prediction failed");
-              setIsLoading(false);
-              break;
-          }
+        if (updatedPrediction.status === "succeeded") {
+          setPredictions(currentPredictions => {
+            const updatedPredictions = [...currentPredictions];
+            const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+            if (indexToUpdate !== -1) {
+              updatedPredictions[indexToUpdate] = updatedPrediction;
+            }
+            dispatch(setIndex(updatedPredictions.length));
+            setIsLoading(false);
+            return updatedPredictions;
+          });
+          break;
+        } else if (updatedPrediction.status === "failed") {
+          setError("Prediction failed");
+          setIsLoading(false);
+          break;
+        }
       }
     };
-    
 
     const startOver = () => {
         setPredictions([]);
