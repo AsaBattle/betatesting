@@ -6,6 +6,8 @@ import Spinner from 'components/spinner';
 import { tools } from './tools/Tools'; // Adjust the import path as necessary
 import Cursor from './cursor';
 
+
+
 const Canvas = (props) => {
   const canvasRef = useRef(null);
   const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
@@ -22,17 +24,20 @@ const Canvas = (props) => {
     ? props.predictions[index].output[props.predictions[index].output.length - 1]
     : null
   : null;
-// Add to your Canvas component
-const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
-// Then, use this safely checked currentPredictionImage in your useEffect
-useEffect(() => {
-  console.log('Index:', index);
-  console.log('Predictions:', props.predictions);
-  //console.log('Current Prediction Image:', currentPredictionImage);
-}, [index, props.predictions, currentPredictionImage]);
+  // Add to your Canvas component
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
 
+  // Then, use this safely checked currentPredictionImage in your useEffect
+  useEffect(() => {
+    console.log('Index:', index);
+    console.log('Predictions:', props.predictions);
+    //console.log('Current Prediction Image:', currentPredictionImage);
+  }, [index, props.predictions, currentPredictionImage]);
+
+
+  
   // Process predictions to add lastImage property
   const processedPredictions = props.predictions.map(prediction => ({
     ...prediction,

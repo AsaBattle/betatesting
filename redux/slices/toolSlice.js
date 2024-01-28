@@ -6,6 +6,7 @@ export const toolbarSlice = createSlice({
   initialState: {
     currentToolName: tools[0].name, 
     brushSize: 40,
+    aspectRatioName: 'wide',
     // ... other toolbar state
   },
   reducers: {
@@ -14,6 +15,9 @@ export const toolbarSlice = createSlice({
     },
     setBrushSize: (state, action) => {
       state.brushSize = action.payload;
+    },
+    setAspectRatio: (state, action) => {
+      state.aspectRatioName = action.payload;
     },
     // ... other reducers for toolbar actions
   },

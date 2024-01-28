@@ -29,6 +29,7 @@ const VerticalToolbar = ({ onToolSelected }) => {
       style={{ overflowY: 'hidden' }}  // inline style for overflow
     >
       {tools.map((tool) => (
+        (tool.renderInToolbar) &&(
         <Button
           key={tool.name}
           variant="contained"
@@ -37,6 +38,7 @@ const VerticalToolbar = ({ onToolSelected }) => {
           className={`${styles.button} ${currentToolName === tool.name ? styles.selectedButton : ''}`}
         >
         </Button>
+        )
       ))}
     </Stack>
   );
