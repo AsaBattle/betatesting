@@ -250,9 +250,9 @@ export default function Home(theUserData) {
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
                   <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
-                  <div className="border-hairline max-w-[1024px] mx-auto relative" ref={canvasContainerRef}>
+                  <div className="border-hairline max-w-[512px] mx-auto relative" ref={canvasContainerRef}>
                       <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
-                      <div className={`bg-black relative max-h-[1024px] w-full flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}>
+                      <div className={`bg-black relative max-h-full w-[512px] flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}>
                           <Canvas
                               isLoading={isLoading}
                               brushSize={brushSize}
@@ -264,7 +264,7 @@ export default function Home(theUserData) {
                           />
                       </div>
                   </div>
-                  <div id="asathisisit"  ref={belowCanvasRef} className="max-w-[1024px] mx-auto">
+                  <div id="asathisisit"  ref={belowCanvasRef} className="max-w-[512px] mx-auto">
                       <ImageNavigation imageTotal={predictions.length} />
                       <PromptForm onSubmit={handleSubmit} />
                       <div className="text-center">
