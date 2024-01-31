@@ -28,3 +28,15 @@
     background-color: #2e2e2e; /* Content background color */
   }
   
+  .responsiveCanvasContainer {
+    max-width: 100%;
+    height: auto;
+    /* You can add additional responsive styling here if needed */
+  }
+  
+  #asathisisit {
+    position: absolute;
+    top: 500px; /* The y-coordinate where you want the div to appear */
+    left: 0; /* Align to the left */
+    width: 100%; /* Take the full width */
+  }

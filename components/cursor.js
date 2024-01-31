@@ -5,6 +5,7 @@ const Cursor = ({ brushSize, isDrawing }) => {
 
     useEffect(() => {
         const onMouseMove = (e) => {
+            //console.log('onMouseMove is executing, e.clientX:', e.clientX, 'e.clientY:', e.clientY);
             const canvasContainer = document.getElementById('canvasContainer');
             if (canvasContainer && isDrawing) {
                 const rect = canvasContainer.getBoundingClientRect();

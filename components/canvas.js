@@ -6,28 +6,28 @@ import Spinner from 'components/spinner';
 import { tools, getResolution } from './tools/Tools'; // Adjust the import path as necessary
 import Cursor from './cursor';
 
-
-
 const Canvas = (props) => {
   const canvasRef = useRef(null);
   const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
   const [allowDrawing, setAllowDrawing] = useState(true);
- 
+
   const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
   const { width, height } = getResolution(aspectRatioName);
-  
+
   // Decide if the aspect ratio is 'tall' (height is greater than width)
   const isTall = height > width;
 
   // Styles for the container that maintains aspect ratio
   const canvasContainerStyle = isTall ? {
-    height: '80vh',  // Limit the height for tall images to viewport height
-    width: `${(width / height) * 80}vh`, // Calculate width based on aspect ratio
+    height: '80vh',
+    width: `min(${(width / height) * 80}vh, 100%)`, // Adjust width calculation
     position: 'relative',
+    overflow: 'hidden', // Prevent overflow
   } : {
-    width: '100%', // For wide images, use 100% of the width
-    paddingTop: `${(height / width) * 100}%`, // Padding-top trick maintains aspect ratio
+    width: '100%',
+    paddingTop: `${(height / width) * 100}%`,
     position: 'relative',
+    overflow: 'hidden', // Prevent overflow
   };
 
   // Cursor style should be applied only to the ReactSketchCanvas for drawing
@@ -38,13 +38,7 @@ const Canvas = (props) => {
     left: 0,
     right: 0,
     bottom: 0,
-  };
-  
-  // Set the aspect ratio of the canvas container
-  const aspectRatioPercentage = (height / width) * 100;
-  const canvasAspectRatioStyle = {
-    paddingTop: `${aspectRatioPercentage}%` // This creates the aspect ratio
-  };
+  }; 
   
   // Retrieve the current image from Redux store
   const currentImage = useSelector((state) => state.history.currentImage);
@@ -58,44 +52,60 @@ const Canvas = (props) => {
     : null
   : null;
 
-  // Add to your Canvas component
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    console.log('Aspect Ratio:', aspectRatioName); // Log the current aspect ratio
+    console.log('Width and Height from getResolution:', width, height);
+    let containerWidth, containerHeight;
+
+    if (isTall) {
+        // For tall aspect ratios, use the viewport height to calculate the size
+        containerHeight = window.innerHeight * 0.8; // 80vh as per your style
+        containerWidth = (width / height) * containerHeight;
+    } else {
+        // For other aspect ratios, calculate based on the viewport width
+        containerWidth = window.innerWidth; // Assuming full width
+        containerHeight = (height / width) * containerWidth;
+
+        // Adjust for maximum width
+        if (containerWidth > window.innerWidth) {
+            containerWidth = window.innerWidth;
+            containerHeight = (height / width) * containerWidth;
+        }
+    }
+
+    console.log('Calculated Container Size:', containerWidth, containerHeight);
+
+    if (containerWidth !== canvasStateRef.current.width || containerHeight !== canvasStateRef.current.height) {
+        props.onCanvasSizeChange({ width: containerWidth, height: containerHeight });
+        canvasStateRef.current = { width: containerWidth, height: containerHeight };
+    }
+}, [width, height, isTall, props.onCanvasSizeChange]);
 
 
-  // Then, use this safely checked currentPredictionImage in your useEffect
   useEffect(() => {
     console.log('Index:', index);
     console.log('Predictions:', props.predictions);
-    //console.log('Current Prediction Image:', currentPredictionImage);
   }, [index, props.predictions, currentPredictionImage]);
 
-
-
-  // Process predictions to add lastImage property
   const processedPredictions = props.predictions.map(prediction => ({
     ...prediction,
     lastImage: prediction.output ? prediction.output[prediction.output.length - 1] : null,
   }));
 
-// Handle the change event for the canvas
-const onChange = async () => {
-  const paths = await canvasRef.current.exportPaths();
-  if (paths.length) {
-    const data = await canvasRef.current.exportImage('svg');
-    if (data !== canvasStateRef.current) {
-      // Push the current state to undo stack before updating, but only if we want to save the current image evert time the user hits the mouse(meaning when the canvas changes)
-      // dispatch(pushToUndo(canvasStateRef.current));
-      canvasStateRef.current = data;
+  const onChange = async () => {
+    const paths = await canvasRef.current.exportPaths();
+    if (paths.length) {
+      const data = await canvasRef.current.exportImage('svg');
+      if (data !== canvasStateRef.current) {
+        canvasStateRef.current = data;
+      }
+      props.onDraw(data);
     }
-    props.onDraw(data);
-  }
-};
+  };
 
- // changed the following code: const predicting = processedPredictions.some(prediction => !prediction.output);
- // to the following code: 
- const predicting = props.isLoading;
+  const predicting = props.isLoading;
   const lastPrediction = processedPredictions[processedPredictions.length - 1];
-//  console.log('predicting', predicting);
 
   return (
     <div className="canvasContainer" style={canvasContainerStyle} id="canvasContainer">
@@ -105,7 +115,7 @@ const onChange = async () => {
                 alt={`Current prediction ${index}`}
                 layout="fill"
                 className="absolute animate-in fade-in"
-                style={{ zIndex: 100 }}  // Make sure to set a proper z-index
+                style={{ zIndex: 100 }}
                 src={currentPredictionImage}
             />
         )}
@@ -153,7 +163,7 @@ const onChange = async () => {
         </div>
       )}
     </div>
-);
+  );
 };
 
 export default Canvas;
