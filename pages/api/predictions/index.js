@@ -29,8 +29,6 @@ export default async function handler(req, res) {
     input: { 
       ...req.body, // Spread the properties of req.body here
       disable_safety_checker: true,
-      height: 1024,
-      width: 1024,
       scheduler: "DDIM", // Add the scheduler property
     },
   });

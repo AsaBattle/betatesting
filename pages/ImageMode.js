@@ -33,6 +33,7 @@ export default function Home(theUserData) {
     const placeholderHandler = () => console.log('Handler not implemented yet.');
     const undoStack = useSelector((state) => state.history.undoStack);
     const [isLoading, setIsLoading] = useState(false);
+    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 }); // New state for canvas size
 
    // Get the current aspect ratio's width and height
    const aspectRatio = useSelector((state) => state.toolbar.aspectRatioName); 
@@ -43,7 +44,7 @@ export default function Home(theUserData) {
     const toolbarRef = useRef(null);
     const index = useSelector((state) => state.history.index - 1); // Access index from history slice
 
-    // just put the above index in, but it's not changing in the display below
+    const belowCanvasRef = useRef(null); // This ref would be attached to your below-canvas element
 
     const handleToolChange = (tool) => {
         dispatch(setCurrentTool(tool));
@@ -53,7 +54,11 @@ export default function Home(theUserData) {
         dispatch(setBrushSize(size));
     };
 
-      
+
+    const handleCanvasSizeChange = (size) => {
+      console.log('Received Canvas Size:', size); // Log the size received from Canvas
+      setCanvasSize(size); // Callback to receive canvas size
+    };      
 
     const updateCanvasPosition = () => {
         if (canvasContainerRef.current && toolbarRef.current) {
@@ -61,6 +66,7 @@ export default function Home(theUserData) {
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
             toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
             toolbarRef.current.style.left = `${canvasRect.left - 100}px`;
+         // console.log('Canvas Rect:', canvasRect);
         }
     };
 
@@ -222,81 +228,76 @@ export default function Home(theUserData) {
     dispatch(setCurrentImage(newImage));
     // Additional logic to display the new image on the canvas
   };
+  console.log('Current canvasSize.height:', canvasSize.height, 'Setting marginTop to:', `${canvasSize.height}px`);
 
 
-  return (
-    <div className={styles.layout}>
-       <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
-       <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} onToolSelected={onToolSelected} />
-      </div>
-      <div className={styles.content}>
-        <Head>
-          <title>FullJourney.AI Inpainting</title>
-          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        </Head>
-        <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI Inpainting Greatness</strong>
-        </p>
-        <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
-          <strong>Draw over the areas you want replaced...</strong>
-        </p>
-        {/*<MenuBar/>*/}
-        <main className="container mx-auto p-2">
-          {error && <div>{error}</div>}
-          <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
-          <div className="border-hairline max-w-[512px] mx-auto relative" ref={canvasContainerRef}>
-          <Dropzone
-            onImageAsFirstPrediction={handleImageAsFirstPrediction}
-            predictions={predictions}
-          />
-            <div
-              className="bg-black relative max-h-[512px] w-full flex items-stretch  border-4 border-pink-400 rounded-xl"
-            >
-              <Canvas
-                isLoading={isLoading}
-                brushSize={brushSize}
-                predictions={predictions}
-                userUploadedImage={userUploadedImage}
-                onDraw={setMaskImage}
-                currentTool={currentTool} // Pass the current tool as a prop
-              />
-            </div>
+    return (
+      <div className={styles.layout}>
+          <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
+              <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} onToolSelected={onToolSelected} />
           </div>
-          <div className="max-w-[512px] mx-auto">
-          <ImageNavigation imageTotal = {predictions.length}/>
-
-          <PromptForm onSubmit={handleSubmit} />
-          <div className="text-center">
-            {undoStack.length > 0 && ( // Only show the Undo button if there are items in the undo stack
-              <button className="lil-button" onClick={PerformUndo}>
-                <StartOverIcon className="icon" />
-                Undo
-              </button>
-            )}
-            {((predictions.length > 0 &&
-              predictions[predictions.length - 1].output) ||
-              maskImage ||
-              userUploadedImage) && (
-              <button className="lil-button" onClick={startOver}>
-                <StartOverIcon className="icon" />
-                Start over1
-              </button>
-            )}
-            <Download predictions={predictions} />
+          <div className={styles.content}>
+              <Head>
+                  <title>FullJourney.AI Inpainting</title>
+                  <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+              </Head>
+              <p className="pb-5 text-xl text-white text-center font-helvetica">
+                  <strong>FullJourney.AI Inpainting Greatness</strong>
+              </p>
+              <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
+                  <strong>Draw over the areas you want replaced...</strong>
+              </p>
+              <main className="container mx-auto p-2">
+                  {error && <div>{error}</div>}
+                  <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
+                  <div className="border-hairline max-w-[1024px] mx-auto relative" ref={canvasContainerRef}>
+                      <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
+                      <div className={`bg-black relative max-h-[1024px] w-full flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}>
+                          <Canvas
+                              isLoading={isLoading}
+                              brushSize={brushSize}
+                              predictions={predictions}
+                              userUploadedImage={userUploadedImage}
+                              onDraw={setMaskImage}
+                              currentTool={currentTool}
+                              onCanvasSizeChange={handleCanvasSizeChange}
+                          />
+                      </div>
+                  </div>
+                  <div id="asathisisit"  ref={belowCanvasRef} className="max-w-[1024px] mx-auto">
+                      <ImageNavigation imageTotal={predictions.length} />
+                      <PromptForm onSubmit={handleSubmit} />
+                      <div className="text-center">
+                          {undoStack.length > 0 && (
+                              <button className="lil-button" onClick={PerformUndo}>
+                                  <StartOverIcon className="icon" />
+                                  Undo
+                              </button>
+                          )}
+                          {((predictions.length > 0 && predictions[predictions.length - 1].output) || maskImage || userUploadedImage) && (
+                              <button className="lil-button" onClick={startOver}>
+                                  <StartOverIcon className="icon" />
+                                  Start over
+                              </button>
+                          )}
+                          <Download predictions={predictions} />
+                      </div>
+                  </div>
+              </main>
+              <footer className="text-center my-4">
+                  <button 
+                      onClick={handleLogout} 
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                      Logout
+                  </button>
+              </footer>
           </div>
-        </div>
-        </main>
-        <footer className="text-center my-4">
-          <button 
-            onClick={handleLogout} 
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Logout
-          </button>
-          </footer>
       </div>
-    </div>
   );
+
+
+
 }
 
 function readAsDataURL(file) {
