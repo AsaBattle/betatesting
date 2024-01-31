@@ -15,19 +15,22 @@ const Canvas = (props) => {
   const { width, height } = getResolution(aspectRatioName);
 
   // Decide if the aspect ratio is 'tall' (height is greater than width)
-  const isTall = height > width;
+  const isTall = false;
 
   // Styles for the container that maintains aspect ratio
   const canvasContainerStyle = isTall ? {
     height: '80vh',
+    maxWidth: '100%', // Ensure the width does not exceed the viewport width
     width: `min(${(width / height) * 80}vh, 100%)`, // Adjust width calculation
     position: 'relative',
     overflow: 'hidden', // Prevent overflow
+    zIndex: 10, // Ensure this is below interactive elements' zIndex
   } : {
     width: '100%',
     paddingTop: `${(height / width) * 100}%`,
     position: 'relative',
-    overflow: 'hidden', // Prevent overflow
+    overflow: 'hidden',
+    zIndex: 10,
   };
 
   // Cursor style should be applied only to the ReactSketchCanvas for drawing
@@ -52,7 +55,7 @@ const Canvas = (props) => {
     : null
   : null;
 
-
+/*
   useEffect(() => {
     console.log('Aspect Ratio:', aspectRatioName); // Log the current aspect ratio
     console.log('Width and Height from getResolution:', width, height);
@@ -81,7 +84,7 @@ const Canvas = (props) => {
         canvasStateRef.current = { width: containerWidth, height: containerHeight };
     }
 }, [width, height, isTall, props.onCanvasSizeChange]);
-
+*/
 
   useEffect(() => {
     console.log('Index:', index);
