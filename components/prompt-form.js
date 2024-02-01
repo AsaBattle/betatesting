@@ -73,6 +73,7 @@ import { setCurrentTool } from '../redux/slices/toolSlice';
 export default function PromptForm(props) {
   const [prompt, setPrompt] = useState(sample(samplePrompts));
   const dispatch = useDispatch();
+  const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
 
   const handleClear = () => setPrompt("");
   const handleInputChange = (e) => setPrompt(e.target.value);
@@ -121,7 +122,7 @@ export default function PromptForm(props) {
 
         {/* Aspect Ratio button */}
         <button type="button" onClick={handleAspectRatio} className="bg-gray-200 text-gray-700 rounded-md px-1 py-2">
-          Aspect Ratio
+          {aspectRatioName}
         </button>
       </div>
     </form>

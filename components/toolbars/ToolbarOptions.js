@@ -20,6 +20,7 @@ const ToolbarOptions = () => {
 
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
+    console.log("Aspect Ratio set to : '", aspectRatio, "'");
       dispatch(setAspectRatio(aspectRatio)); 
   };
 
@@ -107,10 +108,10 @@ const ToolbarOptions = () => {
       <div className="flex flex-col items-center">
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('square')}
+          onClick={() => handleAspectRatioClick('Square')}
           startIcon={<Square />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === 'square' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === 'Square' ? styles.selectedButton : ''}`}
         >
           <Typography>Square</Typography>
         </Button>
@@ -119,20 +120,20 @@ const ToolbarOptions = () => {
       <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('wide')}
+          onClick={() => handleAspectRatioClick('Wide')}
           startIcon={<RectangleHorizontal />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === 'wide' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === 'Wide' ? styles.selectedButton : ''}`}
         >
           <Typography>Wide</Typography>
         </Button>
 
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('tall')}
+          onClick={() => handleAspectRatioClick('Tall')}
           startIcon={<RectangleVertical />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === 'tall' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === 'Tall' ? styles.selectedButton : ''}`}
         >
           <Typography>Tall</Typography>
         </Button>
@@ -141,20 +142,20 @@ const ToolbarOptions = () => {
       <div className="flex flex-col items-center">
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('43')}
+          onClick={() => handleAspectRatioClick('4:3')}
           startIcon={<RectangleHorizontal style={{ transform: 'scale(1.5)' }} />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === '43' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === '4:3' ? styles.selectedButton : ''}`}
         >
           <Typography>4:3</Typography>
         </Button>
 
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('34')}
+          onClick={() => handleAspectRatioClick('3:4')}
           startIcon={<RectangleVertical style={{ transform: 'scale(1.5)' }} />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === '34' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === '3:4' ? styles.selectedButton : ''}`}
         >
           <Typography>3:4</Typography>
         </Button>
