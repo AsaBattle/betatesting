@@ -36,8 +36,9 @@ export default function Home(theUserData) {
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 }); // New state for canvas size
 
    // Get the current aspect ratio's width and height
-   const aspectRatio = useSelector((state) => state.toolbar.aspectRatioName); 
+   const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
     
+   
     // The next line exports the value of the number of images stored inside of predictions
     
     const canvasContainerRef = useRef(null);
@@ -115,73 +116,84 @@ export default function Home(theUserData) {
       dispatch(setIndex(predictions.length+1));
     };
 
-    const handleSubmit = async (e) => {
-      setIsLoading(true);
-      e.preventDefault();
     
-      console.log("handleSubmit is using index: " + index);
-      const currentPrediction = predictions[index];
-      const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
-    
-       const { width, height } = getResolution(aspectRatio); // Use the getResolution function
-     
-      const body = {
-        prompt: e.target.prompt.value,
-        image: maskImage ? currentPredictionOutput : null,
-        mask: maskImage,
-        width,  // Include width
-        height, // Include height
-      };
-    
-      const response = await fetch("/api/predictions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    
-      const prediction = await response.json();
-    
-      if (response.status !== 201) {
-        setError(prediction.detail);
+const handleSubmit = async (e) => {
+  setIsLoading(true);
+  e.preventDefault();
+
+  console.log("handleSubmit is using index: " + index);
+  const currentPrediction = predictions[index];
+  const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
+
+  const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
+
+  const body = {
+    prompt: e.target.prompt.value,
+    image: maskImage ? currentPredictionOutput : null,
+    mask: maskImage,
+    width,  // Include width
+    height, // Include height
+    aspectRatioName: currentAspectRatioName, // Include the aspect ratio name if needed by your backend
+  };
+
+  const response = await fetch("/api/predictions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const prediction = await response.json();
+
+  if (response.status !== 201) {
+    setError(prediction.detail);
+    setIsLoading(false);
+    return;
+  }
+
+  // Modify the prediction object to include the aspect ratio name before adding it to the state
+  const newPrediction = {
+    ...prediction,
+    aspectRatioName: currentAspectRatioName,
+  };
+
+  // Add the new prediction to the predictions state
+  setPredictions(predictions.concat([newPrediction]));
+
+  // Set the history index to the last element of the predictions array, which will be the new prediction
+  dispatch(setIndex(predictions.length));
+
+  while (prediction.status !== "succeeded" && prediction.status !== "failed") {
+    await sleep(1000);
+    const response = await fetch("/api/predictions/" + prediction.id);
+    const updatedPrediction = await response.json();
+    if (response.status !== 200) {
+      setError(updatedPrediction.detail);
+      setIsLoading(false);
+      return;
+    }
+
+    if (updatedPrediction.status === "succeeded") {
+      setPredictions(currentPredictions => {
+        const updatedPredictions = [...currentPredictions];
+        const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+        if (indexToUpdate !== -1) {
+          updatedPredictions[indexToUpdate] = {
+            ...updatedPrediction,
+            aspectRatioName: currentAspectRatioName, // Ensure the updated prediction also includes the aspect ratio
+          };
+        }
+        dispatch(setIndex(updatedPredictions.length));
         setIsLoading(false);
-        return;
-      }
-    
-      // Add the new prediction to the predictions state
-      setPredictions(predictions.concat([prediction]));
-    
-      // Set the history index to the last element of the predictions array, which will be the new prediction
-      dispatch(setIndex(predictions.length));
-    
-      while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-        await sleep(1000);
-        const response = await fetch("/api/predictions/" + prediction.id);
-        const updatedPrediction = await response.json();
-        if (response.status !== 200) {
-          setError(updatedPrediction.detail);
-          setIsLoading(false);
-          return;
-        }
-    
-        if (updatedPrediction.status === "succeeded") {
-          setPredictions(currentPredictions => {
-            const updatedPredictions = [...currentPredictions];
-            const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-            if (indexToUpdate !== -1) {
-              updatedPredictions[indexToUpdate] = updatedPrediction;
-            }
-            dispatch(setIndex(updatedPredictions.length));
-            setIsLoading(false);
-            return updatedPredictions;
-          });
-          break;
-        } else if (updatedPrediction.status === "failed") {
-          setError("Prediction failed");
-          setIsLoading(false);
-          break;
-        }
-      }
-    };
+        return updatedPredictions;
+      });
+      break;
+    } else if (updatedPrediction.status === "failed") {
+      setError("Prediction failed");
+      setIsLoading(false);
+      break;
+    }
+  }
+};
 
     const startOver = () => {
         setPredictions([]);
