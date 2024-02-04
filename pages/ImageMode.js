@@ -265,15 +265,15 @@ useEffect(() => {
           </div>
           <div className={styles.content}>
               <Head>
-                  <title>FullJourney.AI Inpainting</title>
+                  <title>FullJourney.AI Studio</title>
                   <meta name="viewport" content="initial-scale=1.0, width=device-width" />
               </Head>
               <p className="pb-5 text-xl text-white text-center font-helvetica">
-                  <strong>FullJourney.AI Inpainting Greatness</strong>
+                  <strong>FullJourney.AI Studio</strong>
               </p>
-              <p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
+              {/*<p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
                   <strong>Draw over the areas you want replaced...</strong>
-              </p>
+                </p>*/}
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
                   <ToolbarOptions predictions={predictions}/>
