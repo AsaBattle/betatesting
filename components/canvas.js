@@ -27,6 +27,8 @@ const Canvas = (props) => {
     ? props.predictions[index].aspectRatioName
     : 'default'; // Default or fallback aspect ratio
 
+
+
   const { width, height } = getResolution(currentAspectRatioName);
 
   const isTall = height > width;
@@ -45,22 +47,41 @@ const Canvas = (props) => {
     zIndex: 10,
   };
 
+
+
   useEffect(() => {
     console.log('*-----------------------------------*');
     console.log('Index:', index);
     console.log('Predictions:', props.predictions);
-  }, [index, props.predictions]);
+    console.log('Current Aspect Ratio Name:', currentAspectRatioName);
+    console.log('Current Prediction Image:', currentPredictionImage);
+  }, [index, props.predictions, currentAspectRatioName, currentPredictionImage]);
+  
+  useEffect(() => {
+    console.log('Allow Drawing:', allowDrawing);
+  }, [allowDrawing]);
 
   const onChange = async () => {
     const paths = await canvasRef.current.exportPaths();
+    console.log('Canvas Paths Changed:', paths);
     if (paths.length) {
       const data = await canvasRef.current.exportImage('svg');
       if (data !== canvasStateRef.current) {
         canvasStateRef.current = data;
+        console.log('Canvas Data Updated:', data);
       }
       props.onDraw(data);
     }
   };
+
+  useEffect(() => {
+    console.log('Current Aspect Ratio Name:', currentAspectRatioName);
+    console.log('Calculated Width:', width, 'Calculated Height:', height);
+  }, [currentAspectRatioName]);
+
+  useEffect(() => {
+    console.log('Canvas Container Style:', canvasContainerStyle);
+  }, [canvasContainerStyle]);
 
   const predicting = props.isLoading;
 

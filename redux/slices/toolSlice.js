@@ -17,6 +17,7 @@ export const toolbarSlice = createSlice({
       state.brushSize = action.payload;
     },
     setAspectRatio: (state, action) => {
+      console.log('dispatch called for setAspectRatio: ', action.payload);
       state.aspectRatioName = action.payload;
     },
     // ... other reducers for toolbar actions

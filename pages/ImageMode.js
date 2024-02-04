@@ -19,6 +19,8 @@ import ImageNavigation from '../components/ImageNavigation';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+
+
 export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
     const [error, setError] = useState(null);
@@ -34,7 +36,10 @@ export default function Home(theUserData) {
     const undoStack = useSelector((state) => state.history.undoStack);
     const [isLoading, setIsLoading] = useState(false);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 }); // New state for canvas size
+    const [loadedAspectRatio, setLoadedAspectRatio] = useState('default');
 
+    // Get the current aspect ratio's width and height
+    const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
     
     // The next line exports the value of the number of images stored inside of predictions
     
@@ -44,18 +49,13 @@ export default function Home(theUserData) {
 
     const belowCanvasRef = useRef(null); // This ref would be attached to your below-canvas element
 
-
-    // Get the current aspect ratio's width and height
-    const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
-      
+     
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
      ? predictions[index].aspectRatioName
      : 'default'; // Default or fallback aspect ratio
 
     const { width, height, displayWidth } = getResolution(currentImageAspectRatio);
-
-
 
 
     const handleToolChange = (tool) => {
@@ -81,7 +81,7 @@ export default function Home(theUserData) {
          // console.log('Canvas Rect:', canvasRect);
         }
     };
-
+  
     useEffect(() => {
         const handleScroll = () => {
             updateCanvasPosition();
@@ -113,19 +113,30 @@ export default function Home(theUserData) {
         }
     };
 
-    const handleImageAsFirstPrediction = (imageDataUrl) => {
+    useEffect(() => {
+      console.log("USEEFFECT - currentAspectRatioName: " + currentAspectRatioName);
+    }, [currentAspectRatioName]);
+
+
+    const handleImageAsFirstPrediction = (imageDataUrl, aspectRatio) => {
       const newPrediction = {
         // Structure this object to match the prediction objects you receive from your API
         id: 'local-image', // or generate a unique ID as needed
         output: [imageDataUrl],
         status: 'succeeded', // or the appropriate status
+        aspectRatioName: aspectRatio,
         // ... any other necessary properties
       };
-      
+
+      console.log("setting aspectRatioName:" + currentAspectRatioName);
+      console.log("aspect ratio passed back is: " + aspectRatio);
+
       setPredictions([newPrediction, ...predictions]);
       console.log("setting index to predictions.length: " + predictions.length);
       dispatch(setIndex(predictions.length+1));
     };
+
+
 
 const handleSubmit = async (e) => {
   setIsLoading(true);
@@ -250,13 +261,6 @@ useEffect(() => {
     // Similar to undo, but using the next image
   };
 
-  // Function to handle new image (from Dropzone or after generation)
-  const handleNewImage = (newImage) => {
-    dispatch(setCurrentImage(newImage));
-    // Additional logic to display the new image on the canvas
-  };
-  console.log('Current canvasSize.height:', canvasSize.height, 'Setting marginTop to:', `${canvasSize.height}px`);
-
 
     return (
       <div className={styles.layout}>
@@ -322,10 +326,12 @@ useEffect(() => {
           </div>
       </div>
   );
-
-
-
 }
+
+
+
+
+
 
 function readAsDataURL(file) {
   return new Promise((resolve, reject) => {

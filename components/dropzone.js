@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { pushToUndo } from '../redux/slices/historySlice';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,18 +8,21 @@ export default function Dropzone(props) {
   const dispatch = useDispatch();
 
   const onImageDropped = props.onImageAsFirstPrediction;
+  const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
+  let aspectRatioName = 'none';
+
 
   const calculateAspectRatio = (width, height) => {
     // Define your aspect ratios and names here
     const aspectRatios = {
-      'square': 1,
-      'wide': 16 / 9,
-      'tall': 9 / 16,
+      'Square': 1,
+      'Wide': 16 / 9,
+      'Tall': 9 / 16,
       '43': 4 / 3,
       '34': 3 / 4,
     };
 
-    let closestAspectRatioName = 'square';
+    let closestAspectRatioName = 'Square';
     let smallestDifference = Infinity;
     const imageAspectRatio = width / height;
 
@@ -56,7 +59,7 @@ export default function Dropzone(props) {
           const maxSide = 1024;
 
           // Update Redux store with the closest aspect ratio
-          const aspectRatioName = calculateAspectRatio(width, height);
+          aspectRatioName = calculateAspectRatio(width, height);
 
           console.log('Setting aspect ratio to: ', aspectRatioName);
           dispatch(setAspectRatio(aspectRatioName));
@@ -93,7 +96,7 @@ export default function Dropzone(props) {
     async (acceptedFiles) => {
       try {
         const preloadedImage = await preloadImage(acceptedFiles[0]);
-        onImageDropped(preloadedImage);
+        onImageDropped(preloadedImage,aspectRatioName);
       } catch (error) {
         console.error("Error preloading image: ", error);
       }
