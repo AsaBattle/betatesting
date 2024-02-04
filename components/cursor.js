@@ -2,6 +2,29 @@ import React, { useEffect, useState } from 'react';
 
 const Cursor = ({ brushSize, isDrawing }) => {
     const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        // Define the matchMedia query
+        const mql = window.matchMedia('(max-width: 768px)');
+        
+        // Handler to set state
+        const handleMatchMedia = (event) => {
+            setIsMobile(event.matches);
+        };
+        
+        // Set the initial value based on the current width
+        setIsMobile(mql.matches);
+
+        // Add a listener for when the viewport width changes
+        const listener = () => setIsMobile(mql.matches);
+        mql.addEventListener('change', handleMatchMedia);
+
+        return () => {
+            // Clean up the listener when the component is unmounted
+            mql.removeEventListener('change', handleMatchMedia);
+        };
+    }, []);
 
     useEffect(() => {
         const onMouseMove = (e) => {
@@ -20,14 +43,16 @@ const Cursor = ({ brushSize, isDrawing }) => {
                 }
             }
         };
+        if (!isMobile)
+            window.addEventListener('mousemove', onMouseMove);
 
-        window.addEventListener('mousemove', onMouseMove);
         return () => {
             window.removeEventListener('mousemove', onMouseMove);
         };
-    }, [brushSize, isDrawing]);
+    }, [brushSize, isDrawing, isMobile]);
 
-    if (!cursorPos) return null;
+    // Don't render the cursor if on a mobile device
+    if (isMobile || !cursorPos) return null;
 
     return (
         <div
