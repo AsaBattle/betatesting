@@ -1,20 +1,28 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ReactSketchCanvas } from 'react-sketch-canvas';
-import { useSelector } from 'react-redux';
 import Spinner from 'components/spinner';
 import { tools, getResolution } from './tools/Tools'; // Adjust the import path as necessary
 import Cursor from './cursor';
+import { useSelector } from 'react-redux';
 
 const Canvas = (props) => {
   const canvasRef = useRef(null);
-  const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
   const [allowDrawing, setAllowDrawing] = useState(true);
+  const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
 
   // Assuming index is still derived from Redux or props as before
-  const index = useSelector((state) => (state.history.index - 1));
+    const index = useSelector((state) => (state.history.index - 1));
 
-  // Use the aspect ratio from the current prediction in the array, similar to your second version
+  // This line and related calculations for currentPredictionImage remain as you requested
+  const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].output && props.predictions[index].output.length > 0
+      ? props.predictions[index].output[props.predictions[index].output.length - 1]
+      : null
+    : null;
+
+
+  // Calculate aspect ratio from the current prediction if available
   const currentAspectRatioName = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].aspectRatioName
     : 'default'; // Default or fallback aspect ratio
@@ -37,18 +45,11 @@ const Canvas = (props) => {
     zIndex: 10,
   };
 
-  // This line and related calculations for currentPredictionImage remain as you requested
-  const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]
-    ? props.predictions[index].output && props.predictions[index].output.length > 0
-      ? props.predictions[index].output[props.predictions[index].output.length - 1]
-      : null
-    : null;
-
   useEffect(() => {
     console.log('*-----------------------------------*');
     console.log('Index:', index);
     console.log('Predictions:', props.predictions);
-  }, [index, props.predictions, currentPredictionImage]);
+  }, [index, props.predictions]);
 
   const onChange = async () => {
     const paths = await canvasRef.current.exportPaths();
@@ -90,19 +91,18 @@ const Canvas = (props) => {
         )}
 
         {!predicting && (
-          <React.Fragment>
-            <ReactSketchCanvas
-              ref={canvasRef}
-              strokeWidth={props.brushSize}
-              strokeColor="white"
-              canvasColor="transparent"
-              onChange={onChange}
-              allowOnlyPointerType={allowDrawing ? 'all' : 'none'}
-              style={{ position: 'absolute', top: 0, left:   0, right: 0, bottom: 0, zIndex: 10 }}
-            />
-            <Cursor brushSize={props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
-          </React.Fragment>
+          <ReactSketchCanvas
+            ref={canvasRef}
+            strokeWidth={props.brushSize}
+            strokeColor="white"
+            canvasColor="transparent"
+            onChange={onChange}
+            allowOnlyPointerType={allowDrawing ? 'all' : 'none'}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
+          />
         )}
+
+        <Cursor brushSize={props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
     </div>
   );
 };
@@ -124,3 +124,4 @@ function SpinnerOverlay({ prediction }) {
     </div>
   );
 }
+
