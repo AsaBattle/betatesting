@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
 
-const ToolbarOptions = () => {
+function ToolbarOptions (props)  {
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -17,6 +17,23 @@ const ToolbarOptions = () => {
   const currentTool = tools.find(tool => tool.name === currentToolName);
   const dispatch = useDispatch();
   const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
+
+  // Assuming index is still derived from Redux or props as before
+  const index = useSelector((state) => (state.history.index));
+
+  // This line and related calculations for currentPredictionImage remain as you requested
+  const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].output && props.predictions[index].output.length > 0
+      ? props.predictions[index].output[props.predictions[index].output.length - 1]
+      : null
+    : null;
+
+
+  // Calculate aspect ratio from the current prediction if available
+  const currentImageAspectRatio = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].aspectRatioName
+    : 'Not Set'; // Default or fallback aspect ratio
+
 
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
@@ -31,6 +48,10 @@ const ToolbarOptions = () => {
   const handleSliderChange = (value) => {
     dispatch(setBrushSize(value));
   };
+
+  useEffect(() => {
+    console.log("TOOLBAROPTIONS: predictions: ", props.predictions);
+  }, [props.predictions]); // This ensures the effect runs when props.predictions changes
 
 
   const incrementZoom = () => setZoomLevel(zoomLevel + 10);
@@ -115,6 +136,9 @@ const ToolbarOptions = () => {
         >
           <Typography>Square</Typography>
         </Button>
+
+        <Typography className="text-center mt-2">Current: {currentImageAspectRatio} </Typography>
+
       </div>
 
       <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>

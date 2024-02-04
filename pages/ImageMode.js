@@ -127,10 +127,6 @@ export default function Home(theUserData) {
       dispatch(setIndex(predictions.length+1));
     };
 
-useEffect(() => {
-  console.log('Canvas container ref:', canvasContainerRef.current);
-}, [canvasContainerRef]);
-    
 const handleSubmit = async (e) => {
   setIsLoading(true);
   e.preventDefault();
@@ -209,6 +205,11 @@ const handleSubmit = async (e) => {
   }
 };
 
+
+useEffect(() => {
+  console.log('predictions: ', predictions);
+}, [predictions]);
+
     const startOver = () => {
         setPredictions([]);
         setError(null);
@@ -275,7 +276,7 @@ const handleSubmit = async (e) => {
               </p>
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
-                  <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
+                  <ToolbarOptions predictions={predictions}/>
                   <div className={`border-hairline mx-auto relative`} style={{ width: `${displayWidth}px` }} ref={canvasContainerRef}>
                       <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
                       <div className={`bg-black relative max-h-full w-[512px] mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}>
@@ -292,7 +293,7 @@ const handleSubmit = async (e) => {
                   </div>
                   <div id="asathisisit"  ref={belowCanvasRef} className={`max-w-[512px] mx-auto`}>
                       <ImageNavigation imageTotal={predictions.length} />
-                      <PromptForm onSubmit={handleSubmit} />
+                      <PromptForm onSubmit={handleSubmit} predictions={predictions} />
                       <div className="text-center">
                           {undoStack.length > 0 && (
                               <button className="lil-button" onClick={PerformUndo}>

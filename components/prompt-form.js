@@ -77,15 +77,39 @@ export default function PromptForm(props) {
 
   const handleClear = () => setPrompt("");
   const handleInputChange = (e) => setPrompt(e.target.value);
-  const setRandomPrompt = () => setPrompt(sample(samplePrompts));
+  
   const handleAspectRatio = () => {
     dispatch(setCurrentTool('AspectRatio'));
   };
 
+  // Assuming index is still derived from Redux or props as before
+  const index = useSelector((state) => (state.history.index - 1));
+
+  // This line and related calculations for currentPredictionImage remain as you requested
+  const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].output && props.predictions[index].output.length > 0
+      ? props.predictions[index].output[props.predictions[index].output.length - 1]
+      : null
+    : null;
+
+
+  // Calculate aspect ratio from the current prediction if available
+  const currentImagePrompt = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].input.prompt
+    : 'default'; // Default or fallback aspect ratio
+
+  const setRandomPrompt = () => {setPrompt(sample(samplePrompts));};
+
+
   // Set an initial random prompt when the component mounts
   useEffect(() => {
+  console.log('Inside ASA in PromptForm.js index: ' + index + " currentImagePrompt: " + currentImagePrompt);
+    if (currentImagePrompt && currentImagePrompt !== "default") {
+      setPrompt(currentImagePrompt);
+    } else {
     setRandomPrompt();
-  }, []);
+    }
+  }, [index]);
 
   return (
     <form
