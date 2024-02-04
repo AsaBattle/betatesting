@@ -35,10 +35,7 @@ export default function Home(theUserData) {
     const [isLoading, setIsLoading] = useState(false);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 }); // New state for canvas size
 
-   // Get the current aspect ratio's width and height
-   const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
     
-   
     // The next line exports the value of the number of images stored inside of predictions
     
     const canvasContainerRef = useRef(null);
@@ -46,6 +43,20 @@ export default function Home(theUserData) {
     const index = useSelector((state) => state.history.index - 1); // Access index from history slice
 
     const belowCanvasRef = useRef(null); // This ref would be attached to your below-canvas element
+
+
+    // Get the current aspect ratio's width and height
+    const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
+      
+    // Calculate aspect ratio from the current prediction if available
+    const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
+     ? predictions[index].aspectRatioName
+     : 'default'; // Default or fallback aspect ratio
+
+    const { width, height, displayWidth } = getResolution(currentImageAspectRatio);
+
+
+
 
     const handleToolChange = (tool) => {
         dispatch(setCurrentTool(tool));
@@ -116,6 +127,9 @@ export default function Home(theUserData) {
       dispatch(setIndex(predictions.length+1));
     };
 
+useEffect(() => {
+  console.log('Canvas container ref:', canvasContainerRef.current);
+}, [canvasContainerRef]);
     
 const handleSubmit = async (e) => {
   setIsLoading(true);
@@ -262,9 +276,9 @@ const handleSubmit = async (e) => {
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
                   <ToolbarOptions currentTool={currentTool} brushSize={brushSize} onBrushSizeChange={handleBrushSizeChange} />
-                  <div className="border-hairline max-w-[512px] mx-auto relative" ref={canvasContainerRef}>
+                  <div className={`border-hairline mx-auto relative`} style={{ width: `${displayWidth}px` }} ref={canvasContainerRef}>
                       <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
-                      <div className={`bg-black relative max-h-full w-[512px] flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}>
+                      <div className={`bg-black relative max-h-full w-[512px] mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}>
                           <Canvas
                               isLoading={isLoading}
                               brushSize={brushSize}
@@ -276,7 +290,7 @@ const handleSubmit = async (e) => {
                           />
                       </div>
                   </div>
-                  <div id="asathisisit"  ref={belowCanvasRef} className="max-w-[512px] mx-auto">
+                  <div id="asathisisit"  ref={belowCanvasRef} className={`max-w-[512px] mx-auto`}>
                       <ImageNavigation imageTotal={predictions.length} />
                       <PromptForm onSubmit={handleSubmit} />
                       <div className="text-center">
