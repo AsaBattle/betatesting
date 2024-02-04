@@ -94,7 +94,8 @@ export default function PromptForm(props) {
 
 
   // Calculate aspect ratio from the current prediction if available
-  const currentImagePrompt = props.predictions && props.predictions.length > index && props.predictions[index]
+  const currentImagePrompt = props.predictions && props.predictions.length > index &&
+                             props.predictions[index] && props.predictions[index].input
     ? props.predictions[index].input.prompt
     : 'default'; // Default or fallback aspect ratio
 

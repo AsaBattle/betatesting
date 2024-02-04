@@ -19,7 +19,7 @@ function ToolbarOptions (props)  {
   const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
 
   // Assuming index is still derived from Redux or props as before
-  const index = useSelector((state) => (state.history.index));
+  const index = useSelector((state) => (state.history.index-1));
 
   // This line and related calculations for currentPredictionImage remain as you requested
   const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]

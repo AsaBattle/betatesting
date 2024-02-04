@@ -3,16 +3,20 @@ import React, { useEffect, useState } from 'react';
 const Cursor = ({ brushSize, isDrawing }) => {
     const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
     const [isMobile, setIsMobile] = useState(false);
+    let mql = false;
 
     useEffect(() => {
         // Define the matchMedia query
-        const mql = window.matchMedia('(max-width: 768px)');
+        mql = window.matchMedia('(max-width: 768px)');
         
+        console.log('mql:', mql);
+
         // Handler to set state
         const handleMatchMedia = (event) => {
+            console.log('handleMatchMedia is executing, event.matches:', event.matches);
             setIsMobile(event.matches);
         };
-        
+
         // Set the initial value based on the current width
         setIsMobile(mql.matches);
 
