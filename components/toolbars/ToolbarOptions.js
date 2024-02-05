@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setBrushSize, setAspectRatio } from '../../redux/slices/toolSlice';
+import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { Plus, Minus, Square, RectangleHorizontal, RectangleVertical } from 'lucide-react';
@@ -12,7 +12,7 @@ import styles from './ToolbarOptions.module.css'; // Make sure this path is corr
 function ToolbarOptions (props)  {
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
-  const [zoomLevel, setZoomLevel] = useState(100);
+  const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
   
   const currentTool = tools.find(tool => tool.name === currentToolName);
   const dispatch = useDispatch();
@@ -32,12 +32,11 @@ function ToolbarOptions (props)  {
   // Calculate aspect ratio from the current prediction if available
   const currentImageAspectRatio = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].aspectRatioName
-    : 'Not Set'; // Default or fallback aspect ratio
+    : 'Not Yet Set'; // Default or fallback aspect ratio
 
 
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
-    console.log("Aspect Ratio set to : '", aspectRatio, "'");
       dispatch(setAspectRatio(aspectRatio)); 
   };
 
@@ -49,13 +48,8 @@ function ToolbarOptions (props)  {
     dispatch(setBrushSize(value));
   };
 
-  useEffect(() => {
-    console.log("TOOLBAROPTIONS: predictions: ", props.predictions);
-  }, [props.predictions]); // This ensures the effect runs when props.predictions changes
-
-
-  const incrementZoom = () => setZoomLevel(zoomLevel + 10);
-  const decrementZoom = () => setZoomLevel(zoomLevel - 10);
+  const incrementZoom = () => dispatch(alterZoomWidth(10));
+  const decrementZoom = () => dispatch(alterZoomWidth(-10));
 
   return (
     <div className={styles.toolbarContainer}>
@@ -110,7 +104,7 @@ function ToolbarOptions (props)  {
           <input
             type="number"
             value={zoomLevel}
-            onChange={(e) => setZoomLevel(Number(e.target.value))}x
+            onChange={(e) => dispatch(setZoomWidth(e.target.value))}
             className="zoom-input"
           />
           <button onClick={incrementZoom} className="zoom-button">

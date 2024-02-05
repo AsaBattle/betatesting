@@ -39,20 +39,15 @@ export const tools = [
     processTool: (dispatch) => {
       console.log('processing aspect ratio');
     },
-   /* aspectRatios: [
-      {name: 'wide', icon: <
-      'tall',
-      '43',
-      '34',
-    ],*/
   },
- /* { 
+  { 
     name: 'Zoom',
     label: 'Zoom In/Out',
     icon: <ZoomIn />, 
+    renderInToolbar: true, 
     cursor: 'zoom-in',
     processTool: (dispatch) => {
       console.log('Processing tool2');
     }
-  }, */ 
+  }, 
 ]; 
