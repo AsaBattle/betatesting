@@ -107,6 +107,7 @@ export default function Home(theUserData) {
 
     const checkUserLogin = async () => {
         if (theUserData) {
+          console.log("checking login - theUserData is: ", theUserData);
             if (theUserData.userData) {
                 setUserData(theUserData.userData);
             }
