@@ -32,7 +32,8 @@ export default async function handler(req, res) {
       scheduler: "DDIM", // Add the scheduler property
     },
   });
-// if it's square 1024x1024
+  
+  
 
   const response = await fetch(`${API_HOST}/v1/predictions`, {
     method: "POST",

@@ -379,6 +379,19 @@ export async function getServerSideProps(context) {
 
         console.log("response.data is: ", response.data);
         const userData = response.data;
+
+        // check if the user has a subscription
+        if (userData.subscription_status === 'free')
+          {
+            console.log("User is not subscribed");
+            return {
+              redirect: {
+                destination: '/Subscribe',
+                permanent: false,
+              },
+            };
+          }
+
         return { props: { userData } };
       } catch (error) {
         console.error('No user data!!! Error:', error);
