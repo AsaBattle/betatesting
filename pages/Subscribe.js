@@ -3,7 +3,7 @@ import styles from './Subscribe.module.css';
 
 const Subscribe = () => {
     const handleSubscribeClick = () => {
-        window.location.href = 'http://www.fulljourney.ai/subscribe';
+        window.location.href = 'https://www.fulljourney.ai/subscription?v123459i';
     };
 
     return (
