@@ -1,62 +1,54 @@
 import React, { useEffect, useState } from 'react';
 
 const Cursor = ({ brushSize, isDrawing }) => {
-    const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-    const [isMobile, setIsMobile] = useState(false);
-    let mql = false;
+    const [cursorPos, setCursorPos] = useState(null); // Start with null, assume touch device
+    const [hasMouse, setHasMouse] = useState(false); // State to track if a mousemove event has been detected
 
     useEffect(() => {
-        // Define the matchMedia query
-        mql = window.matchMedia('(max-width: 768px)');
-        
-        console.log('mql:', mql);
-
-        // Handler to set state
-        const handleMatchMedia = (event) => {
-            console.log('handleMatchMedia is executing, event.matches:', event.matches);
-            setIsMobile(event.matches);
+        // Handler to detect mouse movement
+        const onMouseMoveDetect = () => {
+            setHasMouse(true); // Set hasMouse to true when mouse is moved
+            window.removeEventListener('mousemove', onMouseMoveDetect); // Remove listener after detecting mouse
         };
 
-        // Set the initial value based on the current width
-        setIsMobile(mql.matches);
-
-        // Add a listener for when the viewport width changes
-        const listener = () => setIsMobile(mql.matches);
-        mql.addEventListener('change', handleMatchMedia);
+        // Add the mousemove event listener to the window
+        window.addEventListener('mousemove', onMouseMoveDetect);
 
         return () => {
             // Clean up the listener when the component is unmounted
-            mql.removeEventListener('change', handleMatchMedia);
+            window.removeEventListener('mousemove', onMouseMoveDetect);
         };
     }, []);
 
     useEffect(() => {
-        const onMouseMove = (e) => {
-            //console.log('onMouseMove is executing, e.clientX:', e.clientX, 'e.clientY:', e.clientY);
+        if (!hasMouse) return; // If no mouse has been detected, exit early
+
+        const onMouseMoveCursor = (e) => {
             const canvasContainer = document.getElementById('canvasContainer');
             if (canvasContainer && isDrawing) {
                 const rect = canvasContainer.getBoundingClientRect();
                 if (e.clientX >= rect.left && e.clientX <= rect.right &&
                     e.clientY >= rect.top && e.clientY <= rect.bottom) {
                     setCursorPos({
-                        x: e.clientX - rect.left+1,     // +1 and +2 to center the cursor as ...
-                        y: e.clientY - rect.top+2,      //                             ...close as we can to the actual brush
+                        x: e.clientX - rect.left + 1, // +1 to center the cursor
+                        y: e.clientY - rect.top + 2,  // +2 to center the cursor
                     });
                 } else {
-                    setCursorPos(null);
+                    setCursorPos(null); // Hide cursor when out of bounds
                 }
             }
         };
-        if (!isMobile)
-            window.addEventListener('mousemove', onMouseMove);
+
+        // Add the mousemove event listener to window
+        window.addEventListener('mousemove', onMouseMoveCursor);
 
         return () => {
-            window.removeEventListener('mousemove', onMouseMove);
+            // Clean up the event listener
+            window.removeEventListener('mousemove', onMouseMoveCursor);
         };
-    }, [brushSize, isDrawing, isMobile]);
+    }, [brushSize, isDrawing, hasMouse]);
 
-    // Don't render the cursor if on a mobile device
-    if (isMobile || !cursorPos) return null;
+    if (!cursorPos) return null; // Don't render if no cursor position is set
 
     return (
         <div
@@ -67,13 +59,12 @@ const Cursor = ({ brushSize, isDrawing }) => {
                 width: `${brushSize}px`,
                 height: `${brushSize}px`,
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255,255,255,0.5)', // semi-transparent white circle
-                pointerEvents: 'none', // allows the mouse events to pass through the div
-                mixBlendMode: 'difference', // this will help to see the cursor on different backgrounds
-                transform: 'translate(-50%, -50%)', // Center the cursor circle
+                backgroundColor: 'rgba(255,255,255,0.5)',
+                pointerEvents: 'none',
+                mixBlendMode: 'difference',
+                transform: 'translate(-50%, -50%)',
             }}
-        >
-        </div>
+        />
     );
 };
 
