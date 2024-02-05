@@ -7,9 +7,15 @@ export const toolbarSlice = createSlice({
     currentToolName: tools[0].name, 
     brushSize: 40,
     aspectRatioName: 'Square',
-    // ... other toolbar state
+    zoomWidth: 512,
   },
   reducers: {
+    setZoomWidth: (state, action) => {
+      state.zoomWidth = action.payload;
+    },
+    alterZoomWidth: (state, action) => {
+      state.zoomWidth += action.payload;
+    },
     setCurrentTool: (state, action) => {
       state.currentToolName = action.payload;
     },
@@ -24,5 +30,5 @@ export const toolbarSlice = createSlice({
   },
 });
 
-export const { setCurrentTool, setBrushSize, setAspectRatio } = toolbarSlice.actions;
+export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth } = toolbarSlice.actions;
 export default toolbarSlice.reducer;

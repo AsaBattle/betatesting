@@ -13,9 +13,10 @@ import VerticalToolbar from '../components/toolbars/VerticalToolbar';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentTool, setBrushSize } from '../redux/slices/toolSlice';
+import { setCurrentTool, setBrushSize, setZoomWidth } from '../redux/slices/toolSlice';
 import { pushToUndo, undo, redo, setIndex, setCurrentImage } from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
+import { set } from "lodash";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -56,7 +57,7 @@ export default function Home(theUserData) {
      : 'default'; // Default or fallback aspect ratio
 
     const { width, height, displayWidth } = getResolution(currentImageAspectRatio);
-
+    const zoomWidth = useSelector((state) => state.toolbar.zoomWidth);
 
     const handleToolChange = (tool) => {
         dispatch(setCurrentTool(tool));
@@ -65,7 +66,6 @@ export default function Home(theUserData) {
     const handleBrushSizeChange = (size) => {
         dispatch(setBrushSize(size));
     };
-
 
     const handleCanvasSizeChange = (size) => {
       console.log('Received Canvas Size:', size); // Log the size received from Canvas
@@ -117,7 +117,24 @@ export default function Home(theUserData) {
       console.log("USEEFFECT - currentAspectRatioName: " + currentAspectRatioName);
     }, [currentAspectRatioName]);
 
+    useEffect(() => {
+      dispatch(setZoomWidth(displayWidth));
+    }, [displayWidth]);
 
+
+    useEffect(() => {
+      if (canvasContainerRef.current && toolbarRef.current) {
+        const canvasRect = canvasContainerRef.current.getBoundingClientRect();
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
+        toolbarRef.current.style.left = `${canvasRect.left - 100}px`;
+     // console.log('Canvas Rect:', canvasRect);
+      } 
+    }, [zoomWidth]);
+
+
+    // When the user uploads an image, Dropzone will call this function with
+    //  the image data URL and aspect ratio name(see toolSlice) calculated from the image's dimensions
     const handleImageAsFirstPrediction = (imageDataUrl, aspectRatio) => {
       const newPrediction = {
         // Structure this object to match the prediction objects you receive from your API
@@ -127,9 +144,6 @@ export default function Home(theUserData) {
         aspectRatioName: aspectRatio,
         // ... any other necessary properties
       };
-
-      console.log("setting aspectRatioName:" + currentAspectRatioName);
-      console.log("aspect ratio passed back is: " + aspectRatio);
 
       setPredictions([newPrediction, ...predictions]);
       console.log("setting index to predictions.length: " + predictions.length);
@@ -281,9 +295,9 @@ useEffect(() => {
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
                   <ToolbarOptions predictions={predictions}/>
-                  <div className={`border-hairline mx-auto relative`} style={{ width: `${displayWidth}px` }} ref={canvasContainerRef}>
+                  <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
                       <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
-                      <div className={`bg-black relative max-h-full w-[512px] mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}>
+                      <div className={`bg-black relative max-h-full mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}  style={{ width: `${zoomWidth}px` }}>
                           <Canvas
                               isLoading={isLoading}
                               brushSize={brushSize}
