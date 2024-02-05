@@ -5,17 +5,17 @@ export default function Auth({ isAuthenticated }) {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
-    console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
-    console.log("Working locally: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+    //console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    //console.log("Inside useEffect in Auth.js isAuthenticated: " + isAuthenticated);
+    //console.log("Working locally: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
     
     // Redirect based on the authentication status
     if (isAuthenticated) {
-      console.log("Going too /ImageMode because isAuthenticated is true: " + isAuthenticated);
+     // console.log("Going too /ImageMode because isAuthenticated is true: " + isAuthenticated);
       router.push('/ImageMode');
     } else 
     if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'true') {
-      console.log("Going to /ImageMode because process.env.NEXT_PUBLIC_WORKING_LOCALLY is true: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+      //console.log("Going to /ImageMode because process.env.NEXT_PUBLIC_WORKING_LOCALLY is true: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
       router.push('/ImageMode');
     }
     else {
