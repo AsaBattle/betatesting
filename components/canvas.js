@@ -6,6 +6,7 @@ import { tools, getResolution } from './tools/Tools'; // Adjust the import path 
 import Cursor from './cursor';
 import { useSelector } from 'react-redux';
 
+
 const Canvas = forwardRef((props, ref) => {
   const canvasRef = useRef(null);
   const [allowDrawing, setAllowDrawing] = useState(true);
