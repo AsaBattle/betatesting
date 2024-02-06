@@ -45,6 +45,7 @@ export default function Home(theUserData) {
     // The next line exports the value of the number of images stored inside of predictions
     
     const canvasContainerRef = useRef(null);
+    const canvasRef = useRef();
     const toolbarRef = useRef(null);
     const index = useSelector((state) => state.history.index - 1); // Access index from history slice
 
@@ -107,6 +108,7 @@ export default function Home(theUserData) {
 
     const checkUserLogin = async () => {
         if (theUserData) {
+          console.log("checking login - theUserData is: ", theUserData);
             if (theUserData.userData) {
                 setUserData(theUserData.userData);
             }
@@ -294,11 +296,12 @@ useEffect(() => {
                 </p>*/}
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
-                  <ToolbarOptions predictions={predictions}/>
+                  <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
                   <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
                       <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
                       <div className={`bg-black relative max-h-full mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}  style={{ width: `${zoomWidth}px` }}>
                           <Canvas
+                              ref={canvasRef}
                               isLoading={isLoading}
                               brushSize={brushSize}
                               predictions={predictions}
@@ -378,6 +381,19 @@ export async function getServerSideProps(context) {
 
         console.log("response.data is: ", response.data);
         const userData = response.data;
+
+        // check if the user has a subscription
+        if (userData.subscription_status === 'free')
+          {
+            console.log("User is not subscribed");
+            return {
+              redirect: {
+                destination: '/Subscribe',
+                permanent: false,
+              },
+            };
+          }
+
         return { props: { userData } };
       } catch (error) {
         console.error('No user data!!! Error:', error);

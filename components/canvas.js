@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import Image from 'next/image';
 import { ReactSketchCanvas } from 'react-sketch-canvas';
 import Spinner from 'components/spinner';
@@ -6,7 +6,8 @@ import { tools, getResolution } from './tools/Tools'; // Adjust the import path 
 import Cursor from './cursor';
 import { useSelector } from 'react-redux';
 
-const Canvas = (props) => {
+
+const Canvas = forwardRef((props, ref) => {
   const canvasRef = useRef(null);
   const [allowDrawing, setAllowDrawing] = useState(true);
   const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
@@ -21,12 +22,10 @@ const Canvas = (props) => {
       : null
     : null;
 
-
   // Calculate aspect ratio from the current prediction if available
   const currentAspectRatioName = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].aspectRatioName
     : 'default'; // Default or fallback aspect ratio
-
 
 
   const { width, height } = getResolution(currentAspectRatioName);
@@ -48,7 +47,7 @@ const Canvas = (props) => {
   };
 
 
-
+/*
   useEffect(() => {
     console.log('*-----------------------------------*');
     console.log('Index:', index);
@@ -61,20 +60,7 @@ const Canvas = (props) => {
     console.log('Allow Drawing:', allowDrawing);
   }, [allowDrawing]);
 
-  const onChange = async () => {
-    const paths = await canvasRef.current.exportPaths();
-    console.log('Canvas Paths Changed:', paths);
-    if (paths.length) {
-      const data = await canvasRef.current.exportImage('svg');
-      if (data !== canvasStateRef.current) {
-        canvasStateRef.current = data;
-        console.log('Canvas Data Updated:', data);
-      }
-      props.onDraw(data);
-    }
-  };
-
-  useEffect(() => {
+    useEffect(() => {
     console.log('Current Aspect Ratio Name:', currentAspectRatioName);
     console.log('Calculated Width:', width, 'Calculated Height:', height);
   }, [currentAspectRatioName]);
@@ -82,6 +68,34 @@ const Canvas = (props) => {
   useEffect(() => {
     console.log('Canvas Container Style:', canvasContainerStyle);
   }, [canvasContainerStyle]);
+
+*/
+
+// useImperativeHandle to exposes these methods to the parent component
+useImperativeHandle(ref, () => ({
+  UndoLastMaskLine: () => {
+    canvasRef.current.undo();
+  },
+  RedoLastMaskLine: () => {
+    canvasRef.current.redo();
+  },
+}));
+
+
+
+  const onChange = async () => {
+    const paths = await canvasRef.current.exportPaths();
+   // console.log('Canvas Paths Changed:', paths);
+    if (paths.length) {
+      const data = await canvasRef.current.exportImage('svg');
+      if (data !== canvasStateRef.current) {
+        canvasStateRef.current = data;
+        //console.log('Canvas Data Updated:', data);
+      }
+      props.onDraw(data);
+    }
+  };
+
 
   const predicting = props.isLoading;
 
@@ -125,9 +139,11 @@ const Canvas = (props) => {
 
         <Cursor brushSize={props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
     </div>
+    
   );
-};
+});
 
+Canvas.displayName = 'Canvas'; // Add display name here
 export default Canvas;
 
 function SpinnerOverlay({ prediction }) {

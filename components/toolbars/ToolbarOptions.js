@@ -8,12 +8,15 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
+import Tooltip from '../tooltip';
+
 
 function ToolbarOptions (props)  {
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
   const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
-  
+  const canvasRef = props.canvasRef;
+
   const currentTool = tools.find(tool => tool.name === currentToolName);
   const dispatch = useDispatch();
   const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
@@ -52,47 +55,116 @@ function ToolbarOptions (props)  {
   const decrementZoom = () => dispatch(alterZoomWidth(-10));
 
   return (
-    <div className={styles.toolbarContainer}>
-     {currentTool?.name === 'MaskPainter' && (
-      <div className={styles.sliderContainer + " te   xt-white flex justify-center mx-auto"} style={{ width: '100%', padding: '0 20px' }}>
-        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Column for the slider */}
-          <div style={{ flexBasis: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <label htmlFor="brushSize" className="flex-shrink-0 mb-2" style={{ alignSelf: 'center' }}>Brush Size</label>
-            <Slider
-              min={1}
-              max={100}
-              value={brushSize}
-              onChange={handleSliderChange}
-              railStyle={{ backgroundColor: '#eaeaea', height: 8 }}
-              trackStyle={{ backgroundColor: '#007bff', height: 8 }}
-              handleStyle={{
-                borderColor: '#007bff',
-                height: 20,
-                width: 20,
-                marginTop: -6,
-                backgroundColor: '#007bff',
-              }}
-            />
-          </div>
-          {/* Column for the brush size indicator */}
-          <div style={{ flexBasis: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div
-              style={{
-                width: `${brushSize}px`,
-                height: `${brushSize}px`,
-                borderRadius: '50%', // Makes the div a circle
-                backgroundColor: 'white',
-                // Make sure the circle doesn't exceed the container
-                maxWidth: '100%',
-                maxHeight: '100%',
-                flexShrink: 0, // Prevent the circle from shrinking
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      )}
+     <div className={styles.toolbarContainer} style={{ position: 'relative' }}>
+  {currentTool?.name === 'MaskPainter' && (
+  <div className={styles.sliderContainer + " text-white justify-center mx-auto"}
+  style={{ 
+    width: '100%', 
+    padding: '0 20px', 
+    marginTop: '-8px', // Move everything up by 15px
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr', 
+    gridTemplateRows: '50px 50px', // Set a fixed height for both rows
+    gridTemplateAreas: `
+      "undo redo"
+      "slider circle"
+    `, 
+    gap: '1px',
+    alignItems: 'start' // Align items to the start of the container
+  }}>
+    {/* Undo button (row 1, col 1) */}
+    <Tooltip text="Undo the last brush stroke change">
+    <button
+      onClick={() => canvasRef.current.UndoLastMaskLine()}
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+      style={{
+        gridArea: 'undo',
+        justifySelf: 'start', // Align to the start of the grid area
+        alignSelf: 'end', // Move down within the grid area
+        padding: '5px 10px', // Reduced padding
+        fontSize: '0.75rem', // Smaller font size
+        width: 'fit-content' // Make width fit the content
+      }}
+    >
+      Undo
+    </button>
+    </Tooltip>
+
+    {/* Redo button (row 1, col 2) */}
+    <Tooltip text="Redo the last brush stroke change">
+    <button
+      onClick={() => canvasRef.current.RedoLastMaskLine()}
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+      style={{
+        gridArea: 'redo',
+        justifySelf: 'end', // Align to the end of the grid area
+        alignSelf: 'end', // Move down within the grid area
+        padding: '5px 10px', // Reduced padding
+        fontSize: '0.75rem', // Smaller font size
+        width: 'fit-content' // Make width fit the content
+      }}
+    >
+      Redo
+    </button>
+    </Tooltip>
+
+    {/* Slider (row 2, col 1) */}
+    <div style={{
+      gridArea: 'slider',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'start' // Move up within the grid area
+    }}>
+      <Tooltip text="changes the size of the masking brush's stroke">
+      <label htmlFor="brushSize" className="flex-shrink-0 mb-2">Brush Size</label>
+      <Slider
+        min={1}
+        max={100}
+        value={brushSize}
+        onChange={handleSliderChange}
+        railStyle={{ backgroundColor: '#eaeaea', height: 8 }}
+        trackStyle={{ backgroundColor: '#007bff', height: 8 }}
+        handleStyle={{
+          borderColor: '#007bff',
+          height: 20,
+          width: 20,
+          marginTop: -6,
+          backgroundColor: '#007bff',
+        }}
+      />
+      </Tooltip>
+    </div>
+
+    {/* Brush size indicator (row 2, col 2) */}
+    <Tooltip text="the size of the masking brush's stroke">
+    <div style={{ 
+      gridArea: 'circle', 
+      position: 'relative', // Set the position to relative
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center'
+    }}>
+      <div
+        style={{
+          position: 'absolute', // Position absolutely to center it based on transform
+          top: '50%', // Set top to 50%
+          left: '50%', // Set left to 50%
+          transform: 'translate(-50%, -50%)', // Use transform to center the circle
+          width: `${brushSize}px`,
+          height: `${brushSize}px`,
+          borderRadius: '50%', // Makes the div a circle
+          backgroundColor: 'white',
+        }}
+      />
+    </div>
+    </Tooltip>
+  </div>
+)}
+
+
+
+
+
 
       {/**********************************************************************/}
       
