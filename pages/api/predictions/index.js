@@ -1,6 +1,7 @@
 const API_HOST = process.env.REPLICATE_API_HOST || "https://api.replicate.com";
 const addBackgroundToPNG = require("lib/add-background-to-png");
 
+
 export const config = {
   api: {
     bodyParser: {
@@ -21,6 +22,7 @@ export default async function handler(req, res) {
     req.body.mask = addBackgroundToPNG(req.body.mask);
   }
 
+  
   const body = JSON.stringify({
     // Pinned to a specific version of Stable Diffusion, fetched from:
     // https://replicate.com/stability-ai/stable-diffusion
@@ -33,7 +35,7 @@ export default async function handler(req, res) {
     },
   });
   
-  
+
 
   const response = await fetch(`${API_HOST}/v1/predictions`, {
     method: "POST",
