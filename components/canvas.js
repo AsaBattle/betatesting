@@ -143,6 +143,7 @@ useImperativeHandle(ref, () => ({
   );
 });
 
+Canvas.displayName = 'Canvas'; // Add display name here
 export default Canvas;
 
 function SpinnerOverlay({ prediction }) {

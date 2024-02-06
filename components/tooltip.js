@@ -58,4 +58,6 @@ const Tooltip = ({ children, text }) => {
     );
 };
 
+Tooltip.displayName = 'Tooltip'; // Add display name here
+
 export default Tooltip;
