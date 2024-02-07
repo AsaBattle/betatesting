@@ -136,9 +136,10 @@ export default function PromptForm(props) {
           <button type="button" onClick={handleClear} className="bg-gray-200 text-gray-700 rounded-md p-2">
             <Eraser size={24} />
           </button>
-          <button type="button" onClick={setRandomPrompt} className="bg-gray-200 text-gray-700 rounded-md p-2">
+          {/*<button type="button" onClick={setRandomPrompt} className="bg-gray-200 text-gray-700 rounded-md p-2">
             <Dice5 size={24} />
           </button>
+          */}
         </div>
 
         {/* Generate button */}

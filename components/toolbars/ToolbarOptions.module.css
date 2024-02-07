@@ -1,7 +1,8 @@
 .toolbarContainer {
   position: relative; /* Add this to establish a positioning context for absolute children */
   background-color: #4A90E2; /* Blue background */
-  background: linear-gradient(to bottom, #4A90E2 0%, #144986 100%);
+  /*background: linear-gradient(to bottom, #4A90E2 0%, #144986 100%);*/
+  background: #4A90E2;
   width: 512px; /* Match the width to your canvas */
   height: 110px; /* Double the height you want */
   margin: auto; /* Centers the toolbar */
@@ -15,4 +16,8 @@
 .sliderContainer {
   position: relative; /* This is crucial for absolute positioning to work */
   /* ... other styles ... */
+}
+
+.button {
+  background-color: #757de8;
 }
