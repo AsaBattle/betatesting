@@ -291,11 +291,11 @@ useEffect(() => {
           </div>
           <div className={styles.content}>
               <Head>
-                  <title>FullJourney.AI Studio</title>
+                  <title>FullJourney.AI Studio BETA</title>
                   <meta name="viewport" content="initial-scale=1.0, width=device-width" />
               </Head>
               <p className="pb-5 text-xl text-white text-center font-helvetica">
-                  <strong>FullJourney.AI Studio</strong>
+                  <strong>FullJourney.AI Studio BETA</strong>
               </p>
               {/*<p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
                   <strong>Draw over the areas you want replaced...</strong>
