@@ -1,3 +1,5 @@
+import { parse } from 'cookie';
+
 const API_HOST = process.env.REPLICATE_API_HOST || "https://api.replicate.com";
 const addBackgroundToPNG = require("lib/add-background-to-png");
 
@@ -12,17 +14,25 @@ export const config = {
 
 
 export default async function handler(req, res) {
+
+  // Parse the cookies from the request headers
+  const cookies = parse(req.headers.cookie || '');
+
+  // Deserialize the user data from the cookie
+  const userData = JSON.parse(cookies.user || '{}');
+
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
     (a, [k, v]) => (v == null ? a : ((a[k] = v), a)),
     {}
   );
 
+
   if (req.body.mask) {
     req.body.mask = addBackgroundToPNG(req.body.mask);
   }
 
-  
+
   const body = JSON.stringify({
     // Pinned to a specific version of Stable Diffusion, fetched from:
     // https://replicate.com/stability-ai/stable-diffusion
@@ -54,6 +64,8 @@ export default async function handler(req, res) {
   }
 
   const prediction = await response.json();
+  prediction.theuser = userData;
+
   res.statusCode = 201;
   res.end(JSON.stringify(prediction));
 }

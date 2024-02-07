@@ -4,18 +4,18 @@ import { incIndex,decIndex } from '../../redux/slices/historySlice';
 
 export function getResolution(aspectRatioName) {
   switch (aspectRatioName) {
-    case 'Square':
+    case '1:1':
       return { width: 1024, height: 1024, displayWidth: 512 };
-    case 'Wide':
+    case '16"9':
       return { width: 1024, height: 512, displayWidth: 512 };
-    case 'Tall':
+    case '9:16':
       return { width: 512, height: 1024, displayWidth: 348 };
     case '4:3':
       return { width: 1024, height: 768, displayWidth: 512 };
     case '3:4':
       return { width: 768, height: 1024, displayWidth: 512 };
     default:
-      return { width: 1024, height: 1024, displayWidth: 512 }; // Default square aspect ratio
+      return { width: 1024, height: 1024, displayWidth: 512 }; // Default 1:1 aspect ratio
   }
 }
 

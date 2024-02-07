@@ -15,14 +15,14 @@ export default function Dropzone(props) {
   const calculateAspectRatio = (width, height) => {
     // Define your aspect ratios and names here
     const aspectRatios = {
-      'Square': 1,
-      'Wide': 16 / 9,
-      'Tall': 9 / 16,
+      '1:1': 1,
+      '16:9': 16 / 9,
+      '9:16': 9 / 16,
       '43': 4 / 3,
       '34': 3 / 4,
     };
 
-    let closestAspectRatioName = 'Square';
+    let closestAspectRatioName = '1:1';
     let smallestDifference = Infinity;
     const imageAspectRatio = width / height;
 

@@ -6,6 +6,7 @@ import PromptForm from "components/prompt-form";
 import Dropzone from "components/dropzone";
 import Download from "components/download";
 import axios from "axios";
+import { serialize } from 'cookie';
 import { XCircle as StartOverIcon } from "lucide-react";
 import styles from './ImageMode.module.css';
 import MenuBar from '../components/toolbars/MenuBar';
@@ -77,7 +78,7 @@ export default function Home(theUserData) {
         if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + 5}px`;
             toolbarRef.current.style.left = `${canvasRect.left - 100}px`;
          // console.log('Canvas Rect:', canvasRect);
         }
@@ -128,7 +129,7 @@ export default function Home(theUserData) {
       if (canvasContainerRef.current && toolbarRef.current) {
         const canvasRect = canvasContainerRef.current.getBoundingClientRect();
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        toolbarRef.current.style.top = `${canvasRect.top + scrollTop}px`;
+        toolbarRef.current.style.top = `${canvasRect.top + scrollTop + 5}px`;
         toolbarRef.current.style.left = `${canvasRect.left - 100}px`;
      // console.log('Canvas Rect:', canvasRect);
       } 
@@ -187,6 +188,8 @@ const handleSubmit = async (e) => {
     return;
   }
 
+  console.log("prediction is: ", prediction.theuser)
+
   // Modify the prediction object to include the aspect ratio name before adding it to the state
   const newPrediction = {
     ...prediction,
@@ -206,6 +209,7 @@ const handleSubmit = async (e) => {
     if (response.status !== 200) {
       setError(updatedPrediction.detail);
       setIsLoading(false);
+      console.log("prediction2 is: ", prediction.theuser)
       return;
     }
 
@@ -221,12 +225,14 @@ const handleSubmit = async (e) => {
         }
         dispatch(setIndex(updatedPredictions.length));
         setIsLoading(false);
+        console.log("prediction3 is: ", prediction.theuser)
         return updatedPredictions;
       });
       break;
     } else if (updatedPrediction.status === "failed") {
       setError("Prediction failed");
       setIsLoading(false);
+      console.log("prediction4 is: ", prediction.theuser)
       break;
     }
   }
@@ -365,54 +371,61 @@ function readAsDataURL(file) {
 
 
 export async function getServerSideProps(context) {
-  const { req } = context;
+  const { req, res } = context;
   const cookies = req.headers.cookie || '';
 
+  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
+    console.log("false Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+    console.log("Sending request for the users login data to the server...")
+    try {
+      const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
+        headers: { Cookie: cookies },
+        withCredentials: true,
+      });
 
-  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false')
-    {
-      console.log("false Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-      console.log("checking for user data")
-     try {
-        const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
-          headers: { Cookie: cookies },
-          withCredentials: true,
-        });
+      console.log("response.data is: ", response.data);
+      const userData = response.data;
 
-        console.log("response.data is: ", response.data);
-        const userData = response.data;
+      // Serialize the user data into a cookie string
+      const userDataCookie = serialize('user', JSON.stringify(userData), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
+        sameSite: 'strict',
+        maxAge: 3600, // 1 hour
+        path: '/',
+      });
 
-        // check if the user has a subscription
-        if (userData.subscription_status === 'free')
-          {
-            console.log("User is not subscribed");
-            return {
-              redirect: {
-                destination: '/Subscribe',
-                permanent: false,
-              },
-            };
-          }
+      // Set the cookie in the response header
+      res.setHeader('Set-Cookie', userDataCookie);
 
-        return { props: { userData } };
-      } catch (error) {
-        console.error('No user data!!! Error:', error);
+      // check if the user has a subscription
+      if (userData.subscription_status === 'free') {
+        console.log("User is not subscribed");
         return {
           redirect: {
-            destination: '/login',
+            destination: '/Subscribe',
             permanent: false,
           },
         };
       }
-    }
-  else
-    {
-      console.log("true Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
 
+      return { props: { userData } };
+    } catch (error) {
+      console.error('No user data!!! Error:', error);
       return {
-        props: {
-          isAuthenticated: true,
+        redirect: {
+          destination: '/login',
+          permanent: false,
         },
       };
     }
+  } else {
+    console.log("true Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+
+    return {
+      props: {
+        isAuthenticated: true,
+      },
+    };
+  }
 }

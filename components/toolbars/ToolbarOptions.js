@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Plus, Minus, Square, RectangleHorizontal, RectangleVertical } from 'lucide-react';
+import { Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo } from 'lucide-react';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
@@ -31,17 +31,28 @@ function ToolbarOptions (props)  {
       : null
     : null;
 
+    
+    // Get the current state
+const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
 
   // Calculate aspect ratio from the current prediction if available
-  const currentImageAspectRatio = props.predictions && props.predictions.length > index && props.predictions[index]
+  let currentImageAspectRatio = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].aspectRatioName
-    : 'Not Yet Set'; // Default or fallback aspect ratio
+    : aspectRatioName; // Default or fallback aspect ratio
 
+
+// Initialize a local state variable
+const [aRatio, setARatio] = useState(aspectRatioName);
 
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
       dispatch(setAspectRatio(aspectRatio)); 
   };
+
+  useEffect(() => {
+    currentImageAspectRatio = aspectRatioName;
+    console.log('currentToolName changed: ' + currentImageAspectRatio);
+  }, [currentToolName]);
 
   useEffect(() => {
     console.log('Current Tool:', currentTool);
@@ -86,7 +97,7 @@ function ToolbarOptions (props)  {
         width: 'fit-content' // Make width fit the content
       }}
     >
-      Undo
+      <Undo/>
     </button>
     </Tooltip>
 
@@ -104,7 +115,7 @@ function ToolbarOptions (props)  {
         width: 'fit-content' // Make width fit the content
       }}
     >
-      Redo
+      <Redo/>
     </button>
     </Tooltip>
 
@@ -195,37 +206,37 @@ function ToolbarOptions (props)  {
       <div className="flex flex-col items-center">
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('Square')}
+          onClick={() => handleAspectRatioClick('1:1')}
           startIcon={<Square />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === 'Square' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === '1:1' ? styles.selectedButton : ''}`}
         >
-          <Typography>Square</Typography>
+          <Typography>1:1</Typography>
         </Button>
 
-        <Typography className="text-center mt-2">Current: {currentImageAspectRatio} </Typography>
+        <Typography className="text-center mt-2">Current Image: {currentImageAspectRatio} </Typography>
 
       </div>
 
       <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('Wide')}
+          onClick={() => handleAspectRatioClick('16:9')}
           startIcon={<RectangleHorizontal />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === 'Wide' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === '16:9' ? styles.selectedButton : ''}`}
         >
-          <Typography>Wide</Typography>
+          <Typography>16:9</Typography>
         </Button>
 
         <Button
           variant="contained"
-          onClick={() => handleAspectRatioClick('Tall')}
+          onClick={() => handleAspectRatioClick('9:16')}
           startIcon={<RectangleVertical />}
           size="large"
-          className={`${styles.button} ${selectedAspectRatio === 'Tall' ? styles.selectedButton : ''}`}
+          className={`${styles.button} ${selectedAspectRatio === '9:16' ? styles.selectedButton : ''}`}
         >
-          <Typography>Tall</Typography>
+          <Typography>9:16</Typography>
         </Button>
       </div>
 

@@ -6,7 +6,7 @@ export const toolbarSlice = createSlice({
   initialState: {
     currentToolName: tools[0].name, 
     brushSize: 40,
-    aspectRatioName: 'Square',
+    aspectRatioName: '1:1',
     zoomWidth: 512,
   },
   reducers: {
