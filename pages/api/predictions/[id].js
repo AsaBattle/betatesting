@@ -11,6 +11,14 @@ export default async function handler(req, res) {
   // Deserialize the user data from the cookie
   const userData = JSON.parse(cookies.user || '{}');
 
+  // Now check to make sure the user has the necessary credits to make a prediction
+  if (CheckAndSubtractCredits(userData, 1) === false) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ detail: "Not enough credits for image." }));
+      return;
+    }
+
+
   const response = await fetch(`${API_HOST}/v1/predictions/${req.query.id}`, {
     headers: {
       Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
@@ -28,6 +36,30 @@ export default async function handler(req, res) {
   const prediction = await response.json();
   prediction.theuser = userData;
   res.end(JSON.stringify(prediction));
+}
+
+
+
+async function CheckAndSubtractCredits(userData, creditsToSubtract) {
+  let currentCredits = userData.credits;
+  let newCredits;
+  currentCredits = parseInt(currentCredits);
+  newCredits = currentCredits - creditsToSubtract;
+  if (newCredits < 0) {
+    return false;
+  }
+  
+  // Now update the user's credits
+  try {
+    const updateResult = await axios.post(`http://3.19.250.209:36734/user/${userData.userId}`, {
+      credits: newCredits.toString(),
+    });
+  } catch (error) {
+    console.error("Error when trying to update user credits." +error);
+    return false;
+  }
+
+  return true;
 }
 
 
