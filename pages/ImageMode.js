@@ -209,6 +209,7 @@ const handleSubmit = async (e) => {
     if (response.status !== 200) {
       setError(updatedPrediction.detail);
       setIsLoading(false);
+      console.log("Prediction error detail is: ", updatedPrediction.detail)
       console.log("prediction2 is: ", prediction.theuser)
       return;
     }

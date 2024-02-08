@@ -13,9 +13,10 @@ export default async function handler(req, res) {
   const userData = JSON.parse(cookies.user || '{}');
 
   // Now check to make sure the user has the necessary credits to make a prediction
-  if (CheckAndSubtractCredits(userData, 1) === false) {
+  let details = await CheckAndSubtractCredits(userData, 1);
+  if (details.worked === false) {
       res.statusCode = 500;
-      res.end(JSON.stringify({ detail: "Not enough credits for image." }));
+      res.end(JSON.stringify({ detail: details.reason }));
       return;
     }
 
@@ -47,7 +48,7 @@ async function CheckAndSubtractCredits(userData, creditsToSubtract) {
   currentCredits = parseInt(currentCredits);
   newCredits = currentCredits - creditsToSubtract;
   if (newCredits < 0) {
-    return false;
+    return {worked: false, reason: "Not enough credits for image."};
   }
   
   // Now update the user's credits
@@ -57,7 +58,7 @@ async function CheckAndSubtractCredits(userData, creditsToSubtract) {
     });
   } catch (error) {
     console.error("Error when trying to update user credits." +error);
-    return false;
+    return  {worked: false, reason: "Error posting to server."};
   }
 
   return true;
