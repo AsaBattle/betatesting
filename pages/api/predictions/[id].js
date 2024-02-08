@@ -53,7 +53,7 @@ async function CheckAndSubtractCredits(userData, creditsToSubtract) {
   
   // Now update the user's credits
   try {
-    const updateResult = await axios.post(`http://3.19.250.209:36734/user/${userData.userId}`, {
+    const updateResult = await axios.post(`http://3.19.250.209:36734/user/${userData.user_id}`, {
       credits: newCredits.toString(),
     });
   } catch (error) {
