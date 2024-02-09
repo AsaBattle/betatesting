@@ -375,7 +375,7 @@ function readAsDataURL(file) {
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const cookies = req.headers.cookie || '';
-
+  
   if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
     console.log("false Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
     console.log("Sending request for the users login data to the server...")
