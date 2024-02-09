@@ -22,6 +22,8 @@ export default async function handler(req, res) {
   // Deserialize the user data from the cookie
   const userData = JSON.parse(cookies.user || '{}');
 
+  
+
    // Now check to make sure the user has the necessary credits to make a prediction
    let details = await CheckAndSubtractCredits(userData, 1);
    if (details.worked === false) {
@@ -80,10 +82,22 @@ export default async function handler(req, res) {
 
 
 async function CheckAndSubtractCredits(userData, creditsToSubtract) {
-  let currentCredits = userData.credits;
+  let response;
+  let currentCredits;
   let newCredits;
-  currentCredits = parseInt(currentCredits);
-  newCredits = currentCredits - creditsToSubtract;
+
+  // grab the user's current credits(userData has only the initial call to the server when the user logged in so it's not updated)
+  try {
+    response = await axios.get(`http://3.19.250.209:36734/user/${userData.user_id}`);
+    const user = response.data;
+    currentCredits = user.credits;
+    currentCredits = parseInt(currentCredits);
+    newCredits = currentCredits - creditsToSubtract;
+  } catch (error) {
+    console.error("Error when trying to get user credits." +error);
+    return  {worked: false, reason: "Error getting user credits."};
+  }
+
   if (newCredits < 0) {
     return {worked: false, reason: "Not enough credits for image."};
   }
