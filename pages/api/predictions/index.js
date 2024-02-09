@@ -21,17 +21,23 @@ export default async function handler(req, res) {
   // Deserialize the user data from the cookie
   const userData = JSON.parse(cookies.user || '{}');
 
+   // Now check to make sure the user has the necessary credits to make a prediction
+   let details = await CheckAndSubtractCredits(userData, 1);
+   if (details.worked === false) {
+       res.statusCode = 500;
+       res.end(JSON.stringify({ detail: details.reason }));
+       return;
+     }
+ 
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
     (a, [k, v]) => (v == null ? a : ((a[k] = v), a)),
     {}
   );
 
-
   if (req.body.mask) {
     req.body.mask = addBackgroundToPNG(req.body.mask);
   }
-
 
   const body = JSON.stringify({
     // Pinned to a specific version of Stable Diffusion, fetched from:
@@ -68,4 +74,32 @@ export default async function handler(req, res) {
 
   res.statusCode = 201;
   res.end(JSON.stringify(prediction));
+}
+
+
+
+async function CheckAndSubtractCredits(userData, creditsToSubtract) {
+  let currentCredits = userData.credits;
+  let newCredits;
+  currentCredits = parseInt(currentCredits);
+  newCredits = currentCredits - creditsToSubtract;
+  if (newCredits < 0) {
+    return {worked: false, reason: "Not enough credits for image."};
+  }
+
+  console.log("UserData is: ", userData);
+  console.log("ok, currentCredits is:", currentCredits, "credits, subtracting:", creditsToSubtract, "credits, for a total of:", newCredits, "credits");
+
+
+  // Now update the user's credits
+  try {
+    const updateResult = await axios.post(`http://3.19.250.209:36734/user/${userData.user_id}`, {
+      credits: newCredits,
+    });
+  } catch (error) {
+    console.error("Error when trying to update user credits." +error);
+    return  {worked: false, reason: "Error posting to server."};
+  }
+
+  return true;
 }
