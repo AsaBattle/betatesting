@@ -15,17 +15,18 @@ export const config = {
 
 
 export default async function handler(req, res) {
+  let cookies, userData, details;
 
   // Only check credits if we're on the server
   if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
     // Parse the cookies from the request headers
-    const cookies = parse(req.headers.cookie || '');
+    cookies = parse(req.headers.cookie || '');
 
     // Deserialize the user data from the cookie
-    const userData = JSON.parse(cookies.user || '{}');
+    userData = JSON.parse(cookies.user || '{}');
 
     // Now check to make sure the user has the necessary credits to make a prediction
-    let details = await CheckAndSubtractCredits(userData, 1);
+    details = await CheckAndSubtractCredits(userData, 1);
     if (details.worked === false) {
       res.statusCode = 500;
       res.end(JSON.stringify({ detail: details.reason }));
