@@ -50,6 +50,8 @@ async function CheckAndSubtractCredits(userData, creditsToSubtract) {
   if (newCredits < 0) {
     return {worked: false, reason: "Not enough credits for image."};
   }
+
+  console.log("UserData is: ", userData);
   
   // Now update the user's credits
   try {
