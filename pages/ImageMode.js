@@ -304,6 +304,7 @@ useEffect(() => {
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
                   <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
+                  {/*<div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>*/}
                   <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
                       <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
                       <div className={`bg-black relative max-h-full mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}  style={{ width: `${zoomWidth}px` }}>
