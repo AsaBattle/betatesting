@@ -55,7 +55,7 @@ export default async function handler(req, res) {
     },
   });
   
-
+  
 
   const response = await fetch(`${API_HOST}/v1/predictions`, {
     method: "POST",

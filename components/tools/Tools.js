@@ -6,7 +6,7 @@ export function getResolution(aspectRatioName) {
   switch (aspectRatioName) {
     case '1:1':
       return { width: 1024, height: 1024, displayWidth: 512 };
-    case '16"9':
+    case '16:9':
       return { width: 1024, height: 512, displayWidth: 512 };
     case '9:16':
       return { width: 512, height: 1024, displayWidth: 348 };
@@ -18,6 +18,7 @@ export function getResolution(aspectRatioName) {
       return { width: 1024, height: 1024, displayWidth: 512 }; // Default 1:1 aspect ratio
   }
 }
+
 
 export const tools = [
   { 
