@@ -16,22 +16,22 @@ export const config = {
 
 export default async function handler(req, res) {
 
-  // Parse the cookies from the request headers
-  const cookies = parse(req.headers.cookie || '');
+  // Only check credits if we're on the server
+  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
+    // Parse the cookies from the request headers
+    const cookies = parse(req.headers.cookie || '');
 
-  // Deserialize the user data from the cookie
-  const userData = JSON.parse(cookies.user || '{}');
+    // Deserialize the user data from the cookie
+    const userData = JSON.parse(cookies.user || '{}');
 
-  
-
-   // Now check to make sure the user has the necessary credits to make a prediction
-   let details = await CheckAndSubtractCredits(userData, 1);
-   if (details.worked === false) {
-       res.statusCode = 500;
-       res.end(JSON.stringify({ detail: details.reason }));
-       return;
-     }
- 
+    // Now check to make sure the user has the necessary credits to make a prediction
+    let details = await CheckAndSubtractCredits(userData, 1);
+    if (details.worked === false) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ detail: details.reason }));
+      return;
+  }
+  } 
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
     (a, [k, v]) => (v == null ? a : ((a[k] = v), a)),
