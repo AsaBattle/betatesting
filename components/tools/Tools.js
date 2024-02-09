@@ -19,6 +19,7 @@ export function getResolution(aspectRatioName) {
   }
 }
 
+
 export const tools = [
   { 
     name: 'MaskPainter',
