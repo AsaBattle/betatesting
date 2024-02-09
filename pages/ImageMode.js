@@ -164,7 +164,7 @@ const handleSubmit = async (e) => {
   const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
 
   const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
-
+  console.log("Calling image generate with width: " + width + " and height: " + height);
   const body = {
     prompt: e.target.prompt.value,
     image: maskImage ? currentPredictionOutput : null,
