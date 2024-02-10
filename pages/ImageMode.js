@@ -109,17 +109,14 @@ export default function Home(theUserData) {
 
     const checkUserLogin = async () => {
         if (theUserData) {
-          console.log("checking login - theUserData is: ", theUserData);
+         // console.log("checking login - theUserData is: ", theUserData);
             if (theUserData.userData) {
                 setUserData(theUserData.userData);
             }
         }
     };
 
-    useEffect(() => {
-      console.log("USEEFFECT - currentAspectRatioName: " + currentAspectRatioName);
-    }, [currentAspectRatioName]);
-
+  
     useEffect(() => {
       dispatch(setZoomWidth(displayWidth));
     }, [displayWidth]);
@@ -149,7 +146,7 @@ export default function Home(theUserData) {
       };
 
       setPredictions([newPrediction, ...predictions]);
-      console.log("setting index to predictions.length: " + predictions.length);
+     // console.log("setting index to predictions.length: " + predictions.length);
       dispatch(setIndex(predictions.length+1));
     };
 
@@ -159,12 +156,12 @@ const handleSubmit = async (e) => {
   setIsLoading(true);
   e.preventDefault();
 
-  console.log("handleSubmit is using index: " + index);
+ // console.log("handleSubmit is using index: " + index);
   const currentPrediction = predictions[index];
   const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
 
   const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
-  console.log("Calling image generate with width: " + width + " and height: " + height);
+  //console.log("Calling image generate with width: " + width + " and height: " + height);
   const body = {
     prompt: e.target.prompt.value,
     image: maskImage ? currentPredictionOutput : null,
@@ -188,7 +185,7 @@ const handleSubmit = async (e) => {
     return;
   }
 
-  console.log("prediction is: ", prediction.theuser)
+  //console.log("prediction is: ", prediction.theuser)
 
   // Modify the prediction object to include the aspect ratio name before adding it to the state
   const newPrediction = {
@@ -226,14 +223,14 @@ const handleSubmit = async (e) => {
         }
         dispatch(setIndex(updatedPredictions.length));
         setIsLoading(false);
-        console.log("prediction3 is: ", prediction.theuser)
+       // console.log("prediction3 is: ", prediction.theuser)
         return updatedPredictions;
       });
       break;
     } else if (updatedPrediction.status === "failed") {
       setError("Prediction failed");
       setIsLoading(false);
-      console.log("prediction4 is: ", prediction.theuser)
+     // console.log("prediction4 is: ", prediction.theuser)
       break;
     }
   }

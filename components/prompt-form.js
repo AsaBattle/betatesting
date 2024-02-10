@@ -105,7 +105,7 @@ export default function PromptForm(props) {
 
   // Set an initial random prompt when the component mounts
   useEffect(() => {
-  console.log('Inside ASA in PromptForm.js index: ' + index + " currentImagePrompt: " + currentImagePrompt);
+//  console.log('Inside ASA in PromptForm.js index: ' + index + " currentImagePrompt: " + currentImagePrompt);
     if (currentImagePrompt && currentImagePrompt !== "default") {
       setPrompt(currentImagePrompt);
     } else {
