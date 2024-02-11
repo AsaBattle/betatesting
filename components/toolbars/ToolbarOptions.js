@@ -51,12 +51,12 @@ const [aRatio, setARatio] = useState(aspectRatioName);
 
   useEffect(() => {
     currentImageAspectRatio = aspectRatioName;
-    console.log('currentToolName changed: ' + currentImageAspectRatio);
+   // console.log('currentToolName changed: ' + currentImageAspectRatio);
   }, [currentToolName]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log('Current Tool:', currentTool);
-  }, [currentTool]);
+  }, [currentTool]);*/
 
   const handleSliderChange = (value) => {
     dispatch(setBrushSize(value));
