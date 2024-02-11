@@ -11,7 +11,8 @@ const Canvas = forwardRef((props, ref) => {
   const canvasRef = useRef(null);
   const [allowDrawing, setAllowDrawing] = useState(true);
   const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
-
+  const [predictionStatus, setPredictionStatus] = props.currentPredictionStatus;
+  
   // Assuming index is still derived from Redux or props as before
     const index = useSelector((state) => (state.history.index - 1));
 
@@ -82,19 +83,17 @@ useImperativeHandle(ref, () => ({
 }));
 
 
-
-  const onChange = async () => {
-    const paths = await canvasRef.current.exportPaths();
-   // console.log('Canvas Paths Changed:', paths);
-    if (paths.length) {
-      const data = await canvasRef.current.exportImage('svg');
-      if (data !== canvasStateRef.current) {
-        canvasStateRef.current = data;
-        //console.log('Canvas Data Updated:', data);
-      }
+const onChange = async () => {
+  const paths = await canvasRef.current.exportPaths();
+  // Proceed only if there are paths
+  if (paths.length > 0) {
+    const data = await canvasRef.current.exportImage('svg');
+    if (data !== canvasStateRef.current) {
+      canvasStateRef.current = data;
       props.onDraw(data);
     }
-  };
+  }
+};
 
 
   const predicting = props.isLoading;
@@ -122,7 +121,7 @@ useImperativeHandle(ref, () => ({
 
         {/* SPINNER */}
         {predicting && (
-            <SpinnerOverlay prediction={props.predictions[props.predictions.length - 1]} />
+            <SpinnerOverlay predStatus={props.currentPredictionStatus} />
         )}
 
         {!predicting && (
@@ -146,19 +145,41 @@ useImperativeHandle(ref, () => ({
 Canvas.displayName = 'Canvas'; // Add display name here
 export default Canvas;
 
-function SpinnerOverlay({ prediction }) {
+function SpinnerOverlay({ predStatus }) {
+  // Split the predStatus by newline character and map to render each part on a new line
+  const formattedStatus = predStatus ? predStatus.split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      <br />
+    </React.Fragment>
+  )) : 'Server warming up...';
+
   return (
     <div
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       style={{ zIndex: 100 }}
     >
-      <div className="p-4 w-40 bg-white text-center rounded-lg animate-in zoom-in">
+      <div style={{
+        padding: '1rem',
+        width: '10rem',
+        backgroundColor: 'white',
+        textAlign: 'center',
+        borderRadius: '0.5rem',
+        animation: 'zoom-in',
+        animationDuration: '0.3s',
+        border: '2px solid #e2e8f0', // Light gray border
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' // Soft shadow for depth
+      }}>
           <Spinner />
-          <p className="pt-3 opacity-30 text-center text-sm">
-          {prediction ? prediction.status : 'Starting...'}
+          <p style={{
+            paddingTop: '0.75rem',
+            opacity: 0.3,
+            textAlign: 'center',
+            fontSize: '0.875rem'
+          }}>
+            {formattedStatus}
           </p>
       </div>
     </div>
   );
 }
-

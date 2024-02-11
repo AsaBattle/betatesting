@@ -39,6 +39,7 @@ export default function Home(theUserData) {
     const [isLoading, setIsLoading] = useState(false);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 }); // New state for canvas size
     const [loadedAspectRatio, setLoadedAspectRatio] = useState('default');
+    const [currentPredictionStatus, setCurrentPredictionStatus] = useState('idle');
 
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
@@ -151,6 +152,79 @@ export default function Home(theUserData) {
     };
 
 
+    function findLastPercentageNumber(inputString) {
+      // Use a regular expression to find all occurrences of percentages in the string
+      const percentages = inputString.match(/\b(\d+)%/g);
+    
+      // Check if any percentages were found
+      if (percentages && percentages.length > 0) {
+        // Extract the last percentage found, remove the '%' sign, and convert to integer
+        const lastPercentage = parseInt(percentages[percentages.length - 1], 10);
+        return lastPercentage;
+      } else {
+        // Return null if no percentages were found
+        return null;
+      }
+    }
+
+    function findLastPercentageWithGraphic(inputString) {
+      // Use a regular expression to find all occurrences of percentages followed by the progress bar graphic
+      const pattern = /\b(\d+)%\|[^|]*\|/g;
+      const matches = [...inputString.matchAll(pattern)];
+    
+      // Check if any matches were found
+      if (matches && matches.length > 0) {
+        // Extract the match related to the last percentage and its progress bar graphic
+        const lastMatch = matches[matches.length - 1][0];
+        return lastMatch;
+      } else {
+        // Return null if no matches were found
+        return null;
+      }
+    }
+
+    function findLastPercentageWithFormattedGraphic2(inputString) {
+      // Use a regular expression to find all occurrences of percentages followed by the progress bar graphic
+      const pattern = /\b(\d+)%\|([^|]*)\|/g;
+      const matches = [...inputString.matchAll(pattern)];
+    
+      // Check if any matches were found
+      if (matches && matches.length > 0) {
+        // Extract the percentage and the progress bar graphic for the last match
+        const lastMatch = matches[matches.length - 1];
+        let percentage = lastMatch[1]; // Capture the percentage
+        const progressBarGraphic = lastMatch[2].trim(); // Capture the progress bar graphic and trim spaces
+    
+        // Format the output to have the percentage on the first line and the graphic on the second line
+        return `${percentage}%\n${progressBarGraphic}`;
+      } else {
+        // Return null if no matches were found
+        return null;
+      }
+    }
+
+    function findLastPercentageWithAdjustedGraphic(inputString) {
+      // Use a regular expression to find all occurrences of percentages followed by the progress bar graphic
+      const pattern = /\b(\d+)%\|([^|]*)\|/g;
+      const matches = [...inputString.matchAll(pattern)];
+    
+      // Check if any matches were found
+      if (matches && matches.length > 0) {
+        // Extract the percentage and the progress bar graphic for the last match
+        let percentage = parseInt(matches[matches.length - 1][1], 10); // Capture the percentage and convert to integer
+        const progressBarGraphic = matches[matches.length - 1][2].trim(); // Capture the progress bar graphic and trim spaces
+    
+        // Adjust the percentage if it's 100
+        if (percentage === 100) 
+          percentage = 99;
+    
+        // Format the output to have the percentage on the first line and the graphic on the second line
+        return `${percentage}%\n${progressBarGraphic}`;
+      } else {
+        // Return null if no matches were found
+        return null;
+      }
+    }
 
 const handleSubmit = async (e) => {
   setIsLoading(true);
@@ -180,6 +254,13 @@ const handleSubmit = async (e) => {
   const prediction = await response.json();
 
   if (response.status !== 201) {
+    // Redirect the user to the /Subscribe page if 5001 is returned
+    if (response.status === 5001)
+      {
+        router.push('/Subscribe');
+        return;
+      }
+    
     setError(prediction.detail);
     setIsLoading(false);
     return;
@@ -198,7 +279,7 @@ const handleSubmit = async (e) => {
 
   // Set the history index to the last element of the predictions array, which will be the new prediction
   dispatch(setIndex(predictions.length));
-
+  setCurrentPredictionStatus("Server warming up...");
   while (prediction.status !== "succeeded" && prediction.status !== "failed") {
     await sleep(1000);
     const response = await fetch("/api/predictions/" + prediction.id);
@@ -210,6 +291,12 @@ const handleSubmit = async (e) => {
       console.log("prediction2 is: ", prediction.theuser)
       return;
     }
+    console.log("Response status is: ", response.status," ", updatedPrediction.status);
+    console.log("Updated Prediction Logs: ", updatedPrediction.logs);
+    console.log("IS: ", findLastPercentageWithAdjustedGraphic(updatedPrediction.logs));
+    const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs)
+    setCurrentPredictionStatus(lastPercentage? lastPercentage : "Server warming up...");
+
 
     if (updatedPrediction.status === "succeeded") {
       setPredictions(currentPredictions => {
@@ -224,12 +311,13 @@ const handleSubmit = async (e) => {
         dispatch(setIndex(updatedPredictions.length));
         setIsLoading(false);
        // console.log("prediction3 is: ", prediction.theuser)
+       console.log("updatedPrediction is: ", updatedPrediction.logs);
         return updatedPredictions;
       });
       break;
     } else if (updatedPrediction.status === "failed") {
       setError("Prediction failed");
-      setIsLoading(false);
+      setIsLoading(false);  
      // console.log("prediction4 is: ", prediction.theuser)
       break;
     }
@@ -314,6 +402,7 @@ useEffect(() => {
                               onDraw={setMaskImage}
                               currentTool={currentTool}
                               onCanvasSizeChange={handleCanvasSizeChange}
+                              currentPredictionStatus={currentPredictionStatus}
                           />
                       </div>
                   </div>
@@ -397,6 +486,7 @@ export async function getServerSideProps(context) {
       // Set the cookie in the response header
       res.setHeader('Set-Cookie', userDataCookie);
 
+      /*
       // check if the user has a subscription
       if (userData.subscription_status === 'free') {
         console.log("User is not subscribed");
@@ -406,7 +496,7 @@ export async function getServerSideProps(context) {
             permanent: false,
           },
         };
-      }
+      }*/
 
       return { props: { userData } };
     } catch (error) {

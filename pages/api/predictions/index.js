@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     // Now check to make sure the user has the necessary credits to make a prediction
     details = await CheckAndSubtractCredits(userData, 1);
     if (details.worked === false) {
-      res.statusCode = 500;
+      res.statusCode = 5001;
       res.end(JSON.stringify({ detail: details.reason }));
       return;
   }
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
     },
   });
   
-  
+
 
   const response = await fetch(`${API_HOST}/v1/predictions`, {
     method: "POST",

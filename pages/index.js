@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import styles from './index.module.css';
 
 export default function About() {
   const router = useRouter();
@@ -9,5 +10,11 @@ export default function About() {
     router.push('/ImageMode');
   }, []);
 
-  return null;
+  return (
+    <div className={styles.container}>
+        <div className={styles.header}>
+            <h1>Welcome to FullJourney Studio</h1>
+        </div>
+    </div>
+);
 }
