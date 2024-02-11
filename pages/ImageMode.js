@@ -317,7 +317,7 @@ const handleSubmit = async (e) => {
       });
       break;
     } else if (updatedPrediction.status === "failed") {
-      setError("Prediction failed");
+      setError("The Prediction failed");
       setIsLoading(false);  
      // console.log("prediction4 is: ", prediction.theuser)
       break;
