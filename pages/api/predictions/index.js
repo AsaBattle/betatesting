@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     details = await CheckAndSubtractCredits(userData, 1);
     if (details.worked === false) {
       res.statusCode = 403;
-      res.end(JSON.stringify({ detail: details.reason, code: 5001 }));
+      res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
   }
   } 

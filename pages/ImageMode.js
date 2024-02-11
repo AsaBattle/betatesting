@@ -254,8 +254,9 @@ const handleSubmit = async (e) => {
   const prediction = await response.json();
 
   if (response.status !== 201) {
+    console.log("status is: ", response.status," and thecode is: ", prediction.thecode);
     // Redirect the user to the /Subscribe page if 5001 is returned
-    if (response.code === 5001)
+    if (response.thecode === 5001)
       {
         router.push('/Subscribe');
         return;
