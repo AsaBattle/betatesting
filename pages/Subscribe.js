@@ -13,7 +13,7 @@ const Subscribe = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1>FullJourney Studio</h1>
+                <h3>FullJourney Studio</h3>
             </div>
             <div className={styles.text}>
                 <p>Oops, You are out of credits!</p>
