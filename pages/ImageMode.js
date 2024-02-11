@@ -292,9 +292,9 @@ const handleSubmit = async (e) => {
       console.log("prediction2 is: ", prediction.theuser)
       return;
     }
-    console.log("Response status is: ", response.status," ", updatedPrediction.status);
-    console.log("Updated Prediction Logs: ", updatedPrediction.logs);
-    console.log("IS: ", findLastPercentageWithAdjustedGraphic(updatedPrediction.logs));
+    //console.log("Response status is: ", response.status," ", updatedPrediction.status);
+    //console.log("Updated Prediction Logs: ", updatedPrediction.logs);
+    //console.log("IS: ", findLastPercentageWithAdjustedGraphic(updatedPrediction.logs));
     const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs)
     setCurrentPredictionStatus(lastPercentage? lastPercentage : "Server warming up...");
 
@@ -326,9 +326,9 @@ const handleSubmit = async (e) => {
 };
 
 
-useEffect(() => {
-  console.log('predictions: ', predictions);
-}, [predictions]);
+//useEffect(() => {
+//  console.log('predictions: ', predictions);
+//}, [predictions]);
 
     const startOver = () => {
         setPredictions([]);
