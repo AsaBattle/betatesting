@@ -13,10 +13,11 @@ const Subscribe = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1>Welcome to FullJourney Studio</h1>
+                <h3>FullJourney Studio</h3>
             </div>
             <div className={styles.text}>
-                <p>You are out of credits, please purchase more or subscribe.</p>
+                <p>Oops, You are out of credits!</p>
+                <p>Please purchase more or subscribe</p>
             </div>
             <div className={styles.footer}>
                 {/* Add the "Purchase Credits" button */}
