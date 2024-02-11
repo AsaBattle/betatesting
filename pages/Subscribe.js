@@ -20,8 +20,8 @@ const Subscribe = () => {
             </div>
             <div className={styles.footer}>
                 {/* Add the "Purchase Credits" button */}
-                <button className={styles.purchaseButton} onClick={handleCreditsClick}>Purchase Credits</button>
-                <button className={styles.subscribeButton} onClick={handleSubscribeClick}>Subscribe Now</button>
+                <button className={`${styles.button} ${styles.purchaseButton}`} onClick={handleCreditsClick}>Purchase Credits</button>
+                <button className={`${styles.button} ${styles.subscribeButton}`} onClick={handleSubscribeClick}>Subscribe Now</button>
             </div>
         </div>
     );

@@ -5,33 +5,57 @@
     align-items: center;
     height: 100vh;
     background-color: #f5f5f5;
+    font-family: 'Arial', sans-serif; /* You can choose a font that suits your brand */
 }
 
 .header {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+}
+
+.header h1 {
+    color: #333;
+    font-size: 2.5rem; /* Adjusted the size for a bigger header */
 }
 
 .text {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     font-size: 1.2rem;
-    color: #333;
+    color: #666; /* Lighter text color */
+    text-align: center;
 }
 
 .footer {
-    margin-top: 2rem;
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem; /* Adds space between buttons */
 }
 
-.subscribeButton {
+.button {
     padding: 1rem 2rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #fff;
-    background-color: #007bff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
+.button:hover {
+    opacity: 0.9; /* Slight opacity change on hover */
+}
+
+.purchaseButton {
+    background-color: #28a745; /* Green background color */
+}
+
+.purchaseButton:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.subscribeButton {
+    background-color: #007bff; /* Blue background color */
+}
+
 .subscribeButton:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker blue on hover */
 }
