@@ -255,7 +255,7 @@ const handleSubmit = async (e) => {
 
   if (response.status !== 201) {
     // Redirect the user to the /Subscribe page if 5001 is returned
-    if (response.status === 5001)
+    if (response.code === 5001)
       {
         router.push('/Subscribe');
         return;
