@@ -215,7 +215,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
           <Typography>1:1</Typography>
         </Button>
 
-        <Typography className="text-center mt-2">Current ImageA: {currentImageAspectRatio} </Typography>
+        <Typography className="text-center mt-2">Current Image: {currentImageAspectRatio} </Typography>
 
       </div>
 
