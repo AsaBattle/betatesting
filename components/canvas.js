@@ -167,7 +167,7 @@ function SpinnerOverlay({ predStatus }) {
         borderRadius: '0.5rem',
         animation: 'zoom-in',
         animationDuration: '0.3s',
-        border: '2px solid #e2e8f0', // Light gray border
+        border: '3px solid #4A90E2', // Light gray border
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' // Soft shadow for depth
       }}>
           <Spinner />
