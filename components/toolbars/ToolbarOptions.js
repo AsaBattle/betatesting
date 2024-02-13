@@ -205,6 +205,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
     >
       <div className="flex flex-col items-center">
         <Button
+          style={{ margin: '5px' }}
           variant="contained"
           onClick={() => handleAspectRatioClick('1:1')}
           startIcon={<Square />}
@@ -220,6 +221,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
 
       <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
         <Button
+          style={{ margin: '5px' }}
           variant="contained"
           onClick={() => handleAspectRatioClick('16:9')}
           startIcon={<RectangleHorizontal />}
@@ -230,6 +232,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
         </Button>
 
         <Button
+          style={{ margin: '5px' }}
           variant="contained"
           onClick={() => handleAspectRatioClick('9:16')}
           startIcon={<RectangleVertical />}
@@ -242,6 +245,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
 
       <div className="flex flex-col items-center">
         <Button
+          style={{ margin: '5px' }}
           variant="contained"
           onClick={() => handleAspectRatioClick('4:3')}
           startIcon={<RectangleHorizontal style={{ transform: 'scale(1.5)' }} />}
@@ -253,6 +257,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
 
         <Button
           variant="contained"
+          style={{ margin: '5px' }}
           onClick={() => handleAspectRatioClick('3:4')}
           startIcon={<RectangleVertical style={{ transform: 'scale(1.5)' }} />}
           size="large"
