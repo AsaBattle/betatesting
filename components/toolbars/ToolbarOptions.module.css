@@ -50,5 +50,5 @@
 
 .currentImageText {
   text-align: center;
-  margin-top: 10px; /* Spacing above the current image text */
+  margin-top: 1px; /* Spacing above the current image text */
 }
