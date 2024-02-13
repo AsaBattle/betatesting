@@ -21,34 +21,12 @@
   background-color: #757de8;
 }
 
-.aspectRatioContainer {
-  text-align: center;
-  width: 100%;
-  padding: 0 20px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  display: flex;
-  gap: 10px; /* This adds space between your flex items */
-}
-
-.aspectRatioButtonGroup {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .button {
   margin: 5px; /* Adjust margin to set the desired spacing */
-  /* ... rest of your button styles ... */
+  color: red;
 }
 
 .selectedButton {
   background-color: #353db8;
   /* ... styles for selected button ... */
-}
-
-.currentImageText {
-  text-align: center;
-  margin-top: 1px; /* Spacing above the current image text */
 }
