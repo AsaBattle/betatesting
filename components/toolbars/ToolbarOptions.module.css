@@ -19,8 +19,6 @@
 
 .button {
   background-color: #757de8;
-  margin: 5px; /* Adjust margin to set the desired spacing */
-  color: red;
 }
 
 .selectedButton {
