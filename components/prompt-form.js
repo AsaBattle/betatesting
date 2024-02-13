@@ -71,8 +71,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentTool } from '../redux/slices/toolSlice';
 import Tooltip from './tooltip';
 
+
 export default function PromptForm(props) {
-  const [prompt, setPrompt] = useState(sample(samplePrompts));
+  const [prompt, setPrompt] = useState("");
   const dispatch = useDispatch();
   const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
 
@@ -100,7 +101,10 @@ export default function PromptForm(props) {
     ? props.predictions[index].input.prompt
     : 'default'; // Default or fallback aspect ratio
 
-  const setRandomPrompt = () => {setPrompt(sample(samplePrompts));};
+  const setRandomPrompt = () => 
+   { 
+    setPrompt('');
+   };
 
 
   // Set an initial random prompt when the component mounts
@@ -133,7 +137,7 @@ export default function PromptForm(props) {
       <div className="flex items-center space-x-2">
         {/* Eraser and Randomize buttons */}
         <div className="flex space-x-2">
-          <button type="button" onClick={handleClear} className="bg-gray-200 text-gray-700 rounded-md p-2">
+          <button type="button" onClick={handleClear} className="bg-gray-200 text-gray-700 border border-gray-100 rounded-md p-2"  style={{boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.8)'}}>
             <Eraser size={24} />
           </button>
           {/*<button type="button" onClick={setRandomPrompt} className="bg-gray-200 text-gray-700 rounded-md p-2">
@@ -143,12 +147,12 @@ export default function PromptForm(props) {
         </div>
 
         {/* Generate button */}
-        <button type="submit" className="bg-black text-white rounded-md px-6 py-2 flex-grow">
+        <button type="submit" className={`bg-black text-white border border-gray-400 rounded-md px-6 py-2 flex-grow`}  style={{boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.8)'}}>
           Generate
         </button>
 
         {/* Aspect Ratio button */}
-        <button type="button" onClick={handleAspectRatio} className="bg-gray-200 text-gray-700 rounded-md px-1 py-2">
+        <button type="button" onClick={handleAspectRatio} className="bg-gray-200 border border-gray-100 text-gray-700 rounded-md px-1 py-2"  style={{boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.8)'}}>
           {aspectRatioName}
         </button>
       </div>

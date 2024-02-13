@@ -229,6 +229,8 @@ export default function Home(theUserData) {
 const handleSubmit = async (e) => {
   setIsLoading(true);
   e.preventDefault();
+  
+  setCurrentPredictionStatus("Server warming up...");
 
  // console.log("handleSubmit is using index: " + index);
   const currentPrediction = predictions[index];
@@ -267,8 +269,6 @@ const handleSubmit = async (e) => {
     return;
   }
 
-  //console.log("prediction is: ", prediction.theuser)
-
   // Modify the prediction object to include the aspect ratio name before adding it to the state
   const newPrediction = {
     ...prediction,
@@ -280,7 +280,6 @@ const handleSubmit = async (e) => {
 
   // Set the history index to the last element of the predictions array, which will be the new prediction
   dispatch(setIndex(predictions.length));
-  setCurrentPredictionStatus("Server warming up...");
   while (prediction.status !== "succeeded" && prediction.status !== "failed") {
     await sleep(1000);
     const response = await fetch("/api/predictions/" + prediction.id);
@@ -292,9 +291,6 @@ const handleSubmit = async (e) => {
       console.log("prediction2 is: ", prediction.theuser)
       return;
     }
-    //console.log("Response status is: ", response.status," ", updatedPrediction.status);
-    //console.log("Updated Prediction Logs: ", updatedPrediction.logs);
-    //console.log("IS: ", findLastPercentageWithAdjustedGraphic(updatedPrediction.logs));
     const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs)
     setCurrentPredictionStatus(lastPercentage? lastPercentage : "Server warming up...");
 
@@ -311,24 +307,17 @@ const handleSubmit = async (e) => {
         }
         dispatch(setIndex(updatedPredictions.length));
         setIsLoading(false);
-       // console.log("prediction3 is: ", prediction.theuser)
-       console.log("updatedPrediction is: ", updatedPrediction.logs);
         return updatedPredictions;
       });
       break;
     } else if (updatedPrediction.status === "failed") {
-      setError("Prediction failed");
+      setError("The Prediction failed");
       setIsLoading(false);  
-     // console.log("prediction4 is: ", prediction.theuser)
       break;
     }
   }
 };
 
-
-//useEffect(() => {
-//  console.log('predictions: ', predictions);
-//}, [predictions]);
 
     const startOver = () => {
         setPredictions([]);
