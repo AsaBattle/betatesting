@@ -20,7 +20,7 @@
   top: 210px important; /* Adjust the position as needed */
   right: -400px; /* Distance from the right of the viewport */
   z-index: 110; /* Ensure it's above other content */
-  transform: translateY(50px);
+  transform: translateY(55px);
 }
 
 /* Adjustments for smaller screens, hide toolbarStack and show menuButton */
