@@ -229,7 +229,7 @@ export default function Home(theUserData) {
 const handleSubmit = async (e) => {
   setIsLoading(true);
   e.preventDefault();
-  
+
   setCurrentPredictionStatus("Server warming up...");
 
  // console.log("handleSubmit is using index: " + index);
@@ -367,15 +367,12 @@ const handleSubmit = async (e) => {
           </div>
           <div className={styles.content}>
               <Head>
-                  <title>FullJourney.AI Studio Beta 1.08a</title>
+                  <title>FullJourney.AI Studio Beta 1.08b</title>
                   <meta name="viewport" content="initial-scale=1.0, width=device-width" />
               </Head>
               <p className="pb-5 text-xl text-white text-center font-helvetica">
                   <strong>FullJourney.AI Studio</strong>
               </p>
-              {/*<p className="pb-2 text-xl text-gray-500 text-center font-helvetica">
-                  <strong>Draw over the areas you want replaced...</strong>
-                </p>*/}
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
                   <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
