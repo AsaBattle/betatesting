@@ -11,6 +11,24 @@ import styles from './ToolbarOptions.module.css'; // Make sure this path is corr
 import Tooltip from '../tooltip';
 
 
+// This function is a custom hook that returns the window width
+function useWindowWidth() {
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    function checkSize() {
+      setIsSmallScreen(window.innerWidth < 768);
+    }
+
+    checkSize(); // Check immediately on mount
+
+    window.addEventListener('resize', checkSize);
+    return () => window.removeEventListener('resize', checkSize);
+  }, []);
+
+  return isSmallScreen;
+}
+
 function ToolbarOptions (props)  {
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
@@ -20,6 +38,7 @@ function ToolbarOptions (props)  {
   const currentTool = tools.find(tool => tool.name === currentToolName);
   const dispatch = useDispatch();
   const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
+  const hamburgerVisible = useWindowWidth(); // If the screens width is less than 768px, set hamburgerVisible to true(Which means the menu/hamburger icon is visible)
 
   // Assuming index is still derived from Redux or props as before
   const index = useSelector((state) => (state.history.index-1));
@@ -72,16 +91,17 @@ const [aRatio, setARatio] = useState(aspectRatioName);
   style={{ 
     width: '100%', 
     padding: '0 20px', 
-    marginTop: '-8px', // Move everything up by 15px
+    marginTop: '1px', // Move everything up
+    marginRight: hamburgerVisible ? '-60px' : '0px', // Move everything left if hamburgerVisible is true
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr', 
-    gridTemplateRows: '50px 50px', // Set a fixed height for both rows
+    gridTemplateColumns: '1.15fr 1fr', 
+    gridTemplateRows: '40px 50px', // Set a fixed height for both rows
     gridTemplateAreas: `
       "undo redo"
       "slider circle"
     `, 
     gap: '1px',
-    alignItems: 'start' // Align items to the start of the container
+    alignItems: 'start' // Align items to the start of the container, the options are start, center, end, and stretch
   }}>
     {/* Undo button (row 1, col 1) */}
     <Tooltip text="Undo the last brush stroke change">
@@ -158,6 +178,8 @@ const [aRatio, setARatio] = useState(aspectRatioName);
       <div
         style={{
           position: 'absolute', // Position absolutely to center it based on transform
+          marginTop: '5px', // Move the circle down
+          marginLeft: !hamburgerVisible ? '40px' : '0px', // Move everything left if hamburgerVisible is true
           top: '50%', // Set top to 50%
           left: '50%', // Set left to 50%
           transform: 'translate(-50%, -50%)', // Use transform to center the circle

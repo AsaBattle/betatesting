@@ -1,47 +1,86 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import { tools } from '../tools/Tools';
+import { Menu } from 'lucide-react'; // Ensure this import is correct
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentTool } from '../../redux/slices/toolSlice';
+import { setHamburgerVisible, setCurrentTool } from '../../redux/slices/toolSlice';
+import { tools } from '../tools/Tools';
 import styles from './VerticalToolbar.module.css';
+
+
+// This function is a custom hook that returns the window width
+function useWindowWidth() {
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    function checkSize() {
+      setIsSmallScreen(window.innerWidth < 768);
+    }
+
+    checkSize(); // Check immediately on mount
+
+    window.addEventListener('resize', checkSize);
+    return () => window.removeEventListener('resize', checkSize);
+  }, []);
+
+  return isSmallScreen;
+}
+
 
 const VerticalToolbar = ({ onToolSelected }) => {
   const dispatch = useDispatch();
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
+  const [isToolbarVisible, setIsToolbarVisible] = useState(false);
+  const isSmallScreen = useWindowWidth(); // Use custom hook
+
+  // Set hamburger visibility based on screen size
+  useEffect(() => {
+    console.log('VerticalToolbar: Setting hamburger visibility: ', isSmallScreen);
+    dispatch(setHamburgerVisible(isSmallScreen));
+  }, [isSmallScreen]);
+
+
 
   const handleButtonClick = (tool) => {
-
-    dispatch(setCurrentTool(tool.name));  // Dispatch only the tool's name
-
-    tool.processTool(dispatch); // Call the tool's process function
+    dispatch(setCurrentTool(tool.name));
+    tool.processTool(dispatch);
     if (onToolSelected) {
-      onToolSelected(tool);  // Continue passing the full tool object to the callback
+      onToolSelected(tool);
     }
+    setIsToolbarVisible(false); // Hide toolbar after selection on small screens
     console.log(`Switched to tool: ${tool.name}`);
   };
 
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      className={styles.toolbarStack}
-      style={{ overflowY: 'hidden' }}  // inline style for overflow
-    >
-      {tools.map((tool) => (
-        (tool.renderInToolbar) &&(
-        <Button
-          key={tool.name}
-          variant="contained"
-          onClick={() => handleButtonClick(tool)}
-          startIcon={<span className={styles.icon}>{tool.icon}</span>}
-          className={`${styles.button} ${currentToolName === tool.name ? styles.selectedButton : ''}`}
+    <>
+      {isSmallScreen && !isToolbarVisible && (
+        <button className={styles.hamburger} onClick={() => setIsToolbarVisible(true)}>
+          <Menu /> {/* Adjust the size as needed */}
+        </button>
+      )}
+      {(!isSmallScreen || isToolbarVisible) && (
+        <Stack
+          direction="column"
+          spacing={2}
+          className={styles.toolbarStack}
+          style={{ overflowY: 'hidden' }}
         >
-        </Button>
-        )
-      ))}
-    </Stack>
+          {tools.map((tool) => (
+            tool.renderInToolbar && (
+              <Button
+                key={tool.name}
+                variant="contained"
+                onClick={() => handleButtonClick(tool)}
+                startIcon={<span className={styles.icon}>{tool.icon}</span>}
+                className={`${styles.button} ${currentToolName === tool.name ? styles.selectedButton : ''}`}
+              >
+              </Button>
+            )
+          ))}
+        </Stack>
+      )}
+    </>
   );
-}
+};
 
 export default VerticalToolbar;

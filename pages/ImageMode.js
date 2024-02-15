@@ -43,10 +43,10 @@ export default function Home(theUserData) {
 
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
-    
-    // The next line exports the value of the number of images stored inside of predictions
+    const hamburgerVisible = useSelector((state) => state.toolbar.hamburgerVisible);
     
     const canvasContainerRef = useRef(null);
+    const toolbaroptionsRef = useRef(null);
     const canvasRef = useRef();
     const toolbarRef = useRef(null);
     const index = useSelector((state) => state.history.index - 1); // Access index from history slice
@@ -76,13 +76,18 @@ export default function Home(theUserData) {
     };      
 
     const updateCanvasPosition = () => {
-        if (canvasContainerRef.current && toolbarRef.current) {
+        // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
+
+          console.log("1hamburgerVisible is: " + hamburgerVisible);
+          let xAmt = (hamburgerVisible ? -20 : 100);
+          let yAmt = (hamburgerVisible ? -70 : 5);
+
+          if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + 5}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - 100}px`;
-         // console.log('Canvas Rect:', canvasRect);
-        }
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + yAmt}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - xAmt}px`;
+          }
     };
   
     useEffect(() => {
@@ -98,7 +103,9 @@ export default function Home(theUserData) {
             window.removeEventListener('resize', updateCanvasPosition);
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [hamburgerVisible]);
+
+
 
     const handleLogout = () => {
         window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
@@ -123,15 +130,20 @@ export default function Home(theUserData) {
     }, [displayWidth]);
 
 
+    // Position the toolbar based on the viewport and canvas container
     useEffect(() => {
-      if (canvasContainerRef.current && toolbarRef.current) {
-        const canvasRect = canvasContainerRef.current.getBoundingClientRect();
-        const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        toolbarRef.current.style.top = `${canvasRect.top + scrollTop + 5}px`;
-        toolbarRef.current.style.left = `${canvasRect.left - 100}px`;
-     // console.log('Canvas Rect:', canvasRect);
-      } 
-    }, [zoomWidth]);
+      console.log("2hamburgerVisible is: " + hamburgerVisible);
+   
+      let xAmt = (hamburgerVisible ? -20 : 100);
+      let yAmt = (hamburgerVisible ? -70 : 5);
+
+          if (canvasContainerRef.current && toolbarRef.current) {
+            const canvasRect = canvasContainerRef.current.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + yAmt}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - xAmt}px`;
+          }
+    }, [zoomWidth, hamburgerVisible]);
 
 
     // When the user uploads an image, Dropzone will call this function with
@@ -375,7 +387,9 @@ const handleSubmit = async (e) => {
               </p>
               <main className="container mx-auto p-2">
                   {error && <div>{error}</div>}
-                  <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
+                  <div ref={toolbaroptionsRef}>
+                    <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
+                  </div>
                   {/*<div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>*/}
                   <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
                       <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
