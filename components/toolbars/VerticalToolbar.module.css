@@ -29,7 +29,6 @@
   width: 80%; /* Set width relative to the toolbar width */
 }
 
-
 .button:hover {
   background-color: #5a6abf;
 }
@@ -41,4 +40,26 @@
 .icon {
   margin-right: -8px;
   margin-left: 4px;
+}
+
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  top: 100px; /* Y coordinate */
+  left: 10px; /* X coordinate */
+  background-color: #4A90E2;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  z-index: 200;
+}
+
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+  .toolbarStack {
+    display: flex; /* Ensure toolbar is displayed when visible */
+  }
 }

@@ -8,8 +8,12 @@ export const toolbarSlice = createSlice({
     brushSize: 40,
     aspectRatioName: '1:1',
     zoomWidth: 512,
+    hamburgerVisible: false,
   },
   reducers: {
+    setHamburgerVisible: (state, action) => {
+      state.hamburgerVisible = action.payload;
+    },
     setZoomWidth: (state, action) => {
       state.zoomWidth = action.payload;
     },
@@ -26,9 +30,9 @@ export const toolbarSlice = createSlice({
       console.log('dispatch called for setAspectRatio: ', action.payload);
       state.aspectRatioName = action.payload;
     },
-    // ... other reducers for toolbar actions
   },
 });
 
-export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth } = toolbarSlice.actions;
+export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, 
+                alterZoomWidth, setHamburgerVisible } = toolbarSlice.actions;
 export default toolbarSlice.reducer;
