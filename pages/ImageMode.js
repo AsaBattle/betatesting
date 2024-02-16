@@ -44,7 +44,9 @@ export default function Home(theUserData) {
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
     const hamburgerVisible = useSelector((state) => state.toolbar.hamburgerVisible);
-    
+    const hamXOffset = (hamburgerVisible ? -20 : 100);
+    const hamYOffset = (hamburgerVisible ? -105 : 5);
+
     const canvasContainerRef = useRef(null);
     const toolbaroptionsRef = useRef(null);
     const canvasRef = useRef();
@@ -79,14 +81,12 @@ export default function Home(theUserData) {
         // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
 
           console.log("1hamburgerVisible is: " + hamburgerVisible);
-          let xAmt = (hamburgerVisible ? -20 : 100);
-          let yAmt = (hamburgerVisible ? -70 : 5);
-
+       
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + yAmt}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - xAmt}px`;
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + hamYOffset}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - hamXOffset}px`;
           }
     };
   
@@ -133,15 +133,12 @@ export default function Home(theUserData) {
     // Position the toolbar based on the viewport and canvas container
     useEffect(() => {
       console.log("2hamburgerVisible is: " + hamburgerVisible);
-   
-      let xAmt = (hamburgerVisible ? -20 : 100);
-      let yAmt = (hamburgerVisible ? -70 : 5);
-
+      
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + yAmt}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - xAmt}px`;
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + hamYOffset}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - hamXOffset}px`;
           }
     }, [zoomWidth, hamburgerVisible]);
 
