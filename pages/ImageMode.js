@@ -11,6 +11,7 @@ import { XCircle as StartOverIcon } from "lucide-react";
 import styles from './ImageMode.module.css';
 import MenuBar from '../components/toolbars/MenuBar';
 import VerticalToolbar from '../components/toolbars/VerticalToolbar';
+import ErrorModal from '../components/errorModal';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
@@ -383,7 +384,7 @@ const handleSubmit = async (e) => {
                   <strong>FullJourney.AI Studio</strong>
               </p>
               <main className="container mx-auto p-2">
-                  {error && <div>{error}</div>}
+              {error && <ErrorModal error={error} onClose={() => setError(null)} />}
                   <div ref={toolbaroptionsRef}>
                     <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
                   </div>

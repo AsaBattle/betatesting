@@ -54,7 +54,7 @@ const VerticalToolbar = ({ onToolSelected }) => {
   return (
     <>
       {isSmallScreen &&  (
-        <button className={styles.hamburger} onClick={() => setIsToolbarVisible(true)}>
+        <button className={styles.hamburger} onClick={() => setIsToolbarVisible(prev => !prev)}>
           <Menu /> {/* Adjust the size as needed */}
         </button>
       )}

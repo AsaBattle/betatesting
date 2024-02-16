@@ -99,7 +99,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
     <Tooltip text="Undo the last brush stroke change">
     <button
       onClick={() => canvasRef.current.UndoLastMaskLine()}
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+      className="hover:bg-blue-700 text-white font-bold rounded"
       style={{
         gridArea: 'undo',
         justifySelf: 'start', // Align to the start of the grid area
@@ -117,7 +117,7 @@ const [aRatio, setARatio] = useState(aspectRatioName);
     <Tooltip text="Redo the last brush stroke change">
     <button
       onClick={() => canvasRef.current.RedoLastMaskLine()}
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+      className="hover:bg-blue-700 text-white font-bold rounded"
       style={{
         gridArea: 'redo',
         justifySelf: 'end', // Align to the end of the grid area
