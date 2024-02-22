@@ -340,22 +340,6 @@ const handleSubmit = async (e) => {
     const currentTool = tools.find(tool => tool.name === currentToolName);
 
 
-    const onToolSelected = (tool) => {
-      switch (tool.name) {
-          case 'MaskPainter':
-              // Logic for MaskPainter tool
-              break;
-          case 'Zoom':
-              // Logic for Zoom tool
-              break;
-          // Add cases for other tools
-          default:
-              break;
-      }
-  };
-
-
-
   const PerformUndo = () => {
     dispatch(undo());
     // Apply the image from the undo stack to the canvas
@@ -373,7 +357,7 @@ const handleSubmit = async (e) => {
     return (
       <div className={styles.layout}>
           <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
-              <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} onToolSelected={onToolSelected} />
+              <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef}/>
           </div>
           <div className={styles.content}>
               <Head>

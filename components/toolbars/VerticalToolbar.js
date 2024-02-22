@@ -27,7 +27,7 @@ function useWindowWidth() {
 }
 
 
-const VerticalToolbar = ({ onToolSelected }) => {
+const VerticalToolbar = (props) => {
   const dispatch = useDispatch();
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const [isToolbarVisible, setIsToolbarVisible] = useState(false);
@@ -43,11 +43,11 @@ const VerticalToolbar = ({ onToolSelected }) => {
 
   const handleButtonClick = (tool) => {
     dispatch(setCurrentTool(tool.name));
-    tool.processTool(dispatch);
-    if (onToolSelected) {
-      onToolSelected(tool);
-    }
     setIsToolbarVisible(false); // Hide toolbar after selection on small screens
+    
+    //tool.setup(props.canvasRef)
+
+    
     console.log(`Switched to tool: ${tool.name}`);
   };
 

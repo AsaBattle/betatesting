@@ -25,3 +25,16 @@
   background-color: #353db8;
   /* ... styles for selected button ... */
 }
+
+.wandContainer {
+  position: relative;
+  background-color: #4A90E2;
+  width: 512px;
+  height: 110px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}

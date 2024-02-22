@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo } from 'lucide-react';
+import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo } from 'lucide-react';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
@@ -189,12 +189,10 @@ const [aRatio, setARatio] = useState(aspectRatioName);
 
 
 
-
-
       {/**********************************************************************/}
-      
+          
       {currentTool?.name === 'Zoom' && (
-        <div className="styles.zoomContainer text-black flex items-center justify-center mx-auto">
+          <div className="styles.zoomContainer text-black flex items-center justify-center mx-auto">
           <button onClick={decrementZoom} className="zoom-button">
             <Minus />
           </button>
@@ -207,6 +205,19 @@ const [aRatio, setARatio] = useState(aspectRatioName);
           <button onClick={incrementZoom} className="zoom-button">
             <Plus />
           </button>
+        </div>
+      )}
+
+
+
+
+
+
+      {/**********************************************************************/}
+      
+      {currentTool?.name === 'Wand' && (
+        <div className="styles.wandContainer text-black flex items-center justify-center mx-auto">
+         <Typography>The magic wands options</Typography>
         </div>
       )}
 
