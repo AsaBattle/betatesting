@@ -9,8 +9,12 @@ export const toolbarSlice = createSlice({
     aspectRatioName: '1:1',
     zoomWidth: 512,
     hamburgerVisible: false,
+    cursor: '/pen-cursor(w)2.png', // use the pen cursor as the default
   },
   reducers: {
+    setCursor: (state, action) => {
+      state.cursor = action.payload;
+    },
     setHamburgerVisible: (state, action) => {
       state.hamburgerVisible = action.payload;
     },
@@ -34,5 +38,5 @@ export const toolbarSlice = createSlice({
 });
 
 export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, 
-                alterZoomWidth, setHamburgerVisible } = toolbarSlice.actions;
+                alterZoomWidth, setHamburgerVisible, setCursor } = toolbarSlice.actions;
 export default toolbarSlice.reducer;

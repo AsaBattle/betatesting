@@ -11,6 +11,7 @@ import { XCircle as StartOverIcon } from "lucide-react";
 import styles from './ImageMode.module.css';
 import MenuBar from '../components/toolbars/MenuBar';
 import VerticalToolbar from '../components/toolbars/VerticalToolbar';
+import ErrorModal from '../components/errorModal';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
@@ -339,22 +340,6 @@ const handleSubmit = async (e) => {
     const currentTool = tools.find(tool => tool.name === currentToolName);
 
 
-    const onToolSelected = (tool) => {
-      switch (tool.name) {
-          case 'MaskPainter':
-              // Logic for MaskPainter tool
-              break;
-          case 'Zoom':
-              // Logic for Zoom tool
-              break;
-          // Add cases for other tools
-          default:
-              break;
-      }
-  };
-
-
-
   const PerformUndo = () => {
     dispatch(undo());
     // Apply the image from the undo stack to the canvas
@@ -372,18 +357,18 @@ const handleSubmit = async (e) => {
     return (
       <div className={styles.layout}>
           <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
-              <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} onToolSelected={onToolSelected} />
+              <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef}/>
           </div>
           <div className={styles.content}>
               <Head>
-                  <title>FullJourney.AI Studio Beta 1.08</title>
+                  <title>FullJourney.AI Studio Beta 1.09aa</title>
                   <meta name="viewport" content="initial-scale=1.0, width=device-width" />
               </Head>
               <p className="pb-5 text-xl text-white text-center font-helvetica">
                   <strong>FullJourney.AI Studio</strong>
               </p>
               <main className="container mx-auto p-2">
-                  {error && <div>{error}</div>}
+              {error && <ErrorModal error={error} onClose={() => setError(null)} />}
                   <div ref={toolbaroptionsRef}>
                     <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
                   </div>

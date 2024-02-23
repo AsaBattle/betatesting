@@ -4,7 +4,7 @@ import { ReactSketchCanvas } from 'react-sketch-canvas';
 import Spinner from 'components/spinner';
 import { tools, getResolution } from './tools/Tools'; // Adjust the import path as necessary
 import Cursor from './cursor';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 
 const Canvas = forwardRef((props, ref) => {
@@ -12,9 +12,16 @@ const Canvas = forwardRef((props, ref) => {
   const [allowDrawing, setAllowDrawing] = useState(true);
   const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
   const [predictionStatus, setPredictionStatus] = props.currentPredictionStatus;
-  
+  const currentToolName = useSelector((state) => state.toolbar.currentToolName);
+  const currentTool = tools.find(tool => tool.name === currentToolName);
+  const dispatch = useDispatch();
+
+  const [mask, setMask] = useState(null); // Holds the mask used by the magic wand tool
+  const [magicWandResultImg, setMagicWandResultImg] = useState(null); // Holds the resulting image of the magic wand tool
+
   // Assuming index is still derived from Redux or props as before
     const index = useSelector((state) => (state.history.index - 1));
+    const currentPredictionImageRef = useRef();
 
   // This line and related calculations for currentPredictionImage remain as you requested
   const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]
@@ -47,30 +54,62 @@ const Canvas = forwardRef((props, ref) => {
     zIndex: 10,
   };
 
-
-/*
   useEffect(() => {
-    console.log('*-----------------------------------*');
-    console.log('Index:', index);
-    console.log('Predictions:', props.predictions);
-    console.log('Current Aspect Ratio Name:', currentAspectRatioName);
-    console.log('Current Prediction Image:', currentPredictionImage);
-  }, [index, props.predictions, currentAspectRatioName, currentPredictionImage]);
+    if (!currentTool) {
+      console.error('Current tool is not defined.');
+      return;
+    }
+
+    setAllowDrawing(currentToolName === 'MaskPainter');
   
-  useEffect(() => {
-    console.log('Allow Drawing:', allowDrawing);
-  }, [allowDrawing]);
+    const canvasContainer = document.getElementById('canvasContainer');
+    if (!canvasContainer) {
+      console.error('Canvas container id not found');
+      return;
+    }
+    
+    console.log('Canvas.js: Setting cursor to: ', currentTool.cursor);
+    canvasContainer.style.cursor = currentTool.cursor;
+  }, [currentToolName]);
 
-    useEffect(() => {
-    console.log('Current Aspect Ratio Name:', currentAspectRatioName);
-    console.log('Calculated Width:', width, 'Calculated Height:', height);
-  }, [currentAspectRatioName]);
 
-  useEffect(() => {
-    console.log('Canvas Container Style:', canvasContainerStyle);
-  }, [canvasContainerStyle]);
+  const handleCanvasClick = (event) => {
+    // Assuming the image ref holds the currentPredictionImage
+    currentPredictionImageRef.current = currentPredictionImage;
+  
+    // Prevent the default context menu from opening on right click
+    if (event.type === 'contextmenu') {
+      event.preventDefault();
+    }
+  
+    // Call the processTool function of the current tool
+    if (currentTool && currentTool.processTool) {
+      // Access the image URL from the ref
+      const imageSrc = currentPredictionImageRef.current;
+  
+      if (imageSrc) {
+        // Get the bounding rectangle of the image container
+        const rect = event.target.getBoundingClientRect();
+        // Calculate the position of the click event relative to the image container
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        // Construct a new event object with offsetX and offsetY
+        const modifiedEvent = {
+          ...event,
+          offsetX: x,
+          offsetY: y,
+        };
+  
+        // Call the tool's process function with the modified event
+        currentTool.processTool(dispatch, modifiedEvent, imageSrc, mask, setMask, setMagicWandResultImg);
+      } else {
+        console.error('No current prediction image found');
+      }
+    }
+  };
+  
 
-*/
+
 
 // useImperativeHandle to exposes these methods to the parent component
 useImperativeHandle(ref, () => ({
@@ -99,7 +138,13 @@ const onChange = async () => {
   const predicting = props.isLoading;
 
   return (
-    <div className="canvasContainer" style={canvasContainerStyle} id="canvasContainer">
+        <div
+        className="canvasContainer"
+        style={canvasContainerStyle}
+        id="canvasContainer"
+        onClick={handleCanvasClick}
+        onContextMenu={handleCanvasClick} // This is for right-clicks
+      >
         {/* PREDICTION IMAGE */}
         {currentPredictionImage && (
             <Image
@@ -107,15 +152,6 @@ const onChange = async () => {
                 layout="fill"
                 className="absolute animate-in fade-in"
                 src={currentPredictionImage}
-            />
-        )}
-
-        {/* USER UPLOADED IMAGE */}
-        {props.userUploadedImage && (
-            <Image
-                src={props.userUploadedImage}
-                alt="User uploaded"
-                layout="fill"
             />
         )}
 
@@ -135,6 +171,15 @@ const onChange = async () => {
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
           />
         )}
+
+        
+        {/* Magic Wand Selection Image */}
+        {magicWandResultImg && (
+          <Image
+            src={magicWandResultImg}
+            layout='fill'
+          />
+        )}  
 
         <Cursor brushSize={props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
     </div>
