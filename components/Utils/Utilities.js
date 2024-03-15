@@ -99,9 +99,10 @@ function findLastPercentageWithAdjustedGraphic(inputString) {
         if (updatedPrediction.status === "succeeded") {
           console.log("Success with mask image: ", updatedPrediction.output);
     
+          let indexToUpdate = -1;
           setPredictions(currentPredictions => {
             const updatedPredictions = [...currentPredictions];
-            const indexToUpdate = updatedPredictions.findIndex(p => p.id === predictionToUse.id);
+            indexToUpdate = updatedPredictions.findIndex(p => p.id === predictionToUse.id);
             if (indexToUpdate !== -1) {
               updatedPredictions[indexToUpdate] = {
                 ...updatedPredictions[indexToUpdate],

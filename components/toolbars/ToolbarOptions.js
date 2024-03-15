@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo } from 'lucide-react';
+import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo, Eraser } from 'lucide-react';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
@@ -143,10 +143,6 @@ useEffect(() => {
     dispatch(setBrushSize(value));
   };
 
-  const isAiMagicWandActive = () => {
-    
-    return true;
-  };
 
   const incrementZoom = () => dispatch(alterZoomWidth(10));
   const decrementZoom = () => dispatch(alterZoomWidth(-10));
@@ -154,112 +150,130 @@ useEffect(() => {
   return (
      <div className={styles.toolbarContainer} style={{ position: 'relative' }}>
   {currentTool?.name === 'MaskPainter' && (
-  <div className={styles.sliderContainer + " text-white justify-center mx-auto"}
-  style={{ 
-    width: '100%', 
-    padding: '0 20px', 
-    marginTop: '1px', // Move everything up
-    marginRight: hamburgerVisible ? '-60px' : '0px', // Move everything left if hamburgerVisible is true
-    display: 'grid',
-    gridTemplateColumns: '1.15fr 1fr', 
-    gridTemplateRows: '40px 50px', // Set a fixed height for both rows
-    gridTemplateAreas: `
-      "undo redo"
-      "slider circle"
-    `, 
-    gap: '1px',
-    alignItems: 'start' // Align items to the start of the container, the options are start, center, end, and stretch
-  }}>
-    {/* Undo button (row 1, col 1) */}
-    <Tooltip text="Undo the last brush stroke change">
-    <button
-      onClick={() => canvasRef.current.UndoLastMaskLine()}
-      className="hover:bg-blue-700 text-white font-bold rounded"
-      style={{
-        gridArea: 'undo',
-        justifySelf: 'start', // Align to the start of the grid area
-        alignSelf: 'end', // Move down within the grid area
-        padding: '5px 10px', // Reduced padding
-        fontSize: '0.75rem', // Smaller font size
-        width: 'fit-content' // Make width fit the content
-      }}
-    >
-      <Undo/>
-    </button>
-    </Tooltip>
-
-    {/* Redo button (row 1, col 2) */}
-    <Tooltip text="Redo the last brush stroke change">
-    <button
-      onClick={() => canvasRef.current.RedoLastMaskLine()}
-      className="hover:bg-blue-700 text-white font-bold rounded"
-      style={{
-        gridArea: 'redo',
-        justifySelf: 'end', // Align to the end of the grid area
-        alignSelf: 'end', // Move down within the grid area
-        padding: '5px 10px', // Reduced padding
-        fontSize: '0.75rem', // Smaller font size
-        width: 'fit-content' // Make width fit the content
-      }}
-    >
-      <Redo/>
-    </button>
-    </Tooltip>
-
-    {/* Slider (row 2, col 1) */}
-    <div style={{
-      gridArea: 'slider',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'start' // Move up within the grid area
+    <div className={styles.sliderContainer + " text-white justify-center mx-auto"}
+    style={{ 
+      width: '100%', 
+      padding: '0 20px', 
+      marginTop: '1px', 
+      marginRight: hamburgerVisible ? '-60px' : '0px', 
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr 1fr', 
+      gridTemplateRows: '40px 50px', 
+      gridTemplateAreas: `
+        "undo middle redo"
+        "slider slider circle"
+      `, 
+      gap: '1px',
+      alignItems: 'start'
     }}>
-      <Tooltip text="changes the size of the masking brush's stroke">
-      <label htmlFor="brushSize" className="flex-shrink-0 mb-2">Brush Size</label>
-      <Slider
-        min={1}
-        max={100}
-        value={brushSize}
-        onChange={handleSliderChange}
-        railStyle={{ backgroundColor: '#eaeaea', height: 8 }}
-        trackStyle={{ backgroundColor: '#007bff', height: 8 }}
-        handleStyle={{
-          borderColor: '#007bff',
-          height: 20,
-          width: 20,
-          marginTop: -6,
-          backgroundColor: '#007bff',
+      {/* Undo button (row 1, col 1) */}
+      <Tooltip text="Undo the last brush stroke change">
+      <button
+        onClick={() => canvasRef.current.UndoLastMaskLine()}
+        className="hover:bg-blue-700 text-white font-bold rounded"
+        style={{
+          gridArea: 'undo',
+          justifySelf: 'start',
+          alignSelf: 'end',
+          padding: '5px 10px',
+          fontSize: '0.75rem',
+          width: 'fit-content'
         }}
-      />
+      >
+        <Undo/>
+      </button>
+      </Tooltip>
+
+      {/* Middle button (row 1, col 2) */}
+      <Tooltip text="Clear all strokes">
+      <button
+      onClick={() => canvasRef.current.ClearMaskLines()}
+        className="hover:bg-blue-700 text-white font-bold rounded"
+        style={{
+          gridArea: 'middle',
+          justifySelf: 'center',
+          alignSelf: 'end',
+          padding: '5px 10px',
+          fontSize: '0.75rem',
+          width: 'fit-content'
+        }}
+      >
+        <Eraser />
+      </button>
+      </Tooltip>
+
+      {/* Redo button (row 1, col 3) */}
+      <Tooltip text="Redo the last brush stroke change">
+      <button
+        onClick={() => canvasRef.current.RedoLastMaskLine()}
+        className="hover:bg-blue-700 text-white font-bold rounded"
+        style={{
+          gridArea: 'redo',
+          justifySelf: 'end',
+          alignSelf: 'end',
+          padding: '5px 10px',
+          fontSize: '0.75rem',
+          width: 'fit-content'
+        }}
+      >
+        <Redo/>
+      </button>
+      </Tooltip>
+
+      {/* Slider (row 2, col 1-2) */}
+      <div style={{
+        gridArea: 'slider',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'start'
+      }}>
+        <Tooltip text="changes the size of the masking brush's stroke">
+        <label htmlFor="brushSize" className="flex-shrink-0 mb-2">Brush Size</label>
+        <Slider
+          min={1}
+          max={100}
+          value={brushSize}
+          onChange={handleSliderChange}
+          railStyle={{ backgroundColor: '#eaeaea', height: 8 }}
+          trackStyle={{ backgroundColor: '#007bff', height: 8 }}
+          handleStyle={{
+            borderColor: '#007bff',
+            height: 20,
+            width: 20,
+            marginTop: -6,
+            backgroundColor: '#007bff',
+          }}
+        />
+        </Tooltip>
+      </div>
+
+      {/* Brush size indicator (row 2, col 3) */}
+      <Tooltip text="the size of the masking brush's stroke">
+      <div style={{ 
+        gridArea: 'circle', 
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center'
+      }}>
+        <div
+          style={{
+            position: 'absolute', 
+            marginTop: '5px', 
+            marginLeft: !hamburgerVisible ? '40px' : '0px', 
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)', 
+            width: `${brushSize}px`,
+            height: `${brushSize}px`,
+            borderRadius: '50%', 
+            backgroundColor: 'white',
+          }}
+        />
+      </div>
       </Tooltip>
     </div>
-
-    {/* Brush size indicator (row 2, col 2) */}
-    <Tooltip text="the size of the masking brush's stroke">
-    <div style={{ 
-      gridArea: 'circle', 
-      position: 'relative', // Set the position to relative
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center'
-    }}>
-      <div
-        style={{
-          position: 'absolute', // Position absolutely to center it based on transform
-          marginTop: '5px', // Move the circle down
-          marginLeft: !hamburgerVisible ? '40px' : '0px', // Move everything left if hamburgerVisible is true
-          top: '50%', // Set top to 50%
-          left: '50%', // Set left to 50%
-          transform: 'translate(-50%, -50%)', // Use transform to center the circle
-          width: `${brushSize}px`,
-          height: `${brushSize}px`,
-          borderRadius: '50%', // Makes the div a circle
-          backgroundColor: 'white',
-        }}
-      />
-    </div>
-    </Tooltip>
-  </div>
-)}
+  )}
 
 
       {/**********************************************************************/}
@@ -286,38 +300,45 @@ useEffect(() => {
       {/**********************************************************************/}
       
       {currentTool?.name === 'Wand' && (
-      <div className="styles.wandContainer text-black flex items-center justify-center mx-auto">
-        <div className="flex flex-col mr-4">
-        <button
-          onClick={handleGenAIMask}
-          className={`${styles.button} ${currentPredictionAvailable ? styles.buttonEnabled : styles.buttonDisabled}`}
-          disabled={!currentPredictionAvailable}
-        >
-          <span>Generate</span>
-          <span>AI Coloring</span>
-        </button>
-          <label className={viewMaskActive ? styles.textEnabled : styles.textDisabled}>
-            View Mask :
-            <input
-              type="checkbox"
-              checked={viewMaskRadioButton}
-              onChange={(e) => setViewMaskRadioButton(e.target.checked)}
-              disabled={!viewMaskActive}
-            />
-          </label>
-          Creation Time : {currentPredictionFSAMGenerationCounter}
+        <div className="styles.wandContainer text-black flex items-center justify-center mx-auto">
+          <div className="flex">
+            <div className="flex flex-col mr-4">
+              <button
+                onClick={handleGenAIMask}
+                className={`${styles.button} ${currentPredictionAvailable ? styles.buttonEnabled : styles.buttonDisabled}`}
+                disabled={!currentPredictionAvailable}
+              >
+                <span>Generate</span>
+                <span>AI Coloring</span>
+              </button>
+              <label className={viewMaskActive ? styles.textEnabled : styles.textDisabled}>
+                View Mask :
+                <input
+                  type="checkbox"
+                  checked={viewMaskRadioButton}
+                  onChange={(e) => setViewMaskRadioButton(e.target.checked)}
+                  disabled={!viewMaskActive}
+                />
+              </label>
+              Creation Time : {currentPredictionFSAMGenerationCounter}
+            </div>
+            <div>
+              <label htmlFor="tolerance">Tolerance:</label>
+              <input
+                type="number"
+                id="tolerance"
+                value={magicWandTolerance}
+                onChange={(e) => dispatch(setTolerance(e.target.value))}
+              />
+            </div>
           </div>
-          <div>
-            <label htmlFor="tolerance">Tolerance:</label>
-            <input
-              type="number"
-              id="tolerance"
-              value={magicWandTolerance}
-              onChange={(e) => dispatch(setTolerance(e.target.value))}
-            />
+          <div className="flex flex-col ml-4">
+            <button className={styles.button}>
+              Clear Mask
+            </button>
           </div>
-      </div>
-    )}
+        </div>
+      )}
 
       {/**********************************************************************/}
 

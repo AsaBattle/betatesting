@@ -170,8 +170,6 @@ export default function Home(theUserData) {
           headers: { 'Content-Type': 'application/json' },
         });
 
-        
-
         prediction = initialResponse.data;
         if (initialResponse.status !== 200) {
           console.error(prediction.message || 'Something went wrong during the initial API call.');

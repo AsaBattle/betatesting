@@ -233,16 +233,17 @@ useImperativeHandle(ref, () => ({
     return combinedImage;
   },
 
-
-
+  ClearMagicWandResult: () => {
+    setMagicWandResultImg(null);
+  },
   UndoLastMaskLine: () => {
     canvasRef.current.undo();
-  },
-
-
-  
+  },  
   RedoLastMaskLine: () => {
     canvasRef.current.redo();
+  },
+  ClearMaskLines: () => {
+    canvasRef.current.resetCanvas();
   },
 }));
 
@@ -263,54 +264,7 @@ const onChange = async () => {
       //props.onDraw(data);
     }
   }
-/*
-  // If the magic wand tool has been used, then we need to combine its results
-  // with the ReactSketchCanvas mask if it exists
-  if (magicWandResultImg) {
-    let combinedImage;
-
-    if (dataWasSet) {
-      console.log('Data was set, combining images');
-      const tmp = await addBackgroundToPNG(magicWandResultImg);
-      combinedImage = await combineImages(tmp, data, width, height);
-    } else {
-      console.log('Data was not set, using magicWandResultImg');
-      combinedImage = await addBackgroundToPNG(magicWandResultImg);
-    }
-
-    props.onDraw(combinedImage);
-    setCombinedImg(combinedImage);
-  }*/
 };
-
-
-// if the magic wand tool has been used, then we need to combine it's results(if there are any) with
-//  the ReactSketchCanvas mask
-/*
-useEffect(() => {
-  const processImage = async () => {
-    if (magicWandResultImg) {
-      let combinedImage, data = null;
-      const paths = await canvasRef.current.exportPaths();
-
-      // Proceed only if there are paths
-      if (paths.length > 0)
-        data = await canvasRef.current.exportImage('svg');
-
-      if (data) {
-        const tmp = await addBackgroundToPNG(magicWandResultImg);
-        combinedImage = await combineImages(tmp, data);
-      } else {
-        combinedImage = await addBackgroundToPNG(magicWandResultImg);
-      }
-
-      props.onDraw(combinedImage);
-      setCombinedImg(combinedImage);
-    }
-  };
-
-  processImage();
-}, [magicWandResultImg]);*/
 
 
 useEffect(() => {
