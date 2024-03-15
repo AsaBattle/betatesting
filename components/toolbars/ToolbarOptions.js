@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth } from '../../redux/slices/toolSlice';
+import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo } from 'lucide-react';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
+import { FSAMProcessor } from '../Utils/Utilities';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
 import Tooltip from '../tooltip';
 
@@ -31,6 +32,8 @@ function ToolbarOptions (props)  {
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
   const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
+  const magicWandTolerance = useSelector((state) => state.toolbar.tolerance);
+  const magicWandSelector = useSelector((state) => state.toolbar.wandSelector);
   const canvasRef = props.canvasRef;
 
   const currentTool = tools.find(tool => tool.name === currentToolName);
@@ -41,6 +44,10 @@ function ToolbarOptions (props)  {
   // Assuming index is still derived from Redux or props as before
   const index = useSelector((state) => (state.history.index-1));
 
+  const currentPrediction = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index]
+    : null;
+
   // This line and related calculations for currentPredictionImage remain as you requested
   const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].output && props.predictions[index].output.length > 0
@@ -49,16 +56,72 @@ function ToolbarOptions (props)  {
     : null;
 
     
-    // Get the current state
-const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
+  // Get the current state
+  const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
 
   // Calculate aspect ratio from the current prediction if available
   let currentImageAspectRatio = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].aspectRatioName
     : aspectRatioName; // Default or fallback aspect ratio
 
-// Initialize a local state variable
-const [aRatio, setARatio] = useState(aspectRatioName);
+  // Initialize a local state variable
+  const [viewMaskRadioButton, setViewMaskRadioButton] = useState(false);
+
+  // If the current prediction has a mask, set the viewMaskActive to true
+  let currentPredictionImageMask = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].magicWandMask && props.predictions[index].magicWandMask.length > 0
+      ? props.predictions[index].magicWandMask
+      : null
+    : null;
+
+  const [viewMaskActive, setViewMaskActive] = useState(currentPredictionImageMask !== null);
+  
+  const [currentPredictionFSAMGenerationCounter, setCurrentPredictionFSAMGenerationCounter] = useState('----');
+
+  const currentPredictionAvailable = props.predictions && props.predictions[index] !== null && props.predictions.length > 0;
+
+
+  // This function is called when the aspect ratio button is clicked
+  const handleGenAIMask = async () => {
+    console.log("handleGenAIMask props.predictions: ", props.predictions);
+
+    // If the current prediction is null, return as we can't generate a mask with no image
+    if (props.predictions[index] === null ||
+      props.predictions.length <= 0)
+      return;
+
+    console.log("right before await FSAMProcessor...");
+    // Start the process of generating the AI mask via the fast segmentation model
+  await FSAMProcessor(props.predictions[index], props.setPredictions);
+    console.log("...right after await FSAMProcessor");
+
+    // flip flops the viewmaskactive state
+    //setViewMaskActive(!viewMaskActive);
+  // Update the currentPredictionFSAMGenerationCounter state after FSAMProcessor completes
+  const updatedCounter = props.predictions[index].fsamGenerationCounter;
+  setCurrentPredictionFSAMGenerationCounter(updatedCounter);
+  console.log('@@@Generating AI Mask');
+  console.log('@@@predictions: ', props.predictions);
+};
+
+useEffect(() => {
+  const updatedCounter = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].fsamGenerationCounter
+    : '--';
+
+  setCurrentPredictionFSAMGenerationCounter(updatedCounter);
+}, [props.predictions, index]);
+
+  // Deactivate the view mask button if there's no mask, or activate if there is
+  useEffect(() => {
+    console.log('useEffect setting: currentPredictionImageMask: ', currentPredictionImageMask);
+    setViewMaskActive(currentPredictionImageMask !== null);
+    
+    // if there's no mask, the view mask button's state to off
+    if (!viewMaskActive || currentPredictionImageMask === null)
+      setViewMaskRadioButton(false);
+  }, [currentPredictionImageMask]);
+
 
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
@@ -69,8 +132,20 @@ const [aRatio, setARatio] = useState(aspectRatioName);
     currentImageAspectRatio = aspectRatioName;
   }, [currentToolName]);
 
+
+  useEffect(() => {
+    console.log('dispatch is being called for setViewMaskRadioButton: ', viewMaskRadioButton);
+   dispatch(setTheViewMaskActive(viewMaskRadioButton));
+  }, [viewMaskRadioButton]);
+
+
   const handleSliderChange = (value) => {
     dispatch(setBrushSize(value));
+  };
+
+  const isAiMagicWandActive = () => {
+    
+    return true;
   };
 
   const incrementZoom = () => dispatch(alterZoomWidth(10));
@@ -187,8 +262,6 @@ const [aRatio, setARatio] = useState(aspectRatioName);
 )}
 
 
-
-
       {/**********************************************************************/}
           
       {currentTool?.name === 'Zoom' && (
@@ -208,18 +281,43 @@ const [aRatio, setARatio] = useState(aspectRatioName);
         </div>
       )}
 
-
-
-
-
+     
 
       {/**********************************************************************/}
       
       {currentTool?.name === 'Wand' && (
-        <div className="styles.wandContainer text-black flex items-center justify-center mx-auto">
-         <Typography>The magic wands options</Typography>
-        </div>
-      )}
+      <div className="styles.wandContainer text-black flex items-center justify-center mx-auto">
+        <div className="flex flex-col mr-4">
+        <button
+          onClick={handleGenAIMask}
+          className={`${styles.button} ${currentPredictionAvailable ? styles.buttonEnabled : styles.buttonDisabled}`}
+          disabled={!currentPredictionAvailable}
+        >
+          <span>Generate</span>
+          <span>AI Coloring</span>
+        </button>
+          <label className={viewMaskActive ? styles.textEnabled : styles.textDisabled}>
+            View Mask :
+            <input
+              type="checkbox"
+              checked={viewMaskRadioButton}
+              onChange={(e) => setViewMaskRadioButton(e.target.checked)}
+              disabled={!viewMaskActive}
+            />
+          </label>
+          Creation Time : {currentPredictionFSAMGenerationCounter}
+          </div>
+          <div>
+            <label htmlFor="tolerance">Tolerance:</label>
+            <input
+              type="number"
+              id="tolerance"
+              value={magicWandTolerance}
+              onChange={(e) => dispatch(setTolerance(e.target.value))}
+            />
+          </div>
+      </div>
+    )}
 
       {/**********************************************************************/}
 

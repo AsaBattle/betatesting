@@ -38,3 +38,41 @@
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
+
+
+.textEnabled {
+  color: #000; /* Or any other color for the enabled state */
+}
+
+.textDisabled {
+  color: #ccc; /* Or any other color for the disabled state */
+} 
+
+.button {
+  display: inline-block;
+  padding: 1px 4px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.3s ease;
+}
+
+.buttonEnabled {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.buttonEnabled:hover {
+  background-color: #0056b3;
+}
+
+.buttonDisabled {
+  background-color: #ccc;
+  color: #888;
+  cursor: not-allowed;
+}

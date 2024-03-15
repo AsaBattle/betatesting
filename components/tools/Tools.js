@@ -1,5 +1,59 @@
+import { set } from 'lodash';
 import { Wand2, Brush, ZoomIn } from 'lucide-react';
 import MagicWand from 'magic-wand-tool';
+
+function concatMasks(mask, old) {
+	let 
+  	data1 = old.data,
+		data2 = mask.data,
+		w1 = old.width,
+		w2 = mask.width,
+		b1 = old.bounds,
+		b2 = mask.bounds,
+		b = { // bounds for new mask
+			minX: Math.min(b1.minX, b2.minX),
+			minY: Math.min(b1.minY, b2.minY),
+			maxX: Math.max(b1.maxX, b2.maxX),
+			maxY: Math.max(b1.maxY, b2.maxY)
+		},
+		w = old.width, // size for new mask
+		h = old.height,
+		i, j, k, k1, k2, len;
+
+	let result = new Uint8Array(w * h);
+
+	// copy all old mask
+	len = b1.maxX - b1.minX + 1;
+	i = b1.minY * w + b1.minX;
+	k1 = b1.minY * w1 + b1.minX;
+	k2 = b1.maxY * w1 + b1.minX + 1;
+	// walk through rows (Y)
+	for (k = k1; k < k2; k += w1) {
+		result.set(data1.subarray(k, k + len), i); // copy row
+		i += w;
+	}
+
+	// copy new mask (only "black" pixels)
+	len = b2.maxX - b2.minX + 1;
+	i = b2.minY * w + b2.minX;
+	k1 = b2.minY * w2 + b2.minX;
+	k2 = b2.maxY * w2 + b2.minX + 1;
+	// walk through rows (Y)
+	for (k = k1; k < k2; k += w2) {
+		// walk through cols (X)
+		for (j = 0; j < len; j++) {
+			if (data2[k + j] === 1) result[i + j] = 1;
+		}
+		i += w;
+	}
+
+	return {
+		data: result,
+		width: w,
+		height: h,
+		bounds: b
+	};
+}
 
 
 function floodFillWithoutBorders(image, px, py, colorThreshold, mask) {
@@ -201,6 +255,33 @@ if (i < 0 || i + 3 >= data.length) {
   };
 }
 
+function findScale(elementId) {
+  // Assuming 'element' is the DOM element you want to check
+  var element = document.getElementById(elementId);
+
+  // Get the computed style of the element
+  var style = window.getComputedStyle(element);
+
+  console.log('Style:', style);
+
+  // Get the relevant transformation values
+  var transform = style.transform || style.webkitTransform || style.mozTransform;
+
+  // Log the transform properties to the console
+  console.log('Transform:', transform);
+
+  // If you need to get the scale specifically
+  var matrix = transform.match(/^matrix\((.+)\)$/);
+  if (matrix) {
+      var values = matrix[1].split(', ');
+      var scaleX = parseFloat(values[0]);
+      var scaleY = parseFloat(values[3]);
+      console.log('ScaleX:', scaleX, 'ScaleY:', scaleY);
+  }
+
+  return { scaleX, scaleY };
+}
+
 
 // Utility functions
 function loadImage(src) {
@@ -218,10 +299,12 @@ function setupCanvas(image) {
   const ctx = canvas.getContext('2d');
   canvas.width = image.width;
   canvas.height = image.height;
+  console.log("Setting up canvas - width: ", canvas.width, "height: ", canvas.height);
   ctx.drawImage(image, 0, 0);
   return { hiddenCanvas: canvas, ctx };
 }
 
+// takes the mask are turns a black rgba image with rest being transparent
 function createResultImageDataArray(mask) {
   const array = new Uint8ClampedArray(mask.width * mask.height * 4);
   // Loop through the mask data to set pixel values
@@ -230,6 +313,23 @@ function createResultImageDataArray(mask) {
     array[idx] = 0;      // R
     array[idx + 1] = 0;  // G
     array[idx + 2] = 0;  // B
+    array[idx + 3] = mask.data[i] ? 255 : 0; // Alpha value based on mask
+  }
+  return array;
+}
+
+
+
+
+// takes the mask are turns a white rgba image with rest being transparent
+function createResultImageDataArray2(mask) {
+  const array = new Uint8ClampedArray(mask.width * mask.height * 4);
+  // Loop through the mask data to set pixel values
+  for (let i = 0; i < mask.data.length; i++) {
+    const idx = i * 4;
+    array[idx] = 255;      // R
+    array[idx + 1] = 255;  // G
+    array[idx + 2] = 255;  // B
     array[idx + 3] = mask.data[i] ? 255 : 0; // Alpha value based on mask
   }
   return array;
@@ -253,10 +353,6 @@ export function getResolution(aspectRatioName) {
 }
 
 
-//the code now works, except the x,y coordinates are not being passed/process correctly
-// also, it floodfill and doesn't give the outline, probably because we left out the gaussian blur since 
- //we are using the magic wand tool and we need to add the gaussian blur to the code so that it can give the outline of the mask
-
 const magicWandTool = {
   name: 'Wand',
   label: 'Magic Wand',
@@ -268,25 +364,33 @@ const magicWandTool = {
   },
 
  
-processTool: function (dispatch, event, imageSrc, currentMask, setMask, setResultImg) {
-  loadImage(imageSrc).then(image => {
-    const { hiddenCanvas, ctx } = setupCanvas(image);
-    const imageData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
-    // ...checks for imageData...
-    const x = Math.round(event.offsetX);
-    const y = Math.round(event.offsetY);
-    const tolerance = 15;
-    const newMask = floodFillWithoutBorders(imageData, x, y, tolerance, currentMask);
-    // ...check newMask validity...
-    const resultImageDataArray = createResultImageDataArray(newMask);
-    const resultImageData = new ImageData(resultImageDataArray, newMask.width, newMask.height);
-    ctx.putImageData(resultImageData, 0, 0);
-    setResultImg(hiddenCanvas.toDataURL());
-    hiddenCanvas.remove();
-  }).catch(error => {
-    console.error('Error processing the magic wand tool:', error);
-  });
-}
+  processTool: function (dispatch, event, imageSrc, previousMask, setMask, setResultImg, tolerance, combine) {
+    loadImage(imageSrc).then(image => {
+      const { hiddenCanvas, ctx } = setupCanvas(image);
+      const imageData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+      const x = Math.round(event.offsetX);
+      const y = Math.round(event.offsetY);
+
+      const newMask = floodFillWithoutBorders(imageData, x, y, tolerance, null); // Assuming currentMask isn't needed directly
+
+      const borderMask = MagicWand.gaussBlurOnlyBorder(newMask, 15, null);
+
+      // Use concatMasks if previousMask exists, else use borderMask directly
+      const resultMask = (previousMask && combine) ? concatMasks(borderMask, previousMask) : borderMask;
+
+      // The new combined mask
+      setMask(resultMask); // Assuming setMask updates the state that stores the current/previous mask
+
+      const resultImageDataArray = createResultImageDataArray2(resultMask);
+      const resultImageData = new ImageData(resultImageDataArray, resultMask.width, resultMask.height);
+      ctx.putImageData(resultImageData, 0, 0);
+      setResultImg(hiddenCanvas.toDataURL());
+      hiddenCanvas.remove();
+    }).catch(error => {
+      console.error('Error processing the magic wand tool:', error);
+    });
+  }
   
 };
 
