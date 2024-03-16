@@ -333,7 +333,7 @@ useEffect(() => {
             </div>
           </div>
           <div className="flex flex-col ml-4">
-            <button className={styles.button}>
+            <button className={styles.button}  onClick={() => canvasRef.current.ClearMagicWandResult()}>
               Clear Mask
             </button>
           </div>
