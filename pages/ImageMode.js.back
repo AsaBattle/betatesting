@@ -58,8 +58,6 @@ export default function Home(theUserData) {
 
     const belowCanvasRef = useRef(null); // This ref would be attached to your below-canvas element
     const updatedPrediction = null;
-
-    const [generateClicked, setGenerateClicked] = useState(false); // Keep track of the generate button click, so that canvas knows when to reset it mask data
      
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
@@ -68,23 +66,6 @@ export default function Home(theUserData) {
 
     const { width, height, displayWidth } = getResolution(currentImageAspectRatio);
     const zoomWidth = useSelector((state) => state.toolbar.zoomWidth);
-
-    const [clearMask, setClearMask] = useState(false);
-
-    // Function to clear the mask
-    const clearMaskImage = () => {
-      setMaskImage(null); // or setMaskImage('');
-      setClearMask(true); // Set clearMask to true when clearing the mask
-    };
-    
-    // Reset clearMask to false after it's been set to true
-    useEffect(() => {
-      if (clearMask) {
-        setClearMask(false);
-      }
-    }, [clearMask]);
-
-
 
     const handleToolChange = (tool) => {
         dispatch(setCurrentTool(tool));
@@ -132,11 +113,14 @@ export default function Home(theUserData) {
         };
     }, [hamburgerVisible]);
 
+   
+    useEffect(() => {
+      console.log("theupdatedPrediction is now set to: ", theupdatedPrediction);
+    }, [theupdatedPrediction]);
 
 
     const FSAMTest = async () => {
       console.log("FSAMTest is being called");
-      setCurrentPredictionStatus( "Server warming up...");
 
       // The following code makes a call to our fsam api at /api/fsam
       if (theupdatedPrediction === null)
@@ -162,8 +146,7 @@ export default function Home(theUserData) {
           input_image: image_url,
           point_label: "[0]",
           point_prompt: "[[0,0]]",
-          withContours: false,
-          better_quality: true
+          withContours: true,
         };
 
         const initialResponse = await axios.post('/api/fsam', fsamRequestBody, {
@@ -179,12 +162,11 @@ export default function Home(theUserData) {
       } catch (error) {
         console.error('Error in handleSubmission:', error);
       }
-      console.log("Initial prediction returned is: ", prediction);
 
 
       while (prediction.status !== "succeeded" && prediction.status !== "failed") {
         await sleep(1000);
-        const response = await fetch("/api/fsam/" + prediction.id);
+        const response = await fetch("/api/predictions/" + prediction.id);
         const updatedPrediction = await response.json();
     
         if (response.status !== 200) {
@@ -197,33 +179,24 @@ export default function Home(theUserData) {
         const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
         setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
     
-      
         if (updatedPrediction.status === "succeeded") {
-          console.log("Success with mask image: ", updatedPrediction.output);
-
-          let updatedPredictions;
-          let indexToUpdate;
           setPredictions(currentPredictions => {
-            updatedPredictions = [...currentPredictions];
-            indexToUpdate = updatedPredictions.findIndex(p => p.id === theupdatedPrediction.id);
+            const updatedPredictions = [...currentPredictions];
+            const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
             if (indexToUpdate !== -1) {
               updatedPredictions[indexToUpdate] = {
-                ...updatedPredictions[indexToUpdate],
-                magicWandMask: updatedPrediction.output,
+                ...updatedPrediction,
+                aspectRatioName: currentAspectRatioName,
               };
             }
             return updatedPredictions;
           });
-          setIsLoading(false); 
-          
-          console.log("updatedPredictions: " + updatedPredictions);
-          console.log("updatedPrediction: " + updatedPrediction.id);
-
-
-
+          dispatch(setIndex(predictions.length - 1));
+          setIsLoading(false);
+    
           // Call a function to handle the successful prediction
-          //thettheUpdatedPrediction(updatedPrediction);
-          console.log("done with magic wand mask processing! index: ", indexToUpdate);
+          settheUpdatedPrediction(updatedPrediction);
+    
           break;
         } else if (updatedPrediction.status === "failed") {
           setError("The Prediction failed");
@@ -231,6 +204,7 @@ export default function Home(theUserData) {
           break;
         }
       }
+
     };
 
 
@@ -285,10 +259,59 @@ export default function Home(theUserData) {
       setPredictions([newPrediction, ...predictions]);
      // console.log("setting index to predictions.length: " + predictions.length);
       dispatch(setIndex(predictions.length+1));
-
-      settheUpdatedPrediction(newPrediction);
     };
 
+
+    function findLastPercentageNumber(inputString) {
+      // Use a regular expression to find all occurrences of percentages in the string
+      const percentages = inputString.match(/\b(\d+)%/g);
+    
+      // Check if any percentages were found
+      if (percentages && percentages.length > 0) {
+        // Extract the last percentage found, remove the '%' sign, and convert to integer
+        const lastPercentage = parseInt(percentages[percentages.length - 1], 10);
+        return lastPercentage;
+      } else {
+        // Return null if no percentages were found
+        return null;
+      }
+    }
+
+    function findLastPercentageWithGraphic(inputString) {
+      // Use a regular expression to find all occurrences of percentages followed by the progress bar graphic
+      const pattern = /\b(\d+)%\|[^|]*\|/g;
+      const matches = [...inputString.matchAll(pattern)];
+    
+      // Check if any matches were found
+      if (matches && matches.length > 0) {
+        // Extract the match related to the last percentage and its progress bar graphic
+        const lastMatch = matches[matches.length - 1][0];
+        return lastMatch;
+      } else {
+        // Return null if no matches were found
+        return null;
+      }
+    }
+
+    function findLastPercentageWithFormattedGraphic2(inputString) {
+      // Use a regular expression to find all occurrences of percentages followed by the progress bar graphic
+      const pattern = /\b(\d+)%\|([^|]*)\|/g;
+      const matches = [...inputString.matchAll(pattern)];
+    
+      // Check if any matches were found
+      if (matches && matches.length > 0) {
+        // Extract the percentage and the progress bar graphic for the last match
+        const lastMatch = matches[matches.length - 1];
+        let percentage = lastMatch[1]; // Capture the percentage
+        const progressBarGraphic = lastMatch[2].trim(); // Capture the progress bar graphic and trim spaces
+    
+        // Format the output to have the percentage on the first line and the graphic on the second line
+        return `${percentage}%\n${progressBarGraphic}`;
+      } else {
+        // Return null if no matches were found
+        return null;
+      }
+    }
 
     function findLastPercentageWithAdjustedGraphic(inputString) {
       // Use a regular expression to find all occurrences of percentages followed by the progress bar graphic
@@ -312,25 +335,24 @@ export default function Home(theUserData) {
         return null;
       }
     }
-   
-    
+
+/*
 const handleSubmit = async (e) => {
   setIsLoading(true);
   e.preventDefault();
 
   setCurrentPredictionStatus("Server warming up...");
 
-  const combinedMask = await canvasRef.current.getCombinedMask();
-
-
+ // console.log("handleSubmit is using index: " + index);
   const currentPrediction = predictions[index];
   const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
 
   const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
+  //console.log("Calling image generate with width: " + width + " and height: " + height);
   const body = {
     prompt: e.target.prompt.value,
-    image: combinedMask ? currentPredictionOutput : null,
-    mask: combinedMask,
+    image: maskImage ? currentPredictionOutput : null,
+    mask: maskImage,
     width,  // Include width
     height, // Include height
     aspectRatioName: currentAspectRatioName, // Include the aspect ratio name if needed by your backend
@@ -343,7 +365,111 @@ const handleSubmit = async (e) => {
   });
 
   const prediction = await response.json();
-  prediction.fsamGenerationCounter = 0;
+
+  if (response.status !== 201) {
+    console.log("status is: ", response.status," and thecode is: ", prediction.thecode);
+    // Redirect the user to the /Subscribe page if 5001 is returned
+    if (prediction.thecode === 5001)
+      {
+        router.push('/Subscribe');
+        return;
+      }
+    
+    setError(prediction.detail);
+    setIsLoading(false);
+    return;
+  }
+
+  // Modify the prediction object to include the aspect ratio name before adding it to the state
+  const newPrediction = {
+    ...prediction,
+    aspectRatioName: currentAspectRatioName,
+  };
+
+  // Add the new prediction to the predictions state
+  setPredictions(predictions.concat([newPrediction]));
+
+  // Set the history index to the last element of the predictions array, which will be the new prediction
+  dispatch(setIndex(predictions.length));
+  while (prediction.status !== "succeeded" && prediction.status !== "failed") {
+    await sleep(1000);
+    const response = await fetch("/api/predictions/" + prediction.id);
+    updatedPrediction = await response.json();
+    if (response.status !== 200) {
+      setError(updatedPrediction.detail);
+      setIsLoading(false);
+      console.log("Prediction error detail is: ", updatedPrediction.detail)
+      console.log("prediction2 is: ", prediction.theuser)
+      return;
+    }
+    const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs)
+    setCurrentPredictionStatus(lastPercentage? lastPercentage : "Server warming up...");
+
+
+    if (updatedPrediction.status === "succeeded") {
+      console.log("updatedPrediction is: ", updatedPrediction);
+      setPredictions(currentPredictions => {
+        const updatedPredictions = [...currentPredictions];
+        const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+        if (indexToUpdate !== -1) {
+          updatedPredictions[indexToUpdate] = {
+            ...updatedPrediction,
+            aspectRatioName: currentAspectRatioName, // Ensure the updated prediction also includes the aspect ratio
+          };
+        }
+        dispatch(setIndex(updatedPredictions.length));
+        setIsLoading(false);
+
+
+        settheUpdatedPrediction(updatedPrediction);
+
+        console.log("updatedPrediction:", updatedPrediction);
+        
+        //router.push({
+        //  pathname: '/FsamTest',
+        //  query: { image_url: updatedPrediction.output[0] },
+        //});
+        
+
+        return updatedPredictions;
+      });
+      break;
+    } else if (updatedPrediction.status === "failed") {
+      setError("The Prediction failed");
+      setIsLoading(false);  
+      break;
+    }
+  }
+};
+*/
+
+const handleSubmit = async (e) => {
+  setIsLoading(true);
+  e.preventDefault();
+
+  setCurrentPredictionStatus("Server warming up...");
+
+  const currentPrediction = predictions[index];
+  const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
+
+  const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
+  const body = {
+    prompt: e.target.prompt.value,
+    image: maskImage ? currentPredictionOutput : null,
+    mask: maskImage,
+    width,  // Include width
+    height, // Include height
+    aspectRatioName: currentAspectRatioName, // Include the aspect ratio name if needed by your backend
+  };
+
+  const response = await fetch("/api/predictions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const prediction = await response.json();
+
   if (response.status !== 201) {
     console.log("status is: ", response.status, " and the code is: ", prediction.thecode);
     if (prediction.thecode === 5001) {
@@ -387,20 +513,11 @@ const handleSubmit = async (e) => {
         }
         return updatedPredictions;
       });
-
-
-      dispatch(setIndex(predictions.length+1)); // we add one to the index because we are adding a new prediction,
-                                                // but dispatch isn't yet aware of the new prediction, so it's 
-                                                // length is one less than the actual length
+      dispatch(setIndex(predictions.length - 1));
       setIsLoading(false);
-
 
       // Call a function to handle the successful prediction
       settheUpdatedPrediction(updatedPrediction);
-
-      // clear the mask
-      clearMaskImage();
-      setGenerateClicked(true); 
 
       break;
     } else if (updatedPrediction.status === "failed") {
@@ -447,87 +564,78 @@ const handleSubmit = async (e) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (generateClicked) {
-      setGenerateClicked(false);
-    }
-  }, [generateClicked]);
 
+    return (
+      <div className={styles.layout}>
+          <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
+              <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef}/>
+          </div>
+          <div className={styles.content}>
+              <Head>
+                  <title>FullJourney.AI Studio Beta 1.09aa</title>
+                  <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+              </Head>
+              <p className="pb-5 text-xl text-white text-center font-helvetica">
+                  <strong>FullJourney.AI Studio</strong>
+              </p>
+              <main className="container mx-auto p-2">
+              {error && <ErrorModal error={error} onClose={() => setError(null)} />}
+                  <div ref={toolbaroptionsRef}>
+                    <ToolbarOptions predictions={predictions} canvasRef={canvasRef}/>
+                  </div>
+                  {/*<div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>*/}
+                  <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
+                      <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
+                      <div className={`bg-black relative max-h-full mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`}  style={{ width: `${zoomWidth}px` }}>
+                          <Canvas
+                              ref={canvasRef}
+                              isLoading={isLoading}
+                              brushSize={brushSize}
+                              predictions={predictions}
+                              userUploadedImage={userUploadedImage}
+                              onDraw={setMaskImage}
+                              currentTool={currentTool}
+                              onCanvasSizeChange={handleCanvasSizeChange}
+                              currentPredictionStatus={currentPredictionStatus}
+                          />
+                      </div>
+                  </div>
+                  <div id="asathisisit"  ref={belowCanvasRef} className={`max-w-[512px] mx-auto`}>
+                      <ImageNavigation imageTotal={predictions.length} />
+                      <PromptForm onSubmit={handleSubmit} predictions={predictions} />
+                      <div className="text-center">
+                          {undoStack.length > 0 && (
+                              <button className="lil-button" onClick={PerformUndo}>
+                                  <StartOverIcon className="icon" />
+                                  Undo
+                              </button>
+                          )}
+                          {((predictions.length > 0 && predictions[predictions.length - 1].output) || maskImage || userUploadedImage) && (
+                              <button className="lil-button" onClick={startOver}>
+                                  <StartOverIcon className="icon" />
+                                  Start over
+                              </button>
+                          )}
+                          <Download predictions={predictions} />
+                      </div>
+                  </div>
+              </main>
+              <footer className="text-center my-4">
+                  <button 
+                      onClick={handleLogout} 
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                      Logout
+                  </button>
+                  <button 
+                      onClick={FSAMTest} 
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  > FsamTest
+                  </button>
 
-  return (
-    <div className={styles.layout}>
-      <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
-        <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef} />
+              </footer>
+          </div>
       </div>
-      <div className={styles.content}>
-        <Head>
-          <title>FullJourney.AI Studio Beta 1.09aa</title>
-          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        </Head>
-        <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI Studio</strong>
-        </p>
-        <main className="container mx-auto p-2">
-          {error && <ErrorModal error={error} onClose={() => setError(null)} />}
-          <div ref={toolbaroptionsRef}>
-            <ToolbarOptions predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
-          </div>
-          <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
-            <Dropzone onImageAsFirstPrediction={handleImageAsFirstPrediction} predictions={predictions} />
-            <div className={`bg-black relative max-h-full mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`} style={{ width: `${zoomWidth}px` }}>
-              <Canvas
-                ref={canvasRef}
-                generateClicked={generateClicked} 
-                clearMask={clearMask}
-                isLoading={isLoading}
-                brushSize={brushSize}
-                predictions={predictions}
-                setPredictions={setPredictions}
-                userUploadedImage={userUploadedImage}
-                onDraw={setMaskImage}
-                currentTool={currentTool}
-                onCanvasSizeChange={handleCanvasSizeChange}
-                currentPredictionStatus={currentPredictionStatus}
-                clear
-              />
-            </div>
-          </div>
-          <div id="asathisisit" ref={belowCanvasRef} className={`max-w-[512px] mx-auto`}>
-            <ImageNavigation imageTotal={predictions.length} />
-            <PromptForm onSubmit={handleSubmit} predictions={predictions} />
-            <div className="text-center">
-              {undoStack.length > 0 && (
-                <button className="lil-button" onClick={PerformUndo}>
-                  <StartOverIcon className="icon" />
-                  Undo
-                </button>
-              )}
-              {((predictions.length > 0 && predictions[predictions.length - 1].output) || maskImage || userUploadedImage) && (
-                <button className="lil-button" onClick={startOver}>
-                  <StartOverIcon className="icon" />
-                  Start over
-                </button>
-              )}
-              <Download predictions={predictions} />
-            </div>
-          </div>
-        </main>
-        <footer className="text-center my-4">
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Logout
-          </button>
-          <button
-            onClick={FSAMTest}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            FsamTest
-          </button>
-        </footer>
-      </div>
-    </div>
   );
 }
 

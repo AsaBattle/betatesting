@@ -10,8 +10,21 @@ export const toolbarSlice = createSlice({
     zoomWidth: 512,
     hamburgerVisible: false,
     cursor: '/pen-cursor(w)2.png', // use the pen cursor as the default
+    tolerance: 50, // the color tolerance for the magic wand tool
+    wandSelector: 'fsam', // Either the ai-wand 'fsam' or the regular magic wand 'regular'
+    viewMaskActive: false, // Whether the view mask button is active so the user is viewing the mask
   },
   reducers: {
+    setTheViewMaskActive: (state, action) => {
+      console.log('dispatch called for setViewMaskActive: ', action.payload);
+      state.viewMaskActive = action.payload;
+    },
+    setWandSelector: (state, action) => {
+      state.wandSelector = action.payload;
+    },
+    setTolerance: (state, action) => {
+      state.tolerance = action.payload;
+    },
     setCursor: (state, action) => {
       state.cursor = action.payload;
     },
@@ -38,5 +51,6 @@ export const toolbarSlice = createSlice({
 });
 
 export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, 
-                alterZoomWidth, setHamburgerVisible, setCursor } = toolbarSlice.actions;
+                alterZoomWidth, setHamburgerVisible, setCursor, setTolerance,
+                setWandSelector, setTheViewMaskActive } = toolbarSlice.actions;
 export default toolbarSlice.reducer;

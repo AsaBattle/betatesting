@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth } from '../../redux/slices/toolSlice';
+import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo } from 'lucide-react';
+import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo, Eraser } from 'lucide-react';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
+import { FSAMProcessor } from '../Utils/Utilities';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
 import Tooltip from '../tooltip';
 
@@ -31,6 +32,8 @@ function ToolbarOptions (props)  {
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
   const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
+  const magicWandTolerance = useSelector((state) => state.toolbar.tolerance);
+  const magicWandSelector = useSelector((state) => state.toolbar.wandSelector);
   const canvasRef = props.canvasRef;
 
   const currentTool = tools.find(tool => tool.name === currentToolName);
@@ -41,6 +44,10 @@ function ToolbarOptions (props)  {
   // Assuming index is still derived from Redux or props as before
   const index = useSelector((state) => (state.history.index-1));
 
+  const currentPrediction = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index]
+    : null;
+
   // This line and related calculations for currentPredictionImage remain as you requested
   const currentPredictionImage = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].output && props.predictions[index].output.length > 0
@@ -49,16 +56,72 @@ function ToolbarOptions (props)  {
     : null;
 
     
-    // Get the current state
-const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
+  // Get the current state
+  const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
 
   // Calculate aspect ratio from the current prediction if available
   let currentImageAspectRatio = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].aspectRatioName
     : aspectRatioName; // Default or fallback aspect ratio
 
-// Initialize a local state variable
-const [aRatio, setARatio] = useState(aspectRatioName);
+  // Initialize a local state variable
+  const [viewMaskRadioButton, setViewMaskRadioButton] = useState(false);
+
+  // If the current prediction has a mask, set the viewMaskActive to true
+  let currentPredictionImageMask = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].magicWandMask && props.predictions[index].magicWandMask.length > 0
+      ? props.predictions[index].magicWandMask
+      : null
+    : null;
+
+  const [viewMaskActive, setViewMaskActive] = useState(currentPredictionImageMask !== null);
+  
+  const [currentPredictionFSAMGenerationCounter, setCurrentPredictionFSAMGenerationCounter] = useState('----');
+
+  const currentPredictionAvailable = props.predictions && props.predictions[index] !== null && props.predictions.length > 0;
+
+
+  // This function is called when the aspect ratio button is clicked
+  const handleGenAIMask = async () => {
+    console.log("handleGenAIMask props.predictions: ", props.predictions);
+
+    // If the current prediction is null, return as we can't generate a mask with no image
+    if (props.predictions[index] === null ||
+      props.predictions.length <= 0)
+      return;
+
+    console.log("right before await FSAMProcessor...");
+    // Start the process of generating the AI mask via the fast segmentation model
+  await FSAMProcessor(props.predictions[index], props.setPredictions);
+    console.log("...right after await FSAMProcessor");
+
+    // flip flops the viewmaskactive state
+    //setViewMaskActive(!viewMaskActive);
+  // Update the currentPredictionFSAMGenerationCounter state after FSAMProcessor completes
+  const updatedCounter = props.predictions[index].fsamGenerationCounter;
+  setCurrentPredictionFSAMGenerationCounter(updatedCounter);
+  console.log('@@@Generating AI Mask');
+  console.log('@@@predictions: ', props.predictions);
+};
+
+useEffect(() => {
+  const updatedCounter = props.predictions && props.predictions.length > index && props.predictions[index]
+    ? props.predictions[index].fsamGenerationCounter
+    : '--';
+
+  setCurrentPredictionFSAMGenerationCounter(updatedCounter);
+}, [props.predictions, index]);
+
+  // Deactivate the view mask button if there's no mask, or activate if there is
+  useEffect(() => {
+    console.log('useEffect setting: currentPredictionImageMask: ', currentPredictionImageMask);
+    setViewMaskActive(currentPredictionImageMask !== null);
+    
+    // if there's no mask, the view mask button's state to off
+    if (!viewMaskActive || currentPredictionImageMask === null)
+      setViewMaskRadioButton(false);
+  }, [currentPredictionImageMask]);
+
 
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
@@ -69,9 +132,17 @@ const [aRatio, setARatio] = useState(aspectRatioName);
     currentImageAspectRatio = aspectRatioName;
   }, [currentToolName]);
 
+
+  useEffect(() => {
+    console.log('dispatch is being called for setViewMaskRadioButton: ', viewMaskRadioButton);
+   dispatch(setTheViewMaskActive(viewMaskRadioButton));
+  }, [viewMaskRadioButton]);
+
+
   const handleSliderChange = (value) => {
     dispatch(setBrushSize(value));
   };
+
 
   const incrementZoom = () => dispatch(alterZoomWidth(10));
   const decrementZoom = () => dispatch(alterZoomWidth(-10));
@@ -79,114 +150,130 @@ const [aRatio, setARatio] = useState(aspectRatioName);
   return (
      <div className={styles.toolbarContainer} style={{ position: 'relative' }}>
   {currentTool?.name === 'MaskPainter' && (
-  <div className={styles.sliderContainer + " text-white justify-center mx-auto"}
-  style={{ 
-    width: '100%', 
-    padding: '0 20px', 
-    marginTop: '1px', // Move everything up
-    marginRight: hamburgerVisible ? '-60px' : '0px', // Move everything left if hamburgerVisible is true
-    display: 'grid',
-    gridTemplateColumns: '1.15fr 1fr', 
-    gridTemplateRows: '40px 50px', // Set a fixed height for both rows
-    gridTemplateAreas: `
-      "undo redo"
-      "slider circle"
-    `, 
-    gap: '1px',
-    alignItems: 'start' // Align items to the start of the container, the options are start, center, end, and stretch
-  }}>
-    {/* Undo button (row 1, col 1) */}
-    <Tooltip text="Undo the last brush stroke change">
-    <button
-      onClick={() => canvasRef.current.UndoLastMaskLine()}
-      className="hover:bg-blue-700 text-white font-bold rounded"
-      style={{
-        gridArea: 'undo',
-        justifySelf: 'start', // Align to the start of the grid area
-        alignSelf: 'end', // Move down within the grid area
-        padding: '5px 10px', // Reduced padding
-        fontSize: '0.75rem', // Smaller font size
-        width: 'fit-content' // Make width fit the content
-      }}
-    >
-      <Undo/>
-    </button>
-    </Tooltip>
-
-    {/* Redo button (row 1, col 2) */}
-    <Tooltip text="Redo the last brush stroke change">
-    <button
-      onClick={() => canvasRef.current.RedoLastMaskLine()}
-      className="hover:bg-blue-700 text-white font-bold rounded"
-      style={{
-        gridArea: 'redo',
-        justifySelf: 'end', // Align to the end of the grid area
-        alignSelf: 'end', // Move down within the grid area
-        padding: '5px 10px', // Reduced padding
-        fontSize: '0.75rem', // Smaller font size
-        width: 'fit-content' // Make width fit the content
-      }}
-    >
-      <Redo/>
-    </button>
-    </Tooltip>
-
-    {/* Slider (row 2, col 1) */}
-    <div style={{
-      gridArea: 'slider',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'start' // Move up within the grid area
+    <div className={styles.sliderContainer + " text-white justify-center mx-auto"}
+    style={{ 
+      width: '100%', 
+      padding: '0 20px', 
+      marginTop: '1px', 
+      marginRight: hamburgerVisible ? '-60px' : '0px', 
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr 1fr', 
+      gridTemplateRows: '40px 50px', 
+      gridTemplateAreas: `
+        "undo middle redo"
+        "slider slider circle"
+      `, 
+      gap: '1px',
+      alignItems: 'start'
     }}>
-      <Tooltip text="changes the size of the masking brush's stroke">
-      <label htmlFor="brushSize" className="flex-shrink-0 mb-2">Brush Size</label>
-      <Slider
-        min={1}
-        max={100}
-        value={brushSize}
-        onChange={handleSliderChange}
-        railStyle={{ backgroundColor: '#eaeaea', height: 8 }}
-        trackStyle={{ backgroundColor: '#007bff', height: 8 }}
-        handleStyle={{
-          borderColor: '#007bff',
-          height: 20,
-          width: 20,
-          marginTop: -6,
-          backgroundColor: '#007bff',
+      {/* Undo button (row 1, col 1) */}
+      <Tooltip text="Undo the last brush stroke change">
+      <button
+        onClick={() => canvasRef.current.UndoLastMaskLine()}
+        className="hover:bg-blue-700 text-white font-bold rounded"
+        style={{
+          gridArea: 'undo',
+          justifySelf: 'start',
+          alignSelf: 'end',
+          padding: '5px 10px',
+          fontSize: '0.75rem',
+          width: 'fit-content'
         }}
-      />
+      >
+        <Undo/>
+      </button>
+      </Tooltip>
+
+      {/* Middle button (row 1, col 2) */}
+      <Tooltip text="Clear all strokes">
+      <button
+      onClick={() => canvasRef.current.ClearMaskLines()}
+        className="hover:bg-blue-700 text-white font-bold rounded"
+        style={{
+          gridArea: 'middle',
+          justifySelf: 'center',
+          alignSelf: 'end',
+          padding: '5px 10px',
+          fontSize: '0.75rem',
+          width: 'fit-content'
+        }}
+      >
+        <Eraser />
+      </button>
+      </Tooltip>
+
+      {/* Redo button (row 1, col 3) */}
+      <Tooltip text="Redo the last brush stroke change">
+      <button
+        onClick={() => canvasRef.current.RedoLastMaskLine()}
+        className="hover:bg-blue-700 text-white font-bold rounded"
+        style={{
+          gridArea: 'redo',
+          justifySelf: 'end',
+          alignSelf: 'end',
+          padding: '5px 10px',
+          fontSize: '0.75rem',
+          width: 'fit-content'
+        }}
+      >
+        <Redo/>
+      </button>
+      </Tooltip>
+
+      {/* Slider (row 2, col 1-2) */}
+      <div style={{
+        gridArea: 'slider',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'start'
+      }}>
+        <Tooltip text="changes the size of the masking brush's stroke">
+        <label htmlFor="brushSize" className="flex-shrink-0 mb-2">Brush Size</label>
+        <Slider
+          min={1}
+          max={100}
+          value={brushSize}
+          onChange={handleSliderChange}
+          railStyle={{ backgroundColor: '#eaeaea', height: 8 }}
+          trackStyle={{ backgroundColor: '#007bff', height: 8 }}
+          handleStyle={{
+            borderColor: '#007bff',
+            height: 20,
+            width: 20,
+            marginTop: -6,
+            backgroundColor: '#007bff',
+          }}
+        />
+        </Tooltip>
+      </div>
+
+      {/* Brush size indicator (row 2, col 3) */}
+      <Tooltip text="the size of the masking brush's stroke">
+      <div style={{ 
+        gridArea: 'circle', 
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center'
+      }}>
+        <div
+          style={{
+            position: 'absolute', 
+            marginTop: '5px', 
+            marginLeft: !hamburgerVisible ? '40px' : '0px', 
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)', 
+            width: `${brushSize}px`,
+            height: `${brushSize}px`,
+            borderRadius: '50%', 
+            backgroundColor: 'white',
+          }}
+        />
+      </div>
       </Tooltip>
     </div>
-
-    {/* Brush size indicator (row 2, col 2) */}
-    <Tooltip text="the size of the masking brush's stroke">
-    <div style={{ 
-      gridArea: 'circle', 
-      position: 'relative', // Set the position to relative
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center'
-    }}>
-      <div
-        style={{
-          position: 'absolute', // Position absolutely to center it based on transform
-          marginTop: '5px', // Move the circle down
-          marginLeft: !hamburgerVisible ? '40px' : '0px', // Move everything left if hamburgerVisible is true
-          top: '50%', // Set top to 50%
-          left: '50%', // Set left to 50%
-          transform: 'translate(-50%, -50%)', // Use transform to center the circle
-          width: `${brushSize}px`,
-          height: `${brushSize}px`,
-          borderRadius: '50%', // Makes the div a circle
-          backgroundColor: 'white',
-        }}
-      />
-    </div>
-    </Tooltip>
-  </div>
-)}
-
-
+  )}
 
 
       {/**********************************************************************/}
@@ -208,16 +295,48 @@ const [aRatio, setARatio] = useState(aspectRatioName);
         </div>
       )}
 
-
-
-
-
+     
 
       {/**********************************************************************/}
       
       {currentTool?.name === 'Wand' && (
         <div className="styles.wandContainer text-black flex items-center justify-center mx-auto">
-         <Typography>The magic wands options</Typography>
+          <div className="flex">
+            <div className="flex flex-col mr-4">
+              <button
+                onClick={handleGenAIMask}
+                className={`${styles.button} ${currentPredictionAvailable ? styles.buttonEnabled : styles.buttonDisabled}`}
+                disabled={!currentPredictionAvailable}
+              >
+                <span>Generate</span>
+                <span>AI Coloring</span>
+              </button>
+              <label className={viewMaskActive ? styles.textEnabled : styles.textDisabled}>
+                View Mask :
+                <input
+                  type="checkbox"
+                  checked={viewMaskRadioButton}
+                  onChange={(e) => setViewMaskRadioButton(e.target.checked)}
+                  disabled={!viewMaskActive}
+                />
+              </label>
+              Creation Time : {currentPredictionFSAMGenerationCounter}
+            </div>
+            <div>
+              <label htmlFor="tolerance">Tolerance:</label>
+              <input
+                type="number"
+                id="tolerance"
+                value={magicWandTolerance}
+                onChange={(e) => dispatch(setTolerance(e.target.value))}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col ml-4">
+            <button className={styles.button}>
+              Clear Mask
+            </button>
+          </div>
         </div>
       )}
 
