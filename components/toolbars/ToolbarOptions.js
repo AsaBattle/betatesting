@@ -309,8 +309,7 @@ useEffect(() => {
                 className={`${styles.button} ${currentPredictionAvailable ? styles.buttonEnabled : styles.buttonDisabled}`}
                 disabled={!currentPredictionAvailable}
               >
-                <span>Generate</span>
-                <span>AI Coloring</span>
+                <span>Generate Coloring</span>
               </button>
               <label className={viewMaskActive ? styles.textEnabled : styles.textDisabled}>
                 View Mask :
