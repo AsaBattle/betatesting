@@ -10,7 +10,7 @@ export const toolbarSlice = createSlice({
     zoomWidth: 512,
     hamburgerVisible: false,
     cursor: '/pen-cursor(w)2.png', // use the pen cursor as the default
-    tolerance: 75, // the color tolerance for the magic wand tool
+    tolerance: 50, // the color tolerance for the magic wand tool
     wandSelector: 'fsam', // Either the ai-wand 'fsam' or the regular magic wand 'regular'
     viewMaskActive: false, // Whether the view mask button is active so the user is viewing the mask
   },

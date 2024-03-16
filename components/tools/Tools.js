@@ -1,6 +1,5 @@
 import { set } from 'lodash';
 import { Wand2, Brush, ZoomIn } from 'lucide-react';
-import MagicWand from 'magic-wand-tool';
 
 function concatMasks(mask, old) {
 	let 
@@ -374,7 +373,7 @@ const magicWandTool = {
 
       const newMask = floodFillWithoutBorders(imageData, x, y, tolerance, null); // Assuming currentMask isn't needed directly
 
-      const borderMask = MagicWand.gaussBlurOnlyBorder(newMask, 15, null);
+      const borderMask = newMask;// MagicWand.gaussBlurOnlyBorder(newMask, 15, null);
 
       // Use concatMasks if previousMask exists, else use borderMask directly
       const resultMask = (previousMask && combine) ? concatMasks(borderMask, previousMask) : borderMask;
