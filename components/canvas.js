@@ -233,15 +233,19 @@ useImperativeHandle(ref, () => ({
   },
 
   ClearMagicWandResult: () => {
+    console.log("Clearing magic wand result");
     setMagicWandResultImg(null);
   },
   UndoLastMaskLine: () => {
+    console.log("Undoing last mask line");
     canvasRef.current.undo();
   },  
   RedoLastMaskLine: () => {
+    console.log("Redoing last mask line");
     canvasRef.current.redo();
   },
   ClearMaskLines: () => {
+    console.log("Clearing mask lines");
     canvasRef.current.resetCanvas();
   },
 }));
