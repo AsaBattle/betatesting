@@ -462,7 +462,7 @@ const handleSubmit = async (e) => {
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Studio Beta 1.1</title>
-          <meta name="viewport" content="initial-scale=0.5, width=device-width" />
+          <meta name="viewport" content="initial-scale=0.55, width=device-width" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>FullJourney Studio</strong>
