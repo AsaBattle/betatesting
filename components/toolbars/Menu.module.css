@@ -1,0 +1,80 @@
+/* components/Menu.module.css */
+
+/* components/Menu.module.css */
+.menuBar {
+    display: flex;
+    background-color: #1e1e1e;
+    color: white;
+    padding: 5px 10px;
+    align-items: center;
+    /* Add a max-width if needed to prevent the menu from stretching */
+    max-width: 800px;
+    /* Optional: Add a border or shadow for better visibility */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  .menuList {
+    list-style: none;
+    margin: 0;
+    padding-left: 0; /* Remove padding to align with the edge of the menu bar */
+    display: flex;
+    flex: 1;
+    justify-content: space-around; /* Adjust spacing around items */
+  }
+  
+  .menuItem {
+    cursor: pointer;
+    padding: 5px 15px; /* Control the spacing of menu items */
+    position: relative;
+    white-space: nowrap; /* Prevents text from wrapping */
+  }
+  
+  .menuItem:hover,
+  .menuItem:hover .dropdown {
+    background-color: #333;
+  }
+  
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #1e1e1e;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .menuItem:hover .dropdown {
+    display: block;
+  }
+  
+  .dropdown li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .dropdown li:hover {
+    background-color: #555;
+  }
+  
+  .aboutItem {
+    padding: 5px 15px;
+    margin-left: auto; /* This will push the About button to the right */
+  }
+  
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 768px) {
+    .menuList {
+      justify-content: space-between; /* Adjusts for better spacing on smaller screens */
+    }
+  
+    .menuItem:not(:last-child) {
+      padding-right: 10px; /* Adjust right padding for each menu item except the last one */
+    }
+  
+    .aboutItem {
+      padding-right: 15px; /* Consistent padding for the About item */
+    }
+  }
+  

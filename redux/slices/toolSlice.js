@@ -9,12 +9,16 @@ export const toolbarSlice = createSlice({
     aspectRatioName: '1:1',
     zoomWidth: 512,
     hamburgerVisible: false,
-    cursor: '/pen-cursor(w)2.png', // use the pen cursor as the default
-    tolerance: 50, // the color tolerance for the magic wand tool
-    wandSelector: 'fsam', // Either the ai-wand 'fsam' or the regular magic wand 'regular'
-    viewMaskActive: false, // Whether the view mask button is active so the user is viewing the mask
+    cursor: '/pen-cursor(w)2.png',  // use the pen cursor as the default
+    tolerance: 50,                  // the color tolerance for the magic wand tool
+    wandSelector: 'fsam',           // Either the ai-wand 'fsam' or the regular magic wand 'regular'
+    viewMaskActive: false,          // Whether the view mask button is active so the user is viewing the mask
+    predictionModelName:  'DreamShaper',
   },
   reducers: {
+    setPredictionModelName: (state, action) => {
+      state.modelName = action.payload;
+    },
     setTheViewMaskActive: (state, action) => {
       console.log('dispatch called for setViewMaskActive: ', action.payload);
       state.viewMaskActive = action.payload;
@@ -52,5 +56,5 @@ export const toolbarSlice = createSlice({
 
 export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, 
                 alterZoomWidth, setHamburgerVisible, setCursor, setTolerance,
-                setWandSelector, setTheViewMaskActive } = toolbarSlice.actions;
+                setWandSelector, setTheViewMaskActive, setPredictionModelName } = toolbarSlice.actions;
 export default toolbarSlice.reducer;

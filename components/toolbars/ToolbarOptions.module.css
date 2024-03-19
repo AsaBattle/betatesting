@@ -1,18 +1,28 @@
-.toolbarContainer {
-  position: relative; /* Add this to establish a positioning context for absolute children */
-  background-color: #4A90E2; /* Blue background */
-  /*background: linear-gradient(to bottom, #4A90E2 0%, #144986 100%);*/
-  background: #4A90E2;
-  width: 512px; /* Match the width to your canvas */
-  height: 110px; /* Double the height you want */
-  margin: auto; /* Centers the toolbar */
+ .toolbarContainer {
+  position: relative;
+  background-color: #4A90E2;
+  width: 512px;
+  height: 110px;
+  margin: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px; /* Optional, for rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* Optional, for shadow */
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
+.wandContainer {
+  position: relative;
+  background-color: #4A90E2;
+  width: 512px;
+  height: 140px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
 .sliderContainer {
   position: relative;
 }
@@ -24,20 +34,6 @@
 .selectedButton {
   background-color: #353db8;
   /* ... styles for selected button ... */
-}
-
-.wandContainer {
-  position: relative;
-  background-color: #4A90E2;
-  width: 512px;
-  height: 110px;
-  margin: auto;
-  margin-right: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 
