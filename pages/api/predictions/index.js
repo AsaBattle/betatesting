@@ -8,7 +8,7 @@ const addBackgroundToPNG = require("lib/add-background-to-png");
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '30mb',
+      sizeLimit: '100mb',
     },
   },
 }
