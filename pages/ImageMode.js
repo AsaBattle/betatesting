@@ -465,7 +465,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.55, width=device-width" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney Studio</strong>
+          <strong>FullJourney AI Studio</strong>
         </p>
         {/*<div className={styles.menuBar}>
           <Menu
