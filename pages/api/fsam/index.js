@@ -1,11 +1,26 @@
 import axios from 'axios';
 
+
+
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '100mb',
+      },
+    },
+  }
+
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        const body = {
+        const body = JSON.stringify({
             version: '371aeee1ce0c5efd25bbef7a4527ec9e59188b963ebae1eeb851ddc145685c17',
-            input: req.body, // Assuming the body sent to this API endpoint already contains the FastSAM-specific parameters
-        };
+            input: { 
+              ...req.body, // Spread the properties of req.body here
+              disable_safety_checker: true,
+              scheduler: "DDIM", // Add the scheduler property
+            },
+          });
+
 
         console.log('Request body is:', body);
 
