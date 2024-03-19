@@ -1,13 +1,5 @@
 import axios from 'axios';
 
-
-export const config = {
-    api: {
-      bodyParser: {
-        sizeLimit: '30mb',
-      },
-    },
-  }
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         const body = {

@@ -9,7 +9,6 @@ import axios from "axios";
 import { serialize } from 'cookie';
 import { XCircle as StartOverIcon } from "lucide-react";
 import styles from './ImageMode.module.css';
-import MenuBar from '../components/toolbars/MenuBar';
 import VerticalToolbar from '../components/toolbars/VerticalToolbar';
 import ErrorModal from '../components/errorModal';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
@@ -454,6 +453,7 @@ const handleSubmit = async (e) => {
   }, [generateClicked]);
 
 
+
   return (
     <div className={styles.layout}>
       <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
@@ -461,12 +461,23 @@ const handleSubmit = async (e) => {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>FullJourney.AI Studio Beta 1.09aa</title>
-          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+          <title>FullJourney.AI Studio Beta 1.1</title>
+          <meta name="viewport" content="initial-scale=0.65, width=device-width" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>FullJourney.AI Studio</strong>
         </p>
+        {/*<div className={styles.menuBar}>
+          <Menu
+            onModeChange={placeholderHandler}
+            onProfileClick={placeholderHandler}
+            onSave={placeholderHandler}
+            onLoad={placeholderHandler}
+            onUndo={placeholderHandler}
+            onRedo={placeholderHandler}
+          />
+       </div>*/}
+        
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
           <div ref={toolbaroptionsRef}>
@@ -519,32 +530,10 @@ const handleSubmit = async (e) => {
           >
             Logout
           </button>
-          <button
-            onClick={FSAMTest}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            FsamTest
-          </button>
         </footer>
       </div>
     </div>
   );
-}
-
-
-
-
-
-
-function readAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const fr = new FileReader();
-    fr.onerror = reject;
-    fr.onload = () => {
-      resolve(fr.result);
-    };
-    fr.readAsDataURL(file);
-  });
 }
 
 
