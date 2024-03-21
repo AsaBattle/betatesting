@@ -48,8 +48,8 @@ export default async function handler(req, res) {
     // https://replicate.com/stability-ai/stable-diffusion
     // This one(startes with 1c7d4c8d) is using DALLE
     
-    //version: "1c7d4c8dec39c7306df7794b28419078cb9d18b9213ab1c21fdc46a1deca0144",
-    version: "9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96",
+    //version: "1c7d4c8dec39c7306df7794b28419078cb9d18b9213ab1c21fdc46a1deca0144",  // Dalle
+    version: "9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96", // Dreamshaper version
     input: { 
       ...req.body, // Spread the properties of req.body here
       disable_safety_checker: true,
