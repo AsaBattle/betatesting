@@ -53,7 +53,9 @@ export default async function handler(req, res) {
     input: { 
       ...req.body, // Spread the properties of req.body here
       disable_safety_checker: true,
-      scheduler: "DDIM", // Add the scheduler property
+      num_inference_steps: 6,
+      apply_watermark: false,
+      scheduler: "K_EULER_ANCESTRAL", // old one was "DDIM", // Add the scheduler property
     },
   });
   
