@@ -29,6 +29,11 @@ function useWindowWidth() {
 }
 
 function ToolbarOptions (props)  {
+  const canUndo = false;
+  const canRedo = false;
+  const showUndoRedo = false;
+
+
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
   const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
@@ -298,48 +303,104 @@ useEffect(() => {
         </div>
       )}
   
-      {currentTool?.name === 'Wand' && (
+        {currentTool?.name === 'Wand' && (
         <div className={styles.wandContainer}>
-          <div className="text-black flex items-center justify-center mx-auto">
-            <div className="flex">
-              <div className="flex flex-col mr-4">
+          <div className="text-black flex items-center justify-center mx-auto" style={{ width: '100%', padding: '0 20px' }}>
+            <div className="flex flex-col items-center w-full">
+              <div className={styles.sliderContainer + " text-white justify-center mx-auto w-full"}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr',
+                  gridTemplateRows: '40px 50px',
+                  gridTemplateAreas: `
+                    "undo clear redo"
+                    "slider slider circle"
+                  `,
+                  gap: '1px',
+                  alignItems: 'start'
+                }}
+              >
+                {/* Undo button (row 1, col 1) */}
+                <Tooltip text="Undo the last magic wand operation">
+                  <button
+                    onClick={() => canvasRef.current.UndoMagicWandResult()}
+                    className={`${styles.button} 
+                                ${styles.toolbarButton}`}
+                    style={{ gridArea: 'undo', width: '40px', height: '40px', fontSize: '14px', visibility: 'hidden' }}
+                  >
+                    <Undo />
+                  </button>
+                </Tooltip>
+
+                {/* Clear Mask button (row 1, col 2) */}
                 <button
-                  onClick={handleGenAIMask}
-                  className={`${styles.button} ${currentPredictionAvailable ? styles.buttonEnabled : styles.buttonDisabled}`}
-                  disabled={!currentPredictionAvailable}
+                  onClick={() => canvasRef.current.ClearMagicWandResult()}
+                  className={`${styles.button} 
+                              ${styles.toolbarButton}`}
+                  style={{ gridArea: 'clear', width: '120px', height: '40px', fontSize: '14px' }}
                 >
-                  <span>Generate Coloring</span>
+                  Clear Mask
                 </button>
-                <label className={viewMaskActive ? styles.textEnabled : styles.textDisabled}>
-                  View Mask :
-                  <input
-                    type="checkbox"
-                    checked={viewMaskRadioButton}
-                    onChange={(e) => setViewMaskRadioButton(e.target.checked)}
-                    disabled={!viewMaskActive}
-                  />
-                </label>
-                Creation Time : {currentPredictionFSAMGenerationCounter}
+
+                {/* Redo button (row 1, col 3) */}
+                <Tooltip text="Redo the last magic wand operation">
+                  <button
+                    onClick={() => canvasRef.current.RedoMagicWandResult()}
+                    className={`${styles.button} ${styles.toolbarButton}`}
+                    style={{ gridArea: 'redo', width: '40px', height: '40px', fontSize: '14px', visibility: 'hidden' }}
+                  >
+                    <Redo />
+                  </button>
+                </Tooltip>
+
+                {/* Slider (row 2, col 1-2) */}
+                <div style={{
+                  gridArea: 'slider',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'start',
+                  width: '100%',
+                  marginRight: hamburgerVisible ? '-60px' : '0px',
+                }}>
+                  <Tooltip text="Changes the tolerance of the magic wand tool">
+                    <label htmlFor="tolerance" className="flex-shrink-0 mb-2">Tolerance</label>
+                    <Slider
+                      min={1}
+                      max={100}
+                      value={magicWandTolerance}
+                      onChange={(value) => dispatch(setTolerance(value))}
+                      railStyle={{ backgroundColor: '#eaeaea', height: 8 }}
+                      trackStyle={{ backgroundColor: '#007bff', height: 8 }}
+                      handleStyle={{
+                        borderColor: '#007bff',
+                        height: 20,
+                        width: 20,
+                        marginTop: -6,
+                        backgroundColor: '#007bff',
+                      }}
+                    />
+                  </Tooltip>
+                </div>
+
+                {/* Tolerance value indicator (row 2, col 3) */}
+                <Tooltip text="The current tolerance value of the magic wand tool">
+                  <div style={{
+                    gridArea: 'circle',
+                    position: 'relative',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}>
+                    <Typography variant="body1" style={{ marginTop: '5px', marginLeft: !hamburgerVisible ? '40px' : '0px' }}>
+                      {magicWandTolerance}
+                    </Typography>
+                  </div>
+                </Tooltip>
               </div>
-              <div>
-                <label htmlFor="tolerance">Tolerance:</label>
-                <input
-                  type="number"
-                  id="tolerance"
-                  value={magicWandTolerance}
-                  onChange={(e) => dispatch(setTolerance(e.target.value))}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col ml-4">
-              <button className={styles.button} onClick={() => canvasRef.current.ClearMagicWandResult()}>
-                Clear Mask
-              </button>
             </div>
           </div>
         </div>
       )}
-  
       {currentTool?.name === 'AspectRatio' && (
         <div className={styles.toolbarContainer}>
           <div className={styles.aspectRatioContainer + ' text-white flex flex-wrap justify-center mx-auto'}
