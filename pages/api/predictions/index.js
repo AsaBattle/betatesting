@@ -8,7 +8,7 @@ const addBackgroundToPNG = require("lib/add-background-to-png");
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '100mb',
+      sizeLimit: '30mb',
     },
   },
 }
@@ -48,8 +48,8 @@ export default async function handler(req, res) {
     // https://replicate.com/stability-ai/stable-diffusion
     // This one(startes with 1c7d4c8d) is using DALLE
     
-    version: "1c7d4c8dec39c7306df7794b28419078cb9d18b9213ab1c21fdc46a1deca0144",
-    //version: "9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96",
+    //version: "1c7d4c8dec39c7306df7794b28419078cb9d18b9213ab1c21fdc46a1deca0144",
+    version: "9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96",
     input: { 
       ...req.body, // Spread the properties of req.body here
       disable_safety_checker: true,
@@ -72,7 +72,7 @@ export default async function handler(req, res) {
     let error = await response.json();
     res.statusCode = 500;
     res.end(JSON.stringify({ detail: error.detail }));
-    return;
+    return; 
   }
 
   const prediction = await response.json();

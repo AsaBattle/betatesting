@@ -446,13 +446,20 @@ const handleSubmit = async (e) => {
     }
   }, []);
 
+
+
+
+
+
   useEffect(() => {
     if (generateClicked) {
       setGenerateClicked(false);
     }
   }, [generateClicked]);
 
+  
 
+  
 
   return (
     <div className={styles.layout}>
@@ -468,14 +475,13 @@ const handleSubmit = async (e) => {
           <strong>FullJourney AI Studio</strong>
         </p>
         {/*<div className={styles.menuBar}>
-          <Menu
+            <Menu
             onModeChange={placeholderHandler}
             onProfileClick={placeholderHandler}
             onSave={placeholderHandler}
             onLoad={placeholderHandler}
             onUndo={placeholderHandler}
             onRedo={placeholderHandler}
-          />
        </div>*/}
         
         <main className="container mx-auto p-2">
