@@ -7,7 +7,7 @@ import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Und
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
-import { FSAMProcessor } from '../Utils/Utilities';
+import { FSAMProcessor } from '../Util/Utilities';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
 import Tooltip from '../tooltip';
 

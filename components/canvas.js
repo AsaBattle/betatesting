@@ -60,7 +60,7 @@ const Canvas = forwardRef((props, ref) => {
 
   const { width, height } = getResolution(currentAspectRatioName);
 
-  const isTall = height > width;
+  const isTall = false; //height > width;
   const canvasContainerStyle = isTall ? {
     height: '80vh',
     maxWidth: '100%',
