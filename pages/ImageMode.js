@@ -472,18 +472,8 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.688, width=device-width user-scalable=no" /> 
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney AI Studio</strong>
+          <strong>FullJourney.AI Studio</strong>
         </p>
-        {/*<div className={styles.menuBar}>
-            <Menu
-            onModeChange={placeholderHandler}
-            onProfileClick={placeholderHandler}
-            onSave={placeholderHandler}
-            onLoad={placeholderHandler}
-            onUndo={placeholderHandler}
-            onRedo={placeholderHandler}
-       </div>*/}
-        
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
           <div ref={toolbaroptionsRef}>
