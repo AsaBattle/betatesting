@@ -13,9 +13,17 @@ export const toolbarSlice = createSlice({
     tolerance: 50,                  // the color tolerance for the magic wand tool
     wandSelector: 'fsam',           // Either the ai-wand 'fsam' or the regular magic wand 'regular'
     viewMaskActive: false,          // Whether the view mask button is active so the user is viewing the mask
+    toolbarVisibility: true,           // Whether the toolbar is visible
     predictionModelName:  'DreamShaper',
   },
   reducers: {
+    setToolbarVisibility: (state, action) => {
+      state.toolbarVisibility = action.payload;
+      if (action.payload)
+        console.log('Toolbar is visible');
+      else
+        console.log('Toolbar is hidden');
+    },
     setPredictionModelName: (state, action) => {
       state.modelName = action.payload;
     },
@@ -56,5 +64,6 @@ export const toolbarSlice = createSlice({
 
 export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, 
                 alterZoomWidth, setHamburgerVisible, setCursor, setTolerance,
-                setWandSelector, setTheViewMaskActive, setPredictionModelName } = toolbarSlice.actions;
+                setWandSelector, setTheViewMaskActive, setPredictionModelName,
+                setToolbarVisibility } = toolbarSlice.actions;
 export default toolbarSlice.reducer;
