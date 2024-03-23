@@ -166,7 +166,7 @@ useEffect(() => {
               marginRight: hamburgerVisible ? '-60px' : '0px',
               display: 'grid',
               gridTemplateColumns: '1fr 1fr 1fr',
-              gridTemplateRows: '40px 50px',
+              gridTemplateRows: '60px 50px', // Increased row height for the buttons
               gridTemplateAreas: `
                 "undo middle redo"
                 "slider slider circle"
@@ -184,14 +184,15 @@ useEffect(() => {
                   justifySelf: 'start',
                   alignSelf: 'end',
                   padding: '5px 10px',
-                  fontSize: '0.75rem',
-                  width: 'fit-content'
+                  fontSize: '1.3125rem', // Increased font size by 75%
+                  width: 'fit-content',
+                  transform: 'scale(1.75)' // Increased button size by 75%
                 }}
               >
                 <Undo />
               </button>
             </Tooltip>
-  
+
             {/* Middle button (row 1, col 2) */}
             <Tooltip text="Clear all strokes">
               <button
@@ -202,14 +203,15 @@ useEffect(() => {
                   justifySelf: 'center',
                   alignSelf: 'end',
                   padding: '5px 10px',
-                  fontSize: '0.75rem',
-                  width: 'fit-content'
+                  fontSize: '1.3125rem', // Increased font size by 75%
+                  width: 'fit-content',
+                  transform: 'scale(1.75)' // Increased button size by 75%
                 }}
               >
                 <Eraser />
               </button>
             </Tooltip>
-  
+
             {/* Redo button (row 1, col 3) */}
             <Tooltip text="Redo the last brush stroke change">
               <button
@@ -220,13 +222,15 @@ useEffect(() => {
                   justifySelf: 'end',
                   alignSelf: 'end',
                   padding: '5px 10px',
-                  fontSize: '0.75rem',
-                  width: 'fit-content'
+                  fontSize: '1.3125rem', // Increased font size by 75%
+                  width: 'fit-content',
+                  transform: 'scale(1.75)' // Increased button size by 75%
                 }}
               >
                 <Redo />
               </button>
             </Tooltip>
+
   
             {/* Slider (row 2, col 1-2) */}
             <div style={{

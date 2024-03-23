@@ -1,8 +1,8 @@
- .toolbarContainer {
+.toolbarContainer {
   position: relative;
   background-color: #4A90E2;
   width: 512px;
-  height: 110px;
+  height: 160px; /* Increased height to accommodate larger buttons */
   margin: auto;
   display: flex;
   justify-content: center;
