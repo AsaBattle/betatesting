@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { Menu } from 'lucide-react'; // Ensure this import is correct
 import { useDispatch, useSelector } from 'react-redux';
-import { setHamburgerVisible, setCurrentTool } from '../../redux/slices/toolSlice';
+import { setHamburgerVisible, setCurrentTool, setToolbarVisibility } from '../../redux/slices/toolSlice';
 import { tools } from '../tools/Tools';
 import styles from './VerticalToolbar.module.css';
 
@@ -37,6 +37,7 @@ const VerticalToolbar = (props) => {
   useEffect(() => {
     console.log('VerticalToolbar: Setting hamburger visibility: ', isSmallScreen);
     dispatch(setHamburgerVisible(isSmallScreen));
+    dispatch(setToolbarVisibility(!isSmallScreen)); // Hide toolbar on small screens
   }, [isSmallScreen]);
 
 
@@ -44,7 +45,7 @@ const VerticalToolbar = (props) => {
   const handleButtonClick = (tool) => {
     dispatch(setCurrentTool(tool.name));
     setIsToolbarVisible(false); // Hide toolbar after selection on small screens
-    
+    dispatch(setToolbarVisibility(false)); // Hide toolbar on small screens
     //tool.setup(props.canvasRef)
 
     
@@ -54,7 +55,7 @@ const VerticalToolbar = (props) => {
   return (
     <>
       {isSmallScreen &&  (
-        <button className={styles.hamburger} onClick={() => setIsToolbarVisible(prev => !prev)}>
+        <button className={styles.hamburger} onClick={() => {setIsToolbarVisible(prev => {dispatch(setToolbarVisibility(!prev)); return !prev;})}}>
           <Menu /> {/* Adjust the size as needed */}
         </button>
       )}

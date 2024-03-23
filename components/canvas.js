@@ -26,6 +26,7 @@ const Canvas = forwardRef((props, ref) => {
   const [predictionStatus, setPredictionStatus] = props.currentPredictionStatus;
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const currentTool = tools.find(tool => tool.name === currentToolName);
+  const isToolbarVisible = useSelector((state) => state.toolbar.toolbarVisibility);
   const dispatch = useDispatch();
   const [combinedImg, setCombinedImg] = useState(null); // Holds the combined image of the magic wand tool and the ReactSketchCanvas mask
   const [mask, setMask] = useState(null); // Holds the mask used by the magic wand tool
@@ -116,6 +117,20 @@ const Canvas = forwardRef((props, ref) => {
     console.log('Canvas.js: Setting cursor to: ', currentTool.cursor);
     canvasContainer.style.cursor = currentTool.cursor;
   }, [currentToolName]);
+
+  useEffect(() => {
+    setAllowDrawing(!isToolbarVisible);
+  }, [isToolbarVisible]);
+
+
+  useEffect(() => {
+    if (props.predictions.length <= 0) {
+      setAllowDrawing(false);
+    } else {
+      setAllowDrawing(true);
+    }
+  }, [props.predictions.length]);
+
 
   const handleCanvasClick = (event) => {
     const cc = document.getElementById('canvasContainer');
