@@ -1,5 +1,5 @@
 import { set } from 'lodash';
-import { Wand2, Brush, ZoomIn } from 'lucide-react';
+import { Wand2, Brush, ZoomIn, Divide } from 'lucide-react';
 
 function concatMasks(mask, old) {
 	let 
@@ -407,11 +407,12 @@ export const tools = [
       console.log('Processing MaskPainter');
     }
   },
+  magicWandTool,
   {
     name: 'AspectRatio',
     label: 'Aspect Ratio',
-    icon: <ZoomIn />,
-    renderInToolbar: false,
+    icon: <Divide />,
+    renderInToolbar: true,
     cursor: 'zoom-in',
     setup: function (canvasReference) {
       console.log('Setting up aspect ratio');
@@ -420,7 +421,6 @@ export const tools = [
       console.log('Processing aspect ratio');
     }
   },
-  magicWandTool
    /*{ 
     name: 'Zoom',
     label: 'Zoom In/Out',

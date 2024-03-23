@@ -408,65 +408,59 @@ useEffect(() => {
           >
             <div className="flex flex-col items-center">
               <Button
-                style={{ margin: '5px' }}
+                style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
                 variant="contained"
                 onClick={() => handleAspectRatioClick('1:1')}
-                startIcon={<Square />}
+                startIcon={<Square style={{ fontSize: '20px' }} />}
                 size="large"
                 className={`${styles.button} ${selectedAspectRatio === '1:1' ? styles.selectedButton : ''}`}
               >
-                <Typography>1:1</Typography>
+                <Typography style={{ fontSize: '16px' }}>1:1</Typography>
               </Button>
-  
-              <Typography className="text-center mt-2">Current Image: {currentImageAspectRatio} </Typography>
-  
+              <Typography className="text-center mt-2">Current Image: {currentImageAspectRatio}</Typography>
             </div>
-  
             <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
               <Button
-                style={{ margin: '5px' }}
+                style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
                 variant="contained"
                 onClick={() => handleAspectRatioClick('16:9')}
-                startIcon={<RectangleHorizontal />}
+                startIcon={<RectangleHorizontal style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
                 size="large"
                 className={`${styles.button} ${selectedAspectRatio === '16:9' ? styles.selectedButton : ''}`}
               >
-                <Typography>16:9</Typography>
+                <Typography style={{ fontSize: '16px' }}>16:9</Typography>
               </Button>
-  
               <Button
-                style={{ margin: '5px' }}
+                style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
                 variant="contained"
                 onClick={() => handleAspectRatioClick('9:16')}
-                startIcon={<RectangleVertical />}
+                startIcon={<RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
                 size="large"
                 className={`${styles.button} ${selectedAspectRatio === '9:16' ? styles.selectedButton : ''}`}
               >
-                <Typography>9:16</Typography>
+                <Typography style={{ fontSize: '16px' }}>9:16</Typography>
               </Button>
             </div>
-  
             <div className="flex flex-col items-center">
               <Button
-                style={{ margin: '5px' }}
+                style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
                 variant="contained"
                 onClick={() => handleAspectRatioClick('4:3')}
-                startIcon={<RectangleHorizontal style={{ transform: 'scale(1.5)' }} />}
+                startIcon={<RectangleHorizontal style={{ fontSize: '20px', transform: 'scale(1.5)' }} />}
                 size="large"
                 className={`${styles.button} ${selectedAspectRatio === '4:3' ? styles.selectedButton : ''}`}
               >
-                <Typography>4:3</Typography>
+                <Typography style={{ fontSize: '16px' }}>4:3</Typography>
               </Button>
-  
               <Button
                 variant="contained"
-                style={{ margin: '5px' }}
+                style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
                 onClick={() => handleAspectRatioClick('3:4')}
-                startIcon={<RectangleVertical style={{ transform: 'scale(1.5)' }} />}
+                startIcon={<RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.5)' }} />}
                 size="large"
                 className={`${styles.button} ${selectedAspectRatio === '3:4' ? styles.selectedButton : ''}`}
               >
-                <Typography>3:4</Typography>
+                <Typography style={{ fontSize: '16px' }}>3:4</Typography>
               </Button>
             </div>
           </div>
