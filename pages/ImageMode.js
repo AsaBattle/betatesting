@@ -22,7 +22,6 @@ import { set } from "lodash";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
-
 export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
     const [error, setError] = useState(null);

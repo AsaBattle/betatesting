@@ -76,10 +76,10 @@ export default function PromptForm(props) {
           Generate
         </button>
 
-        {/* Aspect Ratio button */}
+        {/* Aspect Ratio button
         <button type="button" onClick={handleAspectRatio} className="bg-gray-200 border border-gray-100 text-gray-700 rounded-md px-4 py-4 text-2xl" style={{boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.8)'}}>
           {aspectRatioName}
-        </button>
+        </button> */}
       </div>
     </form>
   );
