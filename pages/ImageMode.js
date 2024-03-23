@@ -468,11 +468,11 @@ const handleSubmit = async (e) => {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>FullJourney.AI Studio Beta 1.1</title>
+          <title>FullJourney.AI Studio Beta 1.2</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" /> 
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney...AI Studio</strong>
+          <strong>FullJourney.AI Studio</strong>
         </p>
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
@@ -499,7 +499,7 @@ const handleSubmit = async (e) => {
               />
             </div>
           </div>
-          <div id="asathisisit" ref={belowCanvasRef} className={`max-w-[512px] mx-auto`}>
+          <div id="asathisisit" ref={belowCanvasRef} className={`max-w-[512px] mx-auto mt-4`}>
             <ImageNavigation imageTotal={predictions.length} />
             <PromptForm onSubmit={handleSubmit} predictions={predictions} />
             <div className="text-center">

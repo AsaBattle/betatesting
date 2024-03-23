@@ -21,42 +21,46 @@ const ImageNavigation = (props) => {
     const handleChange = (event, value) => {
         console.log('handleChange is executing: ' + (value));
         dispatch(setIndex(value));
-      };
-
+    };
 
     return (
         <div>
-        {props.imageTotal === 0 && 
-            <div className="text-center font-helvetica text-xl text-white">
-                 <div className="flex flex-col items-center justify-center">
-                No Images to Display</div></div>}
-        {props.imageTotal > 0 && (
-          <div className="text-center font-helvetica text-xl text-white">
-            <div className="flex flex-col items-center justify-center">
-         
-              <Pagination 
-                    count={props.imageTotal} 
-                    page={index}
-                    onChange={handleChange} 
-                    sx={{
-                        "& .MuiPaginationItem-root": {
-                        color: 'pink', // Color of all items
-                        },
-                        "& .MuiPaginationItem-root.Mui-selected": {
-                        color: 'yellow', // Color of the selected item
-                        },
-                        "& .MuiPaginationItem-ellipsis": {
-                        color: 'white', // Color of the ellipsis (...)
-                        },
-                        "& .MuiPaginationItem-icon": {
-                        color: 'white', // Color of the icons
-                        },
-                    }}
-                />
-            </div>
-          </div>
-        )}
-      </div>
+            {props.imageTotal === 0 && 
+                <div className="text-center font-helvetica text-xl text-white">
+                    <div className="flex flex-col items-center justify-center">
+                        No Images to Display
+                    </div>
+                </div>
+            }
+            {props.imageTotal > 0 && (
+               <div className="text-center font-helvetica text-xl text-white">
+               <div className="flex flex-col items-center justify-center">
+                   <Pagination 
+                       count={props.imageTotal} 
+                       page={index}
+                       onChange={handleChange} 
+                       sx={{
+                           "& .MuiPaginationItem-root": {
+                               color: 'pink', // Color of all items
+                               fontSize: '1.5rem', // Increase the font size of the numbers
+                               margin: '0 1.25rem', // Add horizontal margin between numbers
+                           },
+                           "& .MuiPaginationItem-root.Mui-selected": {
+                               color: 'yellow', // Color of the selected item
+                           },
+                           "& .MuiPaginationItem-ellipsis": {
+                               color: 'white', // Color of the ellipsis (...)
+                           },
+                           "& .MuiPaginationItem-icon": {
+                               color: 'white', // Color of the icons
+                               fontSize: '2rem', // Increase the size of the icons
+                           },
+                       }}
+                   />
+               </div>
+           </div>
+            )}
+        </div>
     );
 };
 
