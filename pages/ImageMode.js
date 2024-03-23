@@ -469,10 +469,10 @@ const handleSubmit = async (e) => {
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Studio Beta 1.1</title>
-          <meta name="viewport" content="initial-scale=0.69, width=device-width user-scalable=no" /> 
+          <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" /> 
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney..AI Studio</strong>
+          <strong>FullJourney...AI Studio</strong>
         </p>
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
