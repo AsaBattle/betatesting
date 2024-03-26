@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     userData = JSON.parse(cookies.user || '{}');
 
     // Now check to make sure the user has the necessary credits to make a prediction
-    details = await CheckAndSubtractCredits(userData, 1);
+    details = await CheckAndSubtractCredits(userData, req.body.userId, 1);
     if (details.worked === false) {
       res.statusCode = 403;
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
@@ -38,10 +38,6 @@ export default async function handler(req, res) {
     (a, [k, v]) => (v == null ? a : ((a[k] = v), a)),
     {}
   );
-
-  /*if (req.body.mask) {
-    req.body.mask = addBackgroundToPNG(req.body.mask);
-  }*/
 
   const body = JSON.stringify({
     // Pinned to a specific version of Stable Diffusion, fetched from:
@@ -86,7 +82,7 @@ export default async function handler(req, res) {
 
 
 
-async function CheckAndSubtractCredits(userData, creditsToSubtract) {
+async function CheckAndSubtractCredits(userData, userUUID, creditsToSubtract) {
   let response;
   let currentCredits;
   let newCredits;
@@ -99,7 +95,7 @@ async function CheckAndSubtractCredits(userData, creditsToSubtract) {
     currentCredits = parseInt(currentCredits);
     newCredits = currentCredits - creditsToSubtract;
   } catch (error) {
-    console.error("Error when trying to get user credits." +error);
+    console.error("Here is the error - Error when trying to get user credits." +error);
     return  {worked: false, reason: "Error getting user credits."};
   }
 
