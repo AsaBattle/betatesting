@@ -15,9 +15,9 @@ import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth } from '../redux/slices/toolSlice';
-import { pushToUndo, undo, redo, setIndex, setCurrentImage } from '../redux/slices/historySlice'; // Adjust the import path
+import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
-import { set } from "lodash";
+import { v4 as uuidv4 } from 'uuid';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -110,6 +110,27 @@ export default function Home(theUserData) {
           }
     };
     
+
+    // We keep track of each user with a unique identifier, stored in a cookie and local storage
+    useEffect(() => {
+      // Check if the user identifier exists in the cookie
+      const userIdCookie = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      
+      if (!userIdCookie) {
+        // Generate a unique user identifier
+        const userId = uuidv4();
+
+        console.log("User did not yet have a userId, so we are setting it to: ", userId);
+
+        // Store the user identifier in a cookie
+        document.cookie = `userId=${userId}; path=/`;
+        
+        // You can also store it in local storage if needed
+        localStorage.setItem('userId', userId);
+      }
+    }, []);
+
+
     useEffect(() => {
       console.log("is loading is: ", isLoading);
     }, [isLoading]);
@@ -325,6 +346,7 @@ const handleSubmit = async (e) => {
   const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
 
   const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
+ 
   const body = {
     prompt: e.target.prompt.value,
     image: combinedMask ? currentPredictionOutput : null,
@@ -332,6 +354,7 @@ const handleSubmit = async (e) => {
     width,  // Include width
     height, // Include height
     aspectRatioName: currentAspectRatioName, // Include the aspect ratio name if needed by your backend
+    userId: document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1"), // Include the user identifier
   };
 
   const response = await fetch("/api/predictions", {
@@ -533,7 +556,53 @@ const handleSubmit = async (e) => {
 
 
 
+export async function getServerSideProps(context) {
+  const { req, res } = context;
+  const cookies = req.headers.cookie || '';
 
+  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
+    console.log("false Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+    console.log("Sending request for the users login data to the server...")
+    try {
+      const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
+        headers: { Cookie: cookies },
+        withCredentials: true,
+      });
+
+      console.log("response.data is: ", response.data);
+      const userData = response.data;
+
+      // Serialize the user data into a cookie string
+      const userDataCookie = serialize('user', JSON.stringify(userData), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
+        sameSite: 'strict',
+        maxAge: 3600, // 1 hour
+        path: '/',
+      });
+
+      // Set the cookie in the response header
+      res.setHeader('Set-Cookie', userDataCookie);
+
+      return { props: { userData } };
+    } catch (error) {
+      console.error('No user data, this must be a first time user Error message:', error);
+      
+      // Allow first-time users to access the page
+      return { props: {} };
+    }
+  } else {
+    console.log("true Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
+
+    return {
+      props: {
+        isAuthenticated: true,
+      },
+    };
+  }
+}
+
+/* Code before letting users try the site without having to log in
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const cookies = req.headers.cookie || '';
@@ -562,18 +631,6 @@ export async function getServerSideProps(context) {
       // Set the cookie in the response header
       res.setHeader('Set-Cookie', userDataCookie);
 
-      /*
-      // check if the user has a subscription
-      if (userData.subscription_status === 'free') {
-        console.log("User is not subscribed");
-        return {
-          redirect: {
-            destination: '/Subscribe',
-            permanent: false,
-          },
-        };
-      }*/
-
       return { props: { userData } };
     } catch (error) {
       console.error('No user data!!! Error:', error);
@@ -593,4 +650,4 @@ export async function getServerSideProps(context) {
       },
     };
   }
-}
+} */
