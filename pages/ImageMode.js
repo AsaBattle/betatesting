@@ -14,9 +14,11 @@ import ErrorModal from '../components/errorModal';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentTool, setBrushSize, setZoomWidth } from '../redux/slices/toolSlice';
+import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
+import { setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
+
 import { v4 as uuidv4 } from 'uuid';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -257,15 +259,27 @@ export default function Home(theUserData) {
         window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
     };
 
+    // See if the user is logged in, if 
     useEffect(() => {
         checkUserLogin();
     }, []);
 
     const checkUserLogin = async () => {
-        if (theUserData) {
+        if (!theUserData) {
+          console.log("Loging check requted in setUserIsLoggedInWithAccount to false!!!");
+          dispatch(setUserIsLoggedInWithAccount(false));
+        } else {
+
          // console.log("checking login - theUserData is: ", theUserData);
             if (theUserData.userData) {
+          console.log("Loging check requted in setUserIsLoggedInWithAccount to  true :)");
+                
+                dispatch(setUserIsLoggedInWithAccount(true));
                 setUserData(theUserData.userData);
+            } else {
+             console.log("Loging check requted in setUserIsLoggedInWithAccount to false!!!");
+
+                dispatch(setUserIsLoggedInWithAccount(false));
             }
         }
     };
@@ -333,7 +347,7 @@ export default function Home(theUserData) {
     }
    
     
-    
+
 const handleSubmit = async (e) => {
   setIsLoading(true);
   e.preventDefault();
