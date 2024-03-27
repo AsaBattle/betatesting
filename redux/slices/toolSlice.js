@@ -9,14 +9,18 @@ export const toolbarSlice = createSlice({
     aspectRatioName: '1:1',
     zoomWidth: 512,
     hamburgerVisible: false,
-    cursor: '/pen-cursor(w)2.png',  // use the pen cursor as the default
-    tolerance: 50,                  // the color tolerance for the magic wand tool
-    wandSelector: 'fsam',           // Either the ai-wand 'fsam' or the regular magic wand 'regular'
-    viewMaskActive: false,          // Whether the view mask button is active so the user is viewing the mask
-    toolbarVisibility: true,           // Whether the toolbar is visible
-    predictionModelName:  'DreamShaper',
+    cursor: '/pen-cursor(w)2.png',        // use the pen cursor as the default
+    tolerance: 50,                        // the color tolerance for the magic wand tool
+    wandSelector: 'fsam',                 // Either the ai-wand 'fsam' or the regular magic wand 'regular'
+    viewMaskActive: false,                // Whether the view mask button is active so the user is viewing the mask
+    toolbarVisibility: true,              // Whether the toolbar is visible
+    predictionModelName:  'DreamShaper',  // The name of the prediction model used wthen the user hits the generate button
+    userIsLoggedInWithAccount:  false,    // Whether the user is logged in with an account(So if false, the user has no membership or account of any kind)
   },
   reducers: {
+    setUserIsLoggedInWithAccount: (state, action) => {
+      state.userIsLoggedInWithAccount = action.payload;
+    },
     setToolbarVisibility: (state, action) => {
       state.toolbarVisibility = action.payload;
       if (action.payload)
@@ -65,5 +69,5 @@ export const toolbarSlice = createSlice({
 export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, 
                 alterZoomWidth, setHamburgerVisible, setCursor, setTolerance,
                 setWandSelector, setTheViewMaskActive, setPredictionModelName,
-                setToolbarVisibility } = toolbarSlice.actions;
+                setToolbarVisibility, setUserIsLoggedInWithAccount } = toolbarSlice.actions;
 export default toolbarSlice.reducer;
