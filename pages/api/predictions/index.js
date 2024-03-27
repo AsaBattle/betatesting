@@ -27,8 +27,13 @@ export default async function handler(req, res) {
 
     // Now check to make sure the user has the necessary credits to make a prediction
     details = await CheckAndSubtractCredits(userData, req.body.userId, 1);
-    if (details.worked === false) {
+    if (details.worked === false && reasonCode === 6) {
       res.statusCode = 403;
+      res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
+      return;
+    } else
+    if (details.worked === false && reasonCode === 5) {
+      res.statusCode = 404
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
   }
@@ -95,8 +100,10 @@ async function CheckAndSubtractCredits(userData, userUUID, creditsToSubtract) {
     currentCredits = parseInt(currentCredits);
     newCredits = currentCredits - creditsToSubtract;
   } catch (error) {
-    console.error("Here is the error - Error when trying to get user credits." +error);
-    return  {worked: false, reason: "Error getting user credits."};
+
+    // Until Lucky adds specific error messages we treat an error as meaning the user doesn't exist
+    console.error("Error retrieving user from database, so treating as if user does not exist" +error);
+    return  {worked: false, reasonCode: 5, reason: "User doesn't exist."};
   }
 
   if (newCredits < 0) {
