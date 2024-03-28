@@ -31,16 +31,20 @@ export default async function handler(req, res) {
     details = await CheckAndSubtractCredits(userData, req.body.userId, 1);
     if (details.worked === false && reasonCode === 6) {
       res.statusCode = 403;
+      console.log("worked is false with reasoncode 6");
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
     } else
     if (details.worked === false && reasonCode === 5) {
-      res.statusCode = 404
+      console.log("User doesn't exist. with reasoncode 5");
+      res.statusCode = 404;
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
   }
-
   } 
+
+  console.log("Made it past the credit check.");
+  
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
     (a, [k, v]) => (v == null ? a : ((a[k] = v), a)),
