@@ -25,6 +25,8 @@ export default async function handler(req, res) {
     // Deserialize the user data from the cookie
     userData = JSON.parse(cookies.user || '{}');
 
+    //console.log("req.body.userId
+/*
     // Now check to make sure the user has the necessary credits to make a prediction
     details = await CheckAndSubtractCredits(userData, req.body.userId, 1);
     if (details.worked === false && reasonCode === 6) {
@@ -37,6 +39,7 @@ export default async function handler(req, res) {
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
   }
+  */
   } 
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
