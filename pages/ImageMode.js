@@ -372,7 +372,8 @@ const handleSubmit = async (e) => {
     width,  // Include width
     height, // Include height
     aspectRatioName: currentAspectRatioName, // Include the aspect ratio name if needed by your backend
-    userId: document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1"), // Include the user identifier
+    userId: 5517,
+    //userId: document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1"), // Include the user identifier
   };
 
   const response = await fetch("/api/predictions", {
