@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
+import { useDispatch } from 'react-redux';
 
 export default function Auth({ isAuthenticated }) {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Redirect based on the authentication status
