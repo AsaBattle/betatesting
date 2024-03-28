@@ -263,7 +263,11 @@ export default function Home(theUserData) {
         checkUserLogin();
     }, []);
 
-    const checkUserLogin = async () => {
+
+     //Just got "oging check requted in setUserIsLoggedInWithAccount to false!!" message an all working-
+     //now we gotta track the number of images produced
+     const checkUserLogin = async () => {
+
         if (!theUserData) {
           console.log("Loging check requted in setUserIsLoggedInWithAccount to false!!!");
           dispatch(setUserIsLoggedInWithAccount(false));
