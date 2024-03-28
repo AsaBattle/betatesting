@@ -574,7 +574,7 @@ const handleSubmit = async (e) => {
 }
 
 
-
+/*
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const cookies = req.headers.cookie || '';
@@ -619,9 +619,9 @@ export async function getServerSideProps(context) {
       },
     };
   }
-}
+}*/
 
-/* Code before letting users try the site without having to log in
+// Code before letting users try the site without having to log in
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const cookies = req.headers.cookie || '';
@@ -669,4 +669,4 @@ export async function getServerSideProps(context) {
       },
     };
   }
-} */
+}
