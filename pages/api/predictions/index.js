@@ -29,13 +29,13 @@ export default async function handler(req, res) {
 
     // Now check to make sure the user has the necessary credits to make a prediction
     details = await CheckAndSubtractCredits(userData, req.body.userId, 1);
-    if (details.worked === false && reasonCode === 6) {
+    if (details.worked === false && details.reasonCode === 6) {
       res.statusCode = 403;
       console.log("worked is false with reasoncode 6");
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
     } else
-    if (details.worked === false && reasonCode === 5) {
+    if (details.worked === false &&details.reasonCode === 5) {
       console.log("User doesn't exist. with reasoncode 5");
       res.statusCode = 404;
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
   } 
 
   console.log("Made it past the credit check.");
-  
+
   // remnove null and undefined values
   req.body = Object.entries(req.body).reduce(
     (a, [k, v]) => (v == null ? a : ((a[k] = v), a)),
