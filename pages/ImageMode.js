@@ -257,7 +257,19 @@ export default function Home(theUserData) {
 
 
     const handleLogout = () => {
-        window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+      // Clear the user data cookie by setting an expired cookie
+      const expiredUserDataCookie = serialize('user', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        expires: new Date(0), // Set the expiration date to the past
+        path: '/',
+      });
+    
+      // Set the expired cookie in the document
+      document.cookie = expiredUserDataCookie;
+    
+      window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
     };
 
     // See if the user is logged in, if 
