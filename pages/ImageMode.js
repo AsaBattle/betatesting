@@ -372,8 +372,7 @@ const handleSubmit = async (e) => {
     width,  // Include width
     height, // Include height
     aspectRatioName: currentAspectRatioName, // Include the aspect ratio name if needed by your backend
-    //userId: 5517,
-    //userId: document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1"), // Include the user identifier
+    userId: document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1"), // Include the user identifier
   };
 
   const response = await fetch("/api/predictions", {
@@ -513,7 +512,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" /> 
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI Studio</strong>
+          <strong>FullJourney.AI2 Studio</strong>
         </p>
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
@@ -574,7 +573,6 @@ const handleSubmit = async (e) => {
 }
 
 
-/*
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const cookies = req.headers.cookie || '';
@@ -619,9 +617,9 @@ export async function getServerSideProps(context) {
       },
     };
   }
-}*/
+}
 
-// Code before letting users try the site without having to log in
+/* Code before letting users try the site without having to log in
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const cookies = req.headers.cookie || '';
@@ -669,4 +667,4 @@ export async function getServerSideProps(context) {
       },
     };
   }
-}
+}*/
