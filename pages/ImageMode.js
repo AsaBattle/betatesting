@@ -128,6 +128,8 @@ export default function Home(theUserData) {
         
         // You can also store it in local storage if needed
         localStorage.setItem('userId', userId);
+      } else {
+        console.log("User already had a userId: ", userIdCookie);
       }
     }, []);
 
@@ -512,7 +514,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" /> 
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI2 Studio</strong>
+          <strong>FullJourney.AI3 Studio</strong>
         </p>
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
