@@ -403,7 +403,7 @@ const handleSubmit = async (e) => {
   console.log("Here we are about to check theUserData: ", theUserData);
 
   // If the user is not logged in, then see if they have any free image gens left 
-  if (!theUserData)
+  if (Object.keys(theUserData).length === 0)
     {
       console.log("User is not logged in, so we need to check if they have any free image gens left");
      
