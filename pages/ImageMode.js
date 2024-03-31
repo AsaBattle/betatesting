@@ -128,6 +128,7 @@ export default function Home(theUserData) {
         
         // You can also store it in local storage if needed
         localStorage.setItem('userId', userId);
+        localStorage.setItem('imageTokens', 0);
       } else {
         console.log("User already had a userId: ", userIdCookie);
       }
@@ -362,33 +363,63 @@ export default function Home(theUserData) {
         return null;
       }
     }
-   
-    
+
+    // Function to subtract credits from the user's account and check if they have enough credits
+    // uses local storage to store the user's credits in imageTokens var
+    const SubtractAndCheckLocalUserCredits = (userId, creditsToSubtract) => {
+      let currentCredits = localStorage.getItem('imageTokens');
+      currentCredits = parseInt(currentCredits);
+      let newCredits = currentCredits - creditsToSubtract;
+
+      if (newCredits <= 0) {
+        return false;
+      } else {
+        localStorage.setItem('imageTokens', newCredits);
+        return true;
+      }
+    };
+
 
 const handleSubmit = async (e) => {
   setIsLoading(true);
   e.preventDefault();
 
-  setCurrentPredictionStatus("Server warming up...");
-
   const combinedMask = await canvasRef.current.getCombinedMask();
-
-
   const currentPrediction = predictions[index];
   const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
-
   const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
  
+  let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+  // If the user is not logged in, then see if they have any free image gens left 
+  if (!theUserData)
+    {
+      console.log("User is not logged in, so we need to check if they have any free image gens left");
+     
+      if (SubtractAndCheckLocalUserCredits(theLocalUserId,1) === false) {
+        console.log("Local User DOES NOT have Enough Credits");
+        
+        // pop up a message window to tell the use to make an account
+        setError("You need to make an account to generate more images.");
+        setIsLoading(false);
+      } else {
+        console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
+      }
+    }
+
+
+
   const body = {
     prompt: e.target.prompt.value,
     image: combinedMask ? currentPredictionOutput : null,
     mask: combinedMask,
     width,  // Include width
     height, // Include height
-    aspectRatioName: currentAspectRatioName, // Include the aspect ratio name if needed by your backend
-    userId: document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1"), // Include the user identifier
+    aspectRatioName: currentAspectRatioName,
+    userId: theLocalUserId,
   };
 
+  setCurrentPredictionStatus("Server warming up...");
   const response = await fetch("/api/predictions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -400,13 +431,30 @@ const handleSubmit = async (e) => {
   if (response.status !== 201) {
     console.log("status is: ", response.status, " and the code is: ", prediction.thecode);
     if (prediction.thecode === 5001) {
-      router.push('/Subscribe');
-      return;
-    }
-    
-    setError(prediction.detail);
-    setIsLoading(false);
-    return;
+      
+      // The user doesn't exist, so we need to do our image count processing
+      if (response.status === 404) {
+        console.log("User doesn't exist, but we've already done the local user image count processing");
+        /*
+        if (SubtractAndCheckLocalUserCredits(theLocalUserId,1) === false) {
+          console.log("Local User DOES NOT have Enough Credits");
+          setError(prediction.detail);
+          setIsLoading(false);
+          router.push('/Subscribe');
+          return;
+        } else { 
+          console.log("Local User DOES HAVE enough credits, proceeding with image generation");
+        } */
+      } 
+      // User exists but not enough credits
+      else if (response.status === 403) {
+        console.log("User exists but not enough credits");
+        setError(prediction.detail);
+        setIsLoading(false);
+        router.push('/Subscribe');
+        return;
+      }
+    }      
   }
 
   setPredictions(predictions.concat([prediction]));
