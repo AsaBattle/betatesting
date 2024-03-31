@@ -400,6 +400,8 @@ const handleSubmit = async (e) => {
  
   let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
+  console.log("Here we are about to check theUserData: ", theUserData);
+
   // If the user is not logged in, then see if they have any free image gens left 
   if (!theUserData)
     {
@@ -414,8 +416,11 @@ const handleSubmit = async (e) => {
       } else {
         console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
       }
+    } else {
+      console.log("User is logged in, so we're good here");
     }
 
+  console.log("ok, we checked it!");
 
   const body = {
     prompt: e.target.prompt.value,
