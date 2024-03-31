@@ -414,6 +414,8 @@ const handleSubmit = async (e) => {
       } else {
         console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
       }
+    } else {
+      console.log("User is logged in, so we're good here");
     }
 
 
