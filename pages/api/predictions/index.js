@@ -28,15 +28,15 @@ export default async function handler(req, res) {
     console.log("req.body.userId: ", req.body.userId);
 
     // Now check to make sure the user has the necessary credits to make a prediction
-    details = await CheckAndSubtractCredits(userData, req.body.userId, 1);
+    details = await CheckAndSubtractCredits(userData, 1);
     if (details.worked === false && details.reasonCode === 6) {
       res.statusCode = 403;
-      console.log("worked is false with reasoncode 6");
+      console.log("Not enough credits left. Reasoncode 6");
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
     } else
     if (details.worked === false &&details.reasonCode === 5) {
-      console.log("User doesn't exist. with reasoncode 5");
+      console.log("User doesn't exist. Reasoncode 5");
       res.statusCode = 404;
       res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
       return;
@@ -94,7 +94,7 @@ export default async function handler(req, res) {
 
 
 
-async function CheckAndSubtractCredits(userData, userUUID, creditsToSubtract) {
+async function CheckAndSubtractCredits(userData, creditsToSubtract) {
   let response;
   let currentCredits;
   let newCredits;
@@ -114,7 +114,7 @@ async function CheckAndSubtractCredits(userData, userUUID, creditsToSubtract) {
   }
 
   if (newCredits < 0) {
-    return {worked: false, reason: "Not enough credits for image."};
+    return {worked: false, reasonCode: 6, reason: "Not enough credits for image."};
   }
 
   console.log("UserData is: ", userData);
