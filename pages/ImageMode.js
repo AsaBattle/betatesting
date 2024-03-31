@@ -165,6 +165,16 @@ export default function Home(theUserData) {
     }, [hamburgerVisible]);
 
 
+    function GetUserLoginName() {
+      if (theUserData.length && theUserData.length >= 0) {
+        return `Username: ${theUserData.name} Credits: ${theUserData.credits}`;
+      } else {
+        const userId = localStorage.getItem('userId');
+        const imageTokens = localStorage.getItem('imageTokens');
+        return `Username: FREE Credits: ${imageTokens}`;
+      }
+    }
+
 
     const FSAMTest = async () => {
       console.log("FSAMTest is being called");
@@ -587,7 +597,10 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" /> 
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI5 Studio</strong>
+          <strong>FullJourney.AI6 Studio</strong>
+        </p>
+        <p className="text-white text-center font-helvetica">
+          {GetUserLoginName()}
         </p>
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
