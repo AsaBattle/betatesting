@@ -128,9 +128,18 @@ export default function Home(theUserData) {
         
         // You can also store it in local storage if needed
         localStorage.setItem('userId', userId);
-        localStorage.setItem('imageTokens', 0);
+        localStorage.setItem('imageTokens', 3);
       } else {
         console.log("User already had a userId: ", userIdCookie);
+
+        // check if the user has an imageTokens value in local storage
+        let currentCredits = localStorage.getItem('imageTokens');
+        if (!currentCredits) {
+          console.log("User did not yet have an imageTokens value, so we are setting it to 3");
+          localStorage.setItem('imageTokens', 3);
+        } else {
+          console.log("User already had an imageTokens value: ", currentCredits);
+        }
       }
     }, []);
 
@@ -406,7 +415,6 @@ const handleSubmit = async (e) => {
         console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
       }
     }
-
 
 
   const body = {
