@@ -36,11 +36,11 @@ export default async function handler(req, res) {
       return;
     } else
     if (details.worked === false &&details.reasonCode === 5) {
-      console.log("User doesn't exist. Reasoncode 5");
-      res.statusCode = 404;
-      res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
-      return;
-  }
+      console.log("User doesn't exist. But this is ok, because we allow first time users some free images Reasoncode 5");
+      //res.statusCode = 404;
+      //res.end(JSON.stringify({ detail: details.reason, thecode: 5001 }));
+      //return;
+    }
   } 
 
   console.log("Made it past the credit check.");
