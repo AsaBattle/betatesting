@@ -403,7 +403,7 @@ const handleSubmit = async (e) => {
   console.log("Here we are about to check theUserData: ", theUserData);
 
   // If the user is not logged in, then see if they have any free image gens left 
-  if (Object.keys(theUserData).length === 0)
+  if (!theUserData.length || theUserData.length === 0)
     {
       console.log("User is not logged in, so we need to check if they have any free image gens left");
      
@@ -587,7 +587,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" /> 
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI3 Studio</strong>
+          <strong>FullJourney.AI4 Studio</strong>
         </p>
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
