@@ -69,6 +69,19 @@ export default function Home(theUserData) {
     const zoomWidth = useSelector((state) => state.toolbar.zoomWidth);
 
     const [clearMask, setClearMask] = useState(false);
+    const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
+
+    useEffect(() => {
+      if (theUserData.length && theUserData.length >= 0) {
+        setUserLoginNameAndCredits(`Username: ${theUserData.name} Credits: ${theUserData.credits}`);
+      } else {
+        const userId = localStorage.getItem('userId');
+        const imageTokens = localStorage.getItem('imageTokens');
+        setUserLoginNameAndCredits(`Username: FREE Credits: ${imageTokens}`);
+      }
+    }, []);
+
+
 
     // Function to clear the mask
     const clearMaskImage = () => {
@@ -164,16 +177,6 @@ export default function Home(theUserData) {
         };
     }, [hamburgerVisible]);
 
-
-    function GetUserLoginName() {
-      if (theUserData.length && theUserData.length >= 0) {
-        return `Username: ${theUserData.name} Credits: ${theUserData.credits}`;
-      } else {
-        const userId = localStorage.getItem('userId');
-        const imageTokens = localStorage.getItem('imageTokens');
-        return `Username: FREE Credits: ${imageTokens}`;
-      }
-    }
 
 
     const FSAMTest = async () => {
@@ -600,7 +603,7 @@ const handleSubmit = async (e) => {
           <strong>FullJourney.AI6 Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
-          {GetUserLoginName()}
+          {userLoginNameAndCredits}
         </p>
         <main className="container mx-auto p-2">
           {error && <ErrorModal error={error} onClose={() => setError(null)} />}
