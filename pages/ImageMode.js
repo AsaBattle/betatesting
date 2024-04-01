@@ -72,9 +72,24 @@ export default function Home(theUserData) {
     const [clearMask, setClearMask] = useState(false);
     const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
 
-    useEffect(() => {
-      console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
 
+    /*
+    The following code as a function called checkUserLoginAndCreditsForChange
+    if (theUserData.userData) {
+        console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
+        if (parseInt(theUserData.userData.credits) > 100)
+          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
+        else
+         setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
+
+      } else {
+        console.log("theUserData is not available");
+        const userId = localStorage.getItem('userId');
+        const imageTokens = localStorage.getItem('imageTokens');
+        setUserLoginNameAndCredits(`FREE Credits Remaining: ${imageTokens}`);
+      }
+    */
+    function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
         console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (parseInt(theUserData.userData.credits) > 100)
@@ -88,6 +103,14 @@ export default function Home(theUserData) {
         const imageTokens = localStorage.getItem('imageTokens');
         setUserLoginNameAndCredits(`FREE Credits Remaining: ${imageTokens}`);
       }
+    }
+    
+
+    
+
+    useEffect(() => {
+      console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
+      checkUserLoginAndCreditsForChange();
     }, [theUserData]);
 
 
@@ -401,6 +424,8 @@ export default function Home(theUserData) {
       let currentCredits = localStorage.getItem('imageTokens');
       currentCredits = parseInt(currentCredits);
       let newCredits = currentCredits - creditsToSubtract;
+
+      checkUserLoginAndCreditsForChange();
 
       if (newCredits <= 0) {
         return false;
