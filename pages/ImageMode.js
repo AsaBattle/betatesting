@@ -435,8 +435,8 @@ const handleSubmit = async (e) => {
         // pop up a message window to tell the use to make an account
         setError("You need to make an account to generate more images.");
 
-        router.push('/login');
-        return;
+        //router.push('/login');
+        //return;
         setIsLoading(false);
 
       } else {
