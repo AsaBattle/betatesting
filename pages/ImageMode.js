@@ -75,7 +75,7 @@ export default function Home(theUserData) {
     useEffect(() => {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
 
-      if (theUserData.length && theUserData.length >= 0) {
+      if (theUserData.userData) {
         console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (theUserData.credits > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
