@@ -19,6 +19,7 @@ import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust th
 import ImageNavigation from '../components/ImageNavigation';
 
 import { v4 as uuidv4 } from 'uuid';
+import { set } from "lodash";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -73,11 +74,15 @@ export default function Home(theUserData) {
 
     useEffect(() => {
       if (theUserData.length && theUserData.length >= 0) {
-        setUserLoginNameAndCredits(`Username: ${theUserData.name} Credits: ${theUserData.credits}`);
+        if (theUserData.credits > 100)
+          setUserLoginNameAndCredits(`Username: ${theUserData.name}`);
+        else
+         setUserLoginNameAndCredits(`Username: ${theUserData.name} Credits: ${theUserData.credits}`);
+
       } else {
         const userId = localStorage.getItem('userId');
         const imageTokens = localStorage.getItem('imageTokens');
-        setUserLoginNameAndCredits(`Username: FREE Credits: ${imageTokens}`);
+        setUserLoginNameAndCredits(`FREE Credits Remaining: ${imageTokens}`);
       }
     }, []);
 
@@ -425,7 +430,13 @@ const handleSubmit = async (e) => {
         
         // pop up a message window to tell the use to make an account
         setError("You need to make an account to generate more images.");
+
+       
+        
+        router.push('/Login');
+        
         setIsLoading(false);
+
       } else {
         console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
       }
@@ -597,7 +608,7 @@ const handleSubmit = async (e) => {
       <div className={styles.content}>
         <Head>
           <title>FullJourney.AI Studio Beta 1.2</title>
-          <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" /> 
+          <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>FullJourney.AI6 Studio</strong>
@@ -605,8 +616,15 @@ const handleSubmit = async (e) => {
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
         </p>
+        {error && (
+          <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
+            <div className="relative bg-white p-8 rounded shadow">
+              <ErrorModal error={error} onClose={() => setError(null)} />
+            </div>
+          </div>
+        )}
         <main className="container mx-auto p-2">
-          {error && <ErrorModal error={error} onClose={() => setError(null)} />}
           <div ref={toolbaroptionsRef}>
             <ToolbarOptions predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
           </div>
@@ -615,7 +633,7 @@ const handleSubmit = async (e) => {
             <div className={`bg-black relative max-h-full mx-auto flex items-stretch border-4 border-pink-400 rounded-xl ${styles.responsiveCanvasContainer}`} style={{ width: `${zoomWidth}px` }}>
               <Canvas
                 ref={canvasRef}
-                generateClicked={generateClicked} 
+                generateClicked={generateClicked}
                 clearMask={clearMask}
                 isLoading={isLoading}
                 brushSize={brushSize}
