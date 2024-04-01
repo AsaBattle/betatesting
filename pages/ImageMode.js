@@ -429,7 +429,7 @@ const handleSubmit = async (e) => {
         console.log("Local User DOES NOT have Enough Credits");
         
         // pop up a message window to tell the use to make an account
-        //setError("You need to make an account to generate more images.");
+        setError("You need to make an account to generate more images.");
 
         router.push('/login');
         return;
@@ -614,14 +614,6 @@ const handleSubmit = async (e) => {
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
         </p>
-        {error && (
-          <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
-            <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
-            <div className="relative bg-white p-8 rounded shadow">
-              <ErrorModal error={error} onClose={() => setError(null)} />
-            </div>
-          </div>
-        )}
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
             <ToolbarOptions predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
@@ -674,6 +666,14 @@ const handleSubmit = async (e) => {
             Logout
           </button>
         </footer>
+        {error && (
+          <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
+            <div className="relative bg-white p-8 rounded shadow">
+              <ErrorModal error={error} onClose={() => setError(null)} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
