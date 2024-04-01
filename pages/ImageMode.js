@@ -73,6 +73,8 @@ export default function Home(theUserData) {
     const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
 
     useEffect(() => {
+      console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
+
       if (theUserData.length && theUserData.length >= 0) {
         if (theUserData.credits > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.name}`);
