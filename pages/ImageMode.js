@@ -77,7 +77,7 @@ export default function Home(theUserData) {
 
       if (theUserData.userData) {
         console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
-        if (theUserData.userData.credits > 100)
+        if (parseInt(theUserData.userData.credits) > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
         else
          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
