@@ -84,7 +84,7 @@ export default function Home(theUserData) {
         const imageTokens = localStorage.getItem('imageTokens');
         setUserLoginNameAndCredits(`FREE Credits Remaining: ${imageTokens}`);
       }
-    }, []);
+    }, [theUserData]);
 
 
 
