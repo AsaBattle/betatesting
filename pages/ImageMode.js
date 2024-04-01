@@ -76,10 +76,11 @@ export default function Home(theUserData) {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
 
       if (theUserData.length && theUserData.length >= 0) {
+        console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (theUserData.credits > 100)
-          setUserLoginNameAndCredits(`Username: ${theUserData.name}`);
+          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
         else
-         setUserLoginNameAndCredits(`Username: ${theUserData.name} Credits: ${theUserData.credits}`);
+         setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
 
       } else {
         const userId = localStorage.getItem('userId');
