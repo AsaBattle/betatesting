@@ -83,6 +83,7 @@ export default function Home(theUserData) {
          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
 
       } else {
+        console.log("theUserData is not available");
         const userId = localStorage.getItem('userId');
         const imageTokens = localStorage.getItem('imageTokens');
         setUserLoginNameAndCredits(`FREE Credits Remaining: ${imageTokens}`);
