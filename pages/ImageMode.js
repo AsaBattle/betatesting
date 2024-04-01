@@ -432,7 +432,7 @@ const handleSubmit = async (e) => {
         //setError("You need to make an account to generate more images.");
 
         router.push('/login');
-        
+        return;
         setIsLoading(false);
 
       } else {
