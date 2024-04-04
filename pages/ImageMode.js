@@ -454,9 +454,14 @@ const handleSubmit = async (e) => {
         console.log("Local User DOES NOT have Enough Credits");
         
         // pop up a message window to tell the use to make an account
-        setError({ message: "You need to make an account to generate more images.", route: '/login' });
-
+        //setError({ message: "Please make a FREE account to generate more images.", route: '/login' });
         setIsLoading(false);
+        
+        router.push({
+          pathname: '/login',
+          query: { message: "Please make a FREE account to generate more images." }
+        });
+
         return;
       } else {
         console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
