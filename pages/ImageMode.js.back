@@ -18,7 +18,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth } from '../redux/slices/toolSlice';
 import { pushToUndo, undo, redo, setIndex, setCurrentImage } from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
-import { set } from "lodash";
+import { set } from "lodash";   
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

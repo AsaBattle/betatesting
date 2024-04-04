@@ -106,6 +106,9 @@ async function CheckAndSubtractCredits(userData, creditsToSubtract) {
     currentCredits = user.credits;
     currentCredits = parseInt(currentCredits);
     newCredits = currentCredits - creditsToSubtract;
+    if (newCredits < 0) {
+      newCredits = 0;
+    }
   } catch (error) {
 
     // Until Lucky adds specific error messages we treat an error as meaning the user doesn't exist

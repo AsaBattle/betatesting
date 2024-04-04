@@ -73,23 +73,8 @@ export default function Home(theUserData) {
     const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
 
 
-    /*
-    The following code as a function called checkUserLoginAndCreditsForChange
-    if (theUserData.userData) {
-        console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
-        if (parseInt(theUserData.userData.credits) > 100)
-          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
-        else
-         setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
-
-      } else {
-        console.log("theUserData is not available");
-        const userId = localStorage.getItem('userId');
-        const imageTokens = localStorage.getItem('imageTokens');
-        setUserLoginNameAndCredits(`FREE Credits Remaining: ${imageTokens}`);
-      }
-    */
     function checkUserLoginAndCreditsForChange() {
+      console.log("checkUserLoginAndCreditsForChange is being called");
       if (theUserData.userData) {
         console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (parseInt(theUserData.userData.credits) > 100)
@@ -154,6 +139,8 @@ export default function Home(theUserData) {
             toolbarRef.current.style.top = `${canvasRect.top + scrollTop + hamYOffset}px`;
             toolbarRef.current.style.left = `${canvasRect.left - hamXOffset}px`;
           }
+
+        //localStorage.setItem('imageTokens', 3);
     };
     
 
@@ -265,7 +252,7 @@ export default function Home(theUserData) {
         const updatedPrediction = await response.json();
     
         if (response.status !== 200) {
-          setError(updatedPrediction.detail);
+          setError({ message: updatedPrediction.detail });
           setIsLoading(false);
           console.log("Prediction error detail is: ", updatedPrediction.detail);
           return;
@@ -303,7 +290,7 @@ export default function Home(theUserData) {
           console.log("done with magic wand mask processing! index: ", indexToUpdate);
           break;
         } else if (updatedPrediction.status === "failed") {
-          setError("The Prediction failed");
+          setError({ message: "The Prediction failed" });
           setIsLoading(false);  
           break;
         }
@@ -425,14 +412,23 @@ export default function Home(theUserData) {
       currentCredits = parseInt(currentCredits);
       let newCredits = currentCredits - creditsToSubtract;
 
+      localStorage.setItem('imageTokens', newCredits);
       checkUserLoginAndCreditsForChange();
 
-      if (newCredits <= 0) {
-        return false;
-      } else {
-        localStorage.setItem('imageTokens', newCredits);
-        return true;
-      }
+      // less than zero because we just got to 0 after subtracting, so we count 0 as an image
+      if (newCredits < 0)
+        {
+          console.log("(newCredits < 0");
+          newCredits = 0;
+          localStorage.setItem('imageTokens', newCredits);
+          return false;
+        }
+      else
+        {
+          console.log("(newCredits >= 0");
+          return true;
+        }
+    
     };
 
 
@@ -450,7 +446,7 @@ const handleSubmit = async (e) => {
   console.log("Here we are about to check theUserData: ", theUserData);
 
   // If the user is not logged in, then see if they have any free image gens left 
-  if (!theUserData.length || theUserData.length === 0)
+  if (!theUserData.userData)
     {
       console.log("User is not logged in, so we need to check if they have any free image gens left");
      
@@ -458,12 +454,10 @@ const handleSubmit = async (e) => {
         console.log("Local User DOES NOT have Enough Credits");
         
         // pop up a message window to tell the use to make an account
-        setError("You need to make an account to generate more images.");
+        setError({ message: "You need to make an account to generate more images.", route: '/login' });
 
-        //router.push('/login');
-        //return;
         setIsLoading(false);
-
+        return;
       } else {
         console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
       }
@@ -513,7 +507,7 @@ const handleSubmit = async (e) => {
       // User exists but not enough credits
       else if (response.status === 403) {
         console.log("User exists but not enough credits");
-        setError(prediction.detail);
+        setError({ message: prediction.detail });
         setIsLoading(false);
         router.push('/Subscribe');
         return;
@@ -530,7 +524,7 @@ const handleSubmit = async (e) => {
     const updatedPrediction = await response.json();
 
     if (response.status !== 200) {
-      setError(updatedPrediction.detail);
+      setError({ message: updatedPrediction.detail });
       setIsLoading(false);
       console.log("Prediction error detail is: ", updatedPrediction.detail);
       return;
@@ -569,7 +563,7 @@ const handleSubmit = async (e) => {
 
       break;
     } else if (updatedPrediction.status === "failed") {
-      setError("The Prediction failed");
+      setError({message:"The Prediction failed"});
       setIsLoading(false);  
       break;
     }
@@ -696,12 +690,12 @@ const handleSubmit = async (e) => {
           </button>
         </footer>
         {error && (
-          <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
-            <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
-            <div className="relative bg-white p-8 rounded shadow">
-              <ErrorModal error={error} onClose={() => setError(null)} />
+            <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
+                <div className="relative bg-white p-8 rounded shadow">
+                    <ErrorModal error={error} onClose={() => setError(null)} />
+                </div>
             </div>
-          </div>
         )}
       </div>
     </div>
