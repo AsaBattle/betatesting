@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import styles from './Login.module.css';
+import styles from './login.module.css';
 
 const Login = () => {
     const router = useRouter();
