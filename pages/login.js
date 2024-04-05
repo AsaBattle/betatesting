@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styles from './login.module.css';
 
 const Login = () => {
-    const router = useRouter();
+    const router = useRouter(); 
     const { message } = router.query;
 
     const handleFullJourneyClick = () => {
