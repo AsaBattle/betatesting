@@ -637,7 +637,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI6 Studio</strong>
+          <strong>FullJourney.AI7 Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
