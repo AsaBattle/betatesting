@@ -1,14 +1,14 @@
-// pages/_app.js
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
-import { ThemeProvider } from '@mui/material/styles';
+import { SessionProvider } from 'next-auth/react';
 import '../styles/globals.css';
-
 
 function MyApp({ Component, pageProps }) {
   return (
     <Provider store={store}>
+      <SessionProvider session={pageProps.session}>
         <Component {...pageProps} />
+      </SessionProvider>
     </Provider>
   );
 }
