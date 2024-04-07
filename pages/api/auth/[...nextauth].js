@@ -7,6 +7,7 @@ export const authOptions = {
    clientSecret: process.env.GS,
   }),
  ],
+ secret: process.env.NEXT_AUTH_S,
  session: {
   strategy: 'jwt',
  },
