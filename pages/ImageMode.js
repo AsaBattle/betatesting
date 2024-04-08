@@ -17,6 +17,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
+import { getSession } from "next-auth/react";
+
 
 import { v4 as uuidv4 } from 'uuid';
 import { set } from "lodash";
@@ -76,12 +78,14 @@ export default function Home(theUserData) {
     function checkUserLoginAndCreditsForChange() {
       console.log("checkUserLoginAndCreditsForChange is being called");
       if (theUserData.userData) {
+        console.log("theUserData is available:", theUserData);
+        /*
         console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (parseInt(theUserData.userData.credits) > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
         else
          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
-
+        */
       } else {
         console.log("theUserData is not available");
         const userId = localStorage.getItem('userId');
@@ -708,6 +712,44 @@ const handleSubmit = async (e) => {
 }
 
 
+
+
+export async function getServerSideProps(context) {
+  const { req, res } = context;
+  const cookies = req.headers.cookie || '';
+
+  // Check if the user is authenticated with FullJourney via Discord
+  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
+    try {
+      const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
+        headers: { Cookie: cookies },
+        withCredentials: true,
+      });
+
+      // ...handle FullJourney user data and set cookie as you have before
+
+      return { props: { userData: response.data } };
+    } catch (error) {
+      console.error('Error fetching FullJourney user data:', error);
+      // If there is an error, it will continue to check for a Google login below
+    }
+  }
+
+  // Check if the user is authenticated with Google via NextAuth
+  const session = await getSession({ req });
+  if (session) {
+    // The user is logged in with Google, we can return the session data
+    // You may want to serialize the session data or select specific fields
+    return { props: { userData: session } };
+  }
+
+  // If neither FullJourney nor Google authentication is present, return empty props
+  return { props: {} };
+}
+
+
+
+/* Before adding in Google login stuff
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const cookies = req.headers.cookie || '';
@@ -752,7 +794,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
-}
+}*/
 
 /* Code before letting users try the site without having to log in
 export async function getServerSideProps(context) {
