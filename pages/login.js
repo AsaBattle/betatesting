@@ -17,18 +17,33 @@ const Login = () => {
         window.location.href = 'https://www.fulljourney.ai/api/auth/nextjsbeta';
     };
 
+    const renderStatus = () => {
+        if (status === 'authenticated') {
+            return (
+              <div>
+                <h1> hi {data.user.name}</h1>
+                <img src={data.user.image} alt={data.user.name + ' photo'} />
+                <button onClick={signOut}>sign out</button>
+              </div>
+            );
+        } else {
+            return (
+                <button className={`${styles.button} ${styles.googleButton}`} onClick={() => signIn('google')}>Login with your Google Account</button>
+            );
+        }
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <h3>FullJourney Studio</h3>
-                <h3>status is: {status}</h3>
+                {renderStatus()}
             </div>
             <div className={styles.text}>
                 <p>{message}</p>
             </div>
             <div className={styles.footer}>
                 <button className={`${styles.button} ${styles.fulljourneyButton}`} onClick={handleFullJourneyClick}>Login with your FullJourney.Ai account</button>
-                <button className={`${styles.button} ${styles.googleButton}`} onClick={() => signIn('google')}>Login with your Google Account</button>
                 <button className={`${styles.button} ${styles.discordButton}`} onClick={handleDiscordClick}>Login with your Discord account</button>
             </div>
         </div>
