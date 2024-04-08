@@ -13,10 +13,6 @@ const Login = () => {
         window.location.href = 'https://www.fulljourney.ai/login';
     };
 
-    const handleGoogleClick = () => {
-        window.location.href = 'https://www.google.com/accounts/o8/id';
-    };
-
     const handleDiscordClick = () => {
         window.location.href = 'https://www.fulljourney.ai/api/auth/nextjsbeta';
     };
