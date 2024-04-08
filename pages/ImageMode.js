@@ -641,7 +641,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI9c Studio</strong>
+          <strong>FullJourney.AI9d Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
@@ -726,7 +726,17 @@ export async function getServerSideProps(context) {
         withCredentials: true,
       });
 
-      // ...handle FullJourney user data and set cookie as you have before
+      // Serialize the user data into a cookie string
+      const userDataCookie = serialize('user', JSON.stringify(userData), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
+        sameSite: 'strict',
+        maxAge: 3600, // 1 hour
+        path: '/',
+      });
+
+      // Set the cookie in the response header
+      res.setHeader('Set-Cookie', userDataCookie);
 
       return { props: { userData: response.data } };
     } catch (error) {
@@ -738,8 +748,27 @@ export async function getServerSideProps(context) {
   // Check if the user is authenticated with Google via NextAuth
   const session = await getSession({ req });
   if (session) {
+
     // The user is logged in with Google, we can return the session data
-    // You may want to serialize the session data or select specific fields
+    // Serialize the session data
+    // Serialize the user data into a cookie string
+    try{
+    const userDataCookie = serialize('user', JSON.stringify(session), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
+      sameSite: 'strict',
+      maxAge: 3600, // 1 hour
+      path: '/',
+    });
+  } catch (error) {
+    console.error('Error serializing the session data', error);
+  }
+  finally {
+    console.log("Successfully Serialized the session data. userDataCookie is: ", userDataCookie);
+  }
+
+    // Set the cookie in the response header
+    res.setHeader('Set-Cookie', userDataCookie);
     return { props: { userData: session } };
   }
 
