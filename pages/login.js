@@ -37,12 +37,12 @@ const Login = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h3>FullJourney Studio</h3>
-                {renderStatus()}
             </div>
             <div className={styles.text}>
                 <p>{message}</p>
             </div>
             <div className={styles.footer}>
+                {renderStatus()}
                 <button className={`${styles.button} ${styles.fulljourneyButton}`} onClick={handleFullJourneyClick}>Login with your FullJourney.Ai account</button>
                 <button className={`${styles.button} ${styles.discordButton}`} onClick={handleDiscordClick}>Login with your Discord account</button>
             </div>
