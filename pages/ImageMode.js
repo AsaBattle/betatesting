@@ -22,7 +22,7 @@ import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccoun
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession } from "next-auth/react";
-import AuthService from '../services/xauthService';
+import AuthService from '../services/authService';
 
 import { v4 as uuidv4 } from 'uuid';
 import { set } from "lodash";
