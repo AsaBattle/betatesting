@@ -717,69 +717,29 @@ const handleSubmit = async (e) => {
 
 
 
-export async function getServerSideProps(context) {
-  const { req, res } = context;
-  const cookies = req.headers.cookie || '';
 
+  export async function getServerSideProps(context) {
+  const { req, res } = context;
+
+  
   if (process.env.NEXT_PUBLIC_WORKING_LOCALLY == 'true')
     return { props: {} };
   else {
-    try {
-      const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
-        headers: { Cookie: cookies },
-        withCredentials: true,
-      });
+  try {
+      const userData = await AuthService.loginUser(req, res);
 
-      // Serialize the user data into a cookie string
-      const userDataCookie = serialize('user', JSON.stringify(userData), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
-        sameSite: 'strict',
-        maxAge: 3600, // 1 hour
-        path: '/',
-      });
-
-      // Set the cookie in the response header
-      res.setHeader('Set-Cookie', userDataCookie);
-
-      return { props: { userData: response.data } };
+      if (userData) {
+        // The user is authenticated, pass the user data as props
+        return { props: { userData } };
+      }
+      // If userData is null, the user is not authenticated
     } catch (error) {
-      console.error('Error fetching FullJourney user data:', error);
-      // If there is an error, it will continue to check for a Google login below
-    }
-  
-
-    // Check if the user is authenticated with Google via NextAuth
-    const session = await getSession({ req });
-    if (session) {
-
-      // The user is logged in with Google, we can return the session data
-      // Serialize the session data
-      // Serialize the user data into a cookie string
-      try{
-      const userDataCookie = serialize('user', JSON.stringify(session), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
-        sameSite: 'strict',
-        maxAge: 3600, // 1 hour
-        path: '/',
-      });
-    } catch (error) {
-      console.error('Error serializing the session data', error);
-    }
-    finally {
-      console.log("Successfully Serialized the session data. userDataCookie is: ", userDataCookie);
-    }
-
-      // Set the cookie in the response header
-      res.setHeader('Set-Cookie', userDataCookie);
-      return { props: { userData: session } };
+      console.error('Error during authentication:', error);
     }
   }
-  // If neither FullJourney nor Google authentication is present, return empty props
+  // Return empty props if not authenticated
   return { props: {} };
 }
-
 
 
 /* Before adding in Google login stuff
