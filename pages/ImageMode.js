@@ -1,7 +1,3 @@
-  //just added the serializing of the session data and server debug statements, check if they are NEXT_PUBLIC_WORKING_LOCALLY
-  // then we need to to make it so if a user signs in with google, we check if they have an account with us, if not, we create one
-  // and then we use need to modify our prediction api to make sure it's properly using the users account
-
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import Head from "next/head";
@@ -82,7 +78,7 @@ export default function Home(theUserData) {
     function checkUserLoginAndCreditsForChange() {
       console.log("checkUserLoginAndCreditsForChange is being called");
       if (theUserData.userData) {
-        console.log("theUserData is available:", theUserData);
+        console.log("OK theUserData that is available is this:", theUserData);
         /*
         console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (parseInt(theUserData.userData.credits) > 100)
@@ -721,12 +717,12 @@ const handleSubmit = async (e) => {
   export async function getServerSideProps(context) {
   const { req, res } = context;
 
-  
+  // If we are working locally, we don't need to check for authentication
   if (process.env.NEXT_PUBLIC_WORKING_LOCALLY == 'true')
     return { props: {} };
   else {
   try {
-      const userData = await AuthService.loginUser(req, res);
+      const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
 
       if (userData) {
         // The user is authenticated, pass the user data as props
