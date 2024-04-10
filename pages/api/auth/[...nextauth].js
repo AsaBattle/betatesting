@@ -1,16 +1,36 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+
 export const authOptions = {
- providers: [
-  GoogleProvider({
-   clientId: process.env.GCI,
-   clientSecret: process.env.GS,
-  }),
- ],
- debug: true,
- secret: process.env.NEXT_AUTH_S,
- session: {
-  strategy: 'jwt',
- },
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GCI,
+      clientSecret: process.env.GS,
+    }),
+    // Add other providers as needed
+  ],
+  debug: true,
+  secret: process.env.NEXT_AUTH_S,
+  session: {
+    strategy: 'jwt',
+  },
+  callbacks: {
+    async jwt({ token, account }) {
+      // Persist the OAuth provider's name in the token right after signin
+      if (account) {
+        token.provider = account.provider;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Forward the provider's name to the session object
+      if (token.provider) {
+        session.user.provider = token.provider;
+      }
+      return session;
+    },
+  },
+  // Other NextAuth configuration
 };
+
 export default NextAuth(authOptions);
