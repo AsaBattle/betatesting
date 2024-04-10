@@ -7,7 +7,7 @@ import styles from './login.module.css';
 const Login = () => {
     const router = useRouter(); 
     const { message } = router.query;
-    const { data, status } = useSession();
+    const { data: session, status } = useSession();
 
     const handleFullJourneyClick = () => {
         window.location.href = 'https://www.fulljourney.ai/login';
@@ -18,25 +18,28 @@ const Login = () => {
     };
 
     const renderStatus = () => {
-        if (status === 'authenticated') {
+        if (status === 'authenticated' && session) {
             return (
               <div>
-                <h1> hi {data.user.name}</h1>
-                <img src={data.user.image} alt={data.user.name + ' photo'} />
-                <button onClick={signOut}>sign out</button>
+                <h1>Hi {session.user.name}</h1>
+                <img src={session.user.image} alt={`${session.user.name}'s photo`} />
+                <p>Signed in with: {session.user.provider}</p> {/* Provider information displayed */}
+                <button onClick={() => signOut()}>Sign out</button>
               </div>
             );
         } else {
             return (
                 <button className={`${styles.button} ${styles.googleButton}`} onClick={() => signIn('google')}>Login with your Google Account</button>
+                // Add other provider sign-in buttons here as needed
             );
         }
-    }
+    };
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <h3>FullJourney Studio</h3>
+                <h3>status is: {status}</h3> {/* Optional: Display authentication status */}
             </div>
             <div className={styles.text}>
                 <p>{message}</p>
