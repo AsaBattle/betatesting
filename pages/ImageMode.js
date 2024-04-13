@@ -17,7 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 import AuthService from '../services/authService';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -314,6 +314,10 @@ export default function Home(theUserData) {
     
       // Set the expired cookie in the document
       document.cookie = expiredUserDataCookie;
+
+      // sign us out from any nextauth session
+      signOut();
+
     
       window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
     };
