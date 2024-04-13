@@ -23,7 +23,7 @@ export const authOptions = {
         }
         return token;
     },
-    async session({ session, token }) {
+    async session({ session, token, user }) {
 
         console.log("session was called with session: ", session);
 
