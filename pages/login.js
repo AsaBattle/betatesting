@@ -9,6 +9,14 @@ const Login = () => {
     const { message } = router.query;
     const { data: session, status } = useSession();
 
+    useEffect(() => {
+    // check to see if the user is already logged in, if so, redirect them to the ImageMode page
+    if (status === 'authenticated' && session) {
+        console.log('User is already logged in, redirecting to ImageMode page');
+        router.push('/ImageMode');
+    }
+    }, [status, session]);
+
     const handleFullJourneyClick = () => {
         window.location.href = 'https://www.fulljourney.ai/login';
     };
@@ -18,6 +26,11 @@ const Login = () => {
     };
 
     const renderStatus = () => {
+        if (session)
+            console.log('session:', session);
+        else
+            console.log('session is null');
+
         if (status === 'authenticated' && session) {
             return (
               <div>

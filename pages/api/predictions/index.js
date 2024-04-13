@@ -1,3 +1,4 @@
+// This is /api/predictions/index.js
 import { parse } from 'cookie';
 import axios from 'axios';
 
