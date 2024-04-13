@@ -150,7 +150,7 @@ export default function Home(theUserData) {
 
     // We keep track of each user with a unique identifier, stored in a cookie and local storage
     useEffect(() => {
-      // Check if the user identifier exists in the cookie
+      // Check if the user identifier exists in cookie
       const userIdCookie = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       
       if (!userIdCookie) {
