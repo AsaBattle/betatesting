@@ -17,7 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
-import { getSession, signOut, signOut } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 import AuthService from '../services/authService';
 
 import { v4 as uuidv4 } from 'uuid';
