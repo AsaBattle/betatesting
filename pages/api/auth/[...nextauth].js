@@ -22,7 +22,7 @@ export const authOptions = {
         }
         return token;
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
 
         // Retrieve the user ID from your database based on the user's email or other identifier
         const userId = await getUserIdFromDatabase("test");
