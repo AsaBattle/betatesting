@@ -28,6 +28,7 @@ export default async function handler(req, res) {
 
     console.log("req.body.userId: ", req.body.userId);
 
+
     // Now check to make sure the user has the necessary credits to make a prediction
     details = await CheckAndSubtractCredits(userData, 1);
     if (details.worked === false && details.reasonCode === 6) {

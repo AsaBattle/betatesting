@@ -29,6 +29,7 @@ export const authOptions = {
       session.userId = token.userId;
       return session;
     },
+
     async signIn({ user, account, profile, email, credentials }) {
         //console.log("signIn was called with user: ", user);
 
@@ -40,11 +41,12 @@ export const authOptions = {
 
         // User found in the database, retrieve the user ID
         const userId = existingUser.user_id;
-        // Attach the user ID to the token for future reference
+        // Attach the user ID to the token for futur    e reference
         user.userId = userId;
       } else {
         console.log("User not found in the database, so creating a new user");
 
+        try{
         // create a next customer in our database(which also creates a new stripe user connected to our database as well)
         const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", 
         // the body of the request
@@ -55,6 +57,9 @@ export const authOptions = {
         });
 
         console.log("response from create_customer_nextAuth: ", response.data);
+        } catch (error) {
+            console.log("error from create_customer_nextAuth: ", error);
+        }
 
         // User not found in the database, handle accordingly (e.g., create a new user)
         // You can perform additional actions or throw an error if needed
