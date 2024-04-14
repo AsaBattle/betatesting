@@ -303,6 +303,9 @@ export default function Home(theUserData) {
 
 
     const handleLogout = async () => {
+
+      console.log("Logging out the user...");
+
       // Clear the user data cookie by setting an expired cookie
       const expiredUserDataCookie = serialize('user', '', {
         httpOnly: true,
@@ -314,9 +317,6 @@ export default function Home(theUserData) {
     
       // Set the expired cookie in the document
       document.cookie = expiredUserDataCookie;
-
-      // sign us out from any nextauth session
-      signOut();
 
         // Sign out the user using next-auth's signOut function
       await signOut({
