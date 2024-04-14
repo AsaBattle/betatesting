@@ -318,14 +318,9 @@ export default function Home(theUserData) {
       // Set the expired cookie in the document
       document.cookie = expiredUserDataCookie;
 
-        // Sign out the user using next-auth's signOut function
-      await signOut({
-        redirect: false, // Prevent automatic redirection
-        callbackUrl: 'https://www.fulljourney.ai/api/auth/logoutnextjs', // Set the callback URL to your logout route
-      });
-
-    
-      //window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+      signOut();
+      console.log("finished");
+      window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
     };
 
     // See if the user is logged in, if 
