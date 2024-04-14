@@ -30,7 +30,7 @@ const AuthService = {
       });
 
       res.setHeader('Set-Cookie', serializedUserCookie);
-      console.error('*** User IS logged in!!! ***');
+      console.error('*** User IS logged in!!! with Discord cookie***');
       return userData;
     } catch (error) {
       console.error('User was not logged in via Fulljourneys discord login process', error);
@@ -44,7 +44,7 @@ const AuthService = {
     if (session) {
       // The user is logged in with NextAuth, we can return the session data
       // The session object contains a user object with the name, email, and image
-      console.error('*** User IS logged in!!! ***');
+      console.error('*** User IS logged in!!! With nextauthsession ***');
       return session.user;
     }
     

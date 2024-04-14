@@ -11,8 +11,6 @@ const Login = () => {
     const { data: session, status } = useSession();
 
     useEffect(() => {
-
-
     // check to see if the user is already logged in, if so, redirect them to the ImageMode page
     if (status === 'authenticated' && session) {
 
