@@ -17,65 +17,53 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, account }) {
-        // Persist the OAuth provider's name in the token right after signin
-        if (account) {
-            token.provider = account.provider;
-        }
-        return token;
+      // Persist the OAuth provider's name in the token right after signin
+      if (account) {
+        token.provider = account.provider;
+      }
+      return token;
     },
-    async session({ session, token }) {
+    async session({ session, token, user }) {
+      console.log("session was called with session: ", session);
+      // Add the custom user ID to the session object
+      session.userId = token.userId;
+      return session;
+    },
+    async signIn({ user, account, profile, email, credentials }) {
+      // Custom logic to check if the user exists in your database
+      const existingUser = await findUserByEmail(user.email);
 
-        console.log("session was called with session: ", session);
+      if (existingUser) {
+        // User found in the database, retrieve the user ID
+        const userId = existingUser.user_id;
+        // Attach the user ID to the token for future reference
+        user.userId = userId;
+      } else {
+        // User not found in the database, handle accordingly (e.g., create a new user)
+        // You can perform additional actions or throw an error if needed
+        console.log("User not found in the database");
+      }
 
-        // Retrieve the user ID from your database based on the user's email or other identifier
-        const userId = await getUserIdFromDatabase("test");
-
-        // Forward the provider's name to the session object
-        if (token.provider) {
-            session.user.provider = token.provider;
-        }
-
-        // Add the custom user ID to the session object
-        session.userId = userId;
-
-        return session;
+      return true; // Return true to allow sign-in to proceed
     },
   },
   // Other NextAuth configuration
 };
 
-// Returns the userID from the database based on the user's user name
-async function getUserIdFromDatabase(email) {
-    console.log("getUserIdFromDatabase was called with email: ", email);
-
-    let user = null;
-    if ((user=findUserByEmail(email)))
-        console.log("User was found in the database: ", user);
-    else
-        console.log("User was not found in the database");
-
-
-  return 357; // Replace this with a real database query
-}
-
-
+// Returns the user from the database based on the user's email
 async function findUserByEmail(email) {
-
-        // Try and fetch the user via their email from our database
-    let findUser;
-    try 
-    {
-        const response = await axios.get(`http://3.19.250.209:36734/user/${email}`);
-        findUser = response.data;
-        findUser.user_id = findUser.user_id.toString();
-    } catch (err) 
-    {
-        if (!err.response || err.response.status !== 404) {
-            throw err;
-        }
+  // Try and fetch the user via their email from your database
+  let findUser = null;
+  try {
+    const response = await axios.get(`http://3.19.250.209:36734/user/${email}`);
+    findUser = response.data;
+    findUser.user_id = findUser.user_id.toString();
+  } catch (err) {
+    if (!err.response || err.response.status !== 404) {
+      throw err;
     }
-
-    return findUser;
+  }
+  return findUser;
 }
 
 export default NextAuth(authOptions);
