@@ -24,7 +24,7 @@ export const authOptions = {
       return token;
     },
     async session({ session, token, user }) {
-      console.log("session was called with session: ", session);
+      console.log("session was called with session: ", session, " and token: ", token, " and user: ", user);
       // Add the custom user ID to the session object
       session.userId = token.userId;
       return session;
