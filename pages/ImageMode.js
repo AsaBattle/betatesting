@@ -302,7 +302,7 @@ export default function Home(theUserData) {
     };
 
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
       // Clear the user data cookie by setting an expired cookie
       const expiredUserDataCookie = serialize('user', '', {
         httpOnly: true,
@@ -318,8 +318,14 @@ export default function Home(theUserData) {
       // sign us out from any nextauth session
       signOut();
 
+        // Sign out the user using next-auth's signOut function
+      await signOut({
+        redirect: false, // Prevent automatic redirection
+        callbackUrl: 'https://www.fulljourney.ai/api/auth/logoutnextjs', // Set the callback URL to your logout route
+      });
+
     
-      window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+      //window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
     };
 
     // See if the user is logged in, if 
