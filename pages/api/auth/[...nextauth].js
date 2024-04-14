@@ -43,6 +43,7 @@ export const authOptions = {
         const userId = existingUser.user_id;
         // Attach the user ID to the token for futur    e reference
         user.userId = userId;
+        user.credits = existingUser.credits;
       } else {
         console.log("User not found in the database, so creating a new user");
 
@@ -55,6 +56,9 @@ export const authOptions = {
             nextAuthUserName: user.name,
             user_id: user.id
         });
+
+        user.credits = response.data.credits;
+        user.userId = response.data.user_id;
 
         console.log("response from create_customer_nextAuth: ", response.data);
         } catch (error) {
