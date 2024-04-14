@@ -30,6 +30,8 @@ export const authOptions = {
       return session;
     },
     async signIn({ user, account, profile, email, credentials }) {
+        console.log("signIn was called with user: ", user);
+        
       // Custom logic to check if the user exists in your database
       const existingUser = await findUserByEmail(user.email);
 
