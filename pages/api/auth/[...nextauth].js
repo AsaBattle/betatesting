@@ -16,26 +16,28 @@ export const authOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, account }) {
-      // Persist the OAuth provider's name in the token right after signin
-      if (account) {
-        token.provider = account.provider;
-      }
-      return token;
-    },
-
-    async session({ session, token, user }) {
-        console.log("2NEWsession was called with session: ", session, " and token: ", token, " and user: ", user);
+    async jwt({ token, account, user }) {
+        // Persist the OAuth provider's name in the token right after signin
+        if (account) {
+          token.provider = account.provider;
+        }
       
-        // Check if the token or user object contains the user data
+        // Include the user data in the token
+        if (user) {
+          token.userId = user.userId;
+          token.credits = user.credits;
+        }
+      
+        return token;
+      },
+
+      async session({ session, token }) {
+        console.log("2NEWsession was called with session: ", session, " and token: ", token);
+      
+        // Add the user ID and credits to the session object
         if (token.userId && token.credits) {
-          // Add the user ID and credits to the session object
           session.userId = token.userId;
           session.credits = token.credits;
-        } else if (user && user.userId && user.credits) {
-          // If the token doesn't have the data, check the user object
-          session.userId = user.userId;
-          session.credits = user.credits;
         }
       
         return session;
