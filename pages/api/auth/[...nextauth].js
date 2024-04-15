@@ -34,11 +34,8 @@ export const authOptions = {
       async session({ session, token }) {
         console.log("2NEWsession was called with session: ", session, " and token: ", token);
       
-        // Add the user ID and credits to the session object
-        if (token.userId && token.credits) {
           session.userId = token.userId;
           session.credits = token.credits;
-        }
       
         return session;
       },
