@@ -23,10 +23,10 @@ export const authOptions = {
       }
       return token;
     },
-    
+
     async session({ session, token, user }) {
 
-      console.log("session was called with session: ", session, " and token: ", token, " and user: ", user);
+      console.log("NEWsession was called with session: ", session, " and token: ", token, " and user: ", user);
       // Add the custom user ID to the session object
       session.userId = token.userId;
       return session;
@@ -37,7 +37,7 @@ export const authOptions = {
     const existingUser = await findUserByNextAuthID(user.id);
 
     if (existingUser) {
-        console.log("User found in the database with our database ID: ", existingUser.user_id);
+        console.log("NEWUser found in the database with our database ID: ", existingUser.user_id);
 
         // User found in the database, retrieve the user ID and credits
         const userId = existingUser.user_id;
