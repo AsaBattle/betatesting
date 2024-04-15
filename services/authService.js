@@ -45,6 +45,7 @@ const AuthService = {
       // The user is logged in with NextAuth, we can return the session data
       // The session object contains a user object with the name, email, and image
       console.error('*** User IS logged in!!! With nextauthsession ***');
+      console.log('Session:', session);
       return session;
     }
     
