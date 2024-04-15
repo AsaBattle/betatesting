@@ -730,6 +730,7 @@ const handleSubmit = async (e) => {
       const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
 
       if (userData) {
+        console.log("UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
         // The user is authenticated, pass the user data as props
         return { props: { userData } };
       }
