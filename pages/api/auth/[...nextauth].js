@@ -23,7 +23,9 @@ export const authOptions = {
       }
       return token;
     },
+    
     async session({ session, token, user }) {
+
       console.log("session was called with session: ", session, " and token: ", token, " and user: ", user);
       // Add the custom user ID to the session object
       session.userId = token.userId;
@@ -31,45 +33,45 @@ export const authOptions = {
     },
 
     async signIn({ user, account, profile, email, credentials }) {
-        //console.log("signIn was called with user: ", user);
+    // Custom logic to check if the user exists in your database
+    const existingUser = await findUserByNextAuthID(user.id);
 
-      // Custom logic to check if the user exists in your database
-      const existingUser = await findUserByNextAuthID(user.id);
-
-      if (existingUser) {
+    if (existingUser) {
         console.log("User found in the database with our database ID: ", existingUser.user_id);
 
-        // User found in the database, retrieve the user ID
+        // User found in the database, retrieve the user ID and credits
         const userId = existingUser.user_id;
-        // Attach the user ID to the token for futur    e reference
-        user.userId = userId;
-        user.credits = existingUser.credits;
-      } else {
+        const credits = existingUser.credits;
+
+        // Attach the user ID and credits to the token for future reference
+        user.token = {
+        userId: userId,
+        credits: credits,
+        };
+    } else {
         console.log("User not found in the database, so creating a new user");
 
-        try{
-        // create a next customer in our database(which also creates a new stripe user connected to our database as well)
-        const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", 
-        // the body of the request
-        { 
-            email: user.email, 
+        try {
+        // Create a new customer in your database
+        const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", {
+            email: user.email,
             nextAuthUserName: user.name,
-            user_id: user.id
+            user_id: user.id,
         });
 
-        user.credits = response.data.credits;
-        user.userId = response.data.user_id;
+        // Attach the user ID and credits to the token for future reference
+        user.token = {
+            userId: response.data.user_id,
+            credits: response.data.credits,
+        };
 
-        console.log("response from create_customer_nextAuth: ", response.data);
+        console.log("Response from create_customer_nextAuth: ", response.data);
         } catch (error) {
-            console.log("error from create_customer_nextAuth: ", error);
+        console.log("Error from create_customer_nextAuth: ", error);
         }
+    }
 
-        // User not found in the database, handle accordingly (e.g., create a new user)
-        // You can perform additional actions or throw an error if needed
-      }
-
-      return true; // Return true to allow sign-in to proceed
+    return true; // Return true to allow sign-in to proceed
     },
   },
   // Other NextAuth configuration
