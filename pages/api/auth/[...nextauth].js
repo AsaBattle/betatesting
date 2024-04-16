@@ -23,10 +23,15 @@ export const authOptions = {
         }
       
         // Include the user data in the token
+        console.log("2NEWjwt was called with token: ", token, " and user: ", user);
         if (user) {
+          console.log("user was NULL");
           token.user_id = user.user_id;
           token.credits = user.credits;
+          token.name = user.name;
         }
+
+
       
         return token;
       },
@@ -36,9 +41,11 @@ export const authOptions = {
       
           session.user_id = token.user_id;
           session.credits = token.credits;
+          session.userName = token.name;
       
         return session;
       },
+
       async signIn({ user, account, profile, email, credentials }) {
         // Custom logic to check if the user exists in your database
         const existingUser = await findUserByNextAuthID(user.id);
@@ -53,6 +60,7 @@ export const authOptions = {
           // Attach the user ID and credits to the user object
           user.user_id = user_id;
           user.credits = credits;
+
         } else {
           console.log("User not found in the database, so creating a new user");
       
