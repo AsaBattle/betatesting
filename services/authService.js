@@ -9,6 +9,10 @@ import { serialize } from 'cookie';
 
 const AuthService = {
     checkIfUserIsAlreadyLoggedIn: async (req, res) => {
+
+    let userData = null;
+    let serializedUserCookie = null;
+
     // *** DISCORD LOGIN check ***
     // Check if the user is logged in using FullJourney's(Discord) authentication
     const cookies = req.headers.cookie || '';
@@ -20,8 +24,8 @@ const AuthService = {
 
       // If authentication was successful(meaning the user had already logged into their discord acocount via fj's login process), 
       // Then we serialize the user data and create a cookie with it
-      const userData = response.data;
-      const serializedUserCookie = serialize('user', JSON.stringify(userData), {
+     userData = response.data;
+     serializedUserCookie = serialize('user', JSON.stringify(userData), {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
         sameSite: 'strict',
