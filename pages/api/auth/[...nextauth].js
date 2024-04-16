@@ -23,12 +23,15 @@ export const authOptions = {
         }
       
         // Include the user data in the token
+        console.log("2NEWjwt was called with token: ", token, " and user: ", user);
         if (user) {
-          console.log("2NEWjwt was called with token: ", token, " and user: ", user);
+          console.log("user was NULL");
           token.user_id = user.user_id;
           token.credits = user.credits;
           token.name = user.name;
         }
+
+
       
         return token;
       },
