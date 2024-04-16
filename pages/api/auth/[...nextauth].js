@@ -24,7 +24,7 @@ export const authOptions = {
       
         // Include the user data in the token
         if (user) {
-          token.userId = user.userId;
+          token.user_id = user.user_id;
           token.credits = user.credits;
         }
       
@@ -34,7 +34,7 @@ export const authOptions = {
       async session({ session, token }) {
         console.log("2NEWsession was called with session: ", session, " and token: ", token);
       
-          session.userId = token.userId;
+          session.user_id = token.user_id;
           session.credits = token.credits;
       
         return session;
@@ -47,11 +47,11 @@ export const authOptions = {
           console.log("2NEWUser found in the database with our database ID: ", existingUser.user_id);
       
           // User found in the database, retrieve the user ID and credits
-          const userId = existingUser.user_id;
+          const user_id = existingUser.user_id;
           const credits = existingUser.credits;
       
           // Attach the user ID and credits to the user object
-          user.userId = userId;
+          user.user_id = user_id;
           user.credits = credits;
         } else {
           console.log("User not found in the database, so creating a new user");
@@ -65,7 +65,7 @@ export const authOptions = {
             });
       
             // Attach the user ID and credits to the user object
-            user.userId = response.data.user_id;
+            user.user_id = response.data.user_id;
             user.credits = response.data.credits;
       
             console.log("Response from create_customer_nextAuth: ", response.data);
