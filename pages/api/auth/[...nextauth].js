@@ -7,6 +7,7 @@ just copied over this signIn code(and the rest of the entire file from Claude)
 */
 import axios from 'axios';
 import NextAuth from 'next-auth';
+import { getToken } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions = {
@@ -56,7 +57,7 @@ export const authOptions = {
         const existingUser = await findUserByNextAuthID(user.id);
       
         if (existingUser) {
-          console.log("3NEWUser found in the database with our database ID: ", existingUser.user_id);
+          console.log("2NEWUser found in the database with our database ID: ", existingUser.user_id);
           // User found in the database, retrieve the user ID and credits
           const user_id = existingUser.user_id;
           const credits = existingUser.credits;
@@ -65,7 +66,7 @@ export const authOptions = {
           user.user_id = user_id;
           user.credits = credits;
         } else {
-          console.log("3User not found in the database, so creating a new user");
+          console.log("User not found in the database, so creating a new user");
           try {
             // Create a new customer in your database
             const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", {
@@ -85,7 +86,7 @@ export const authOptions = {
         }
       
         // Get the JWT token using the getToken function
-        const { token } = await NextAuth.jwt({ req: { headers: { authorization: null } } });
+        const token = await getToken({ req: { headers: { authorization: null } } });
       
         // Pass the JWT token to the main site upon successful login
         const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(token)}`;
