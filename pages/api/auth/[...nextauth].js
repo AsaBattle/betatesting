@@ -7,7 +7,6 @@ just copied over this signIn code(and the rest of the entire file from Claude)
 */
 import axios from 'axios';
 import NextAuth from 'next-auth';
-import { signIn } from 'next-auth/react';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions = {
@@ -24,40 +23,12 @@ export const authOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, account, user }) {
-      // Persist the OAuth provider's name in the token right after signin
-      if (account) {
-        token.provider = account.provider;
-      }
-
-      // Include the user data in the token
-      console.log("3async jwt({ token, account, user }) - was called with token: ", token, " and user: ", user);
-      if (user) {
-        console.log("user was NULL");
-        token.user_id = user.user_id;
-        token.credits = user.credits;
-        token.name = user.name;
-      }
-
-      return token;
-    },
-
-    async session({ session, token }) {
-      console.log("3async session({ session, token }) - was called with session: ", session, " and token: ", token);
-      session.user_id = token.user_id;
-      session.credits = token.credits;
-      session.userName = token.name;
-
-      return session;
-    },
-
- 
     async signIn({ user, account, profile, email, credentials }) {
         // Custom logic to check if the user exists in your database
         const existingUser = await findUserByNextAuthID(user.id);
       
         if (existingUser) {
-          console.log("3NEWUser found in the database with our database ID: ", existingUser.user_id);
+          console.log("2NEWUser found in the database with our database ID: ", existingUser.user_id);
           // User found in the database, retrieve the user ID and credits
           const user_id = existingUser.user_id;
           const credits = existingUser.credits;
@@ -85,11 +56,35 @@ export const authOptions = {
           }
         }
       
-        // Pass the JWT token to the main site upon successful login
-        const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth`;
-        await signIn('credentials', { redirect: false, callbackUrl: redirectUrl, token: user.token });
-      
         return true; // Return true to allow sign-in to proceed
+      },
+      
+      async jwt({ token, user, account, profile, isNewUser }) {
+        // Include the user data in the token
+        if (user) {
+          token.user_id = user.user_id;
+          token.credits = user.credits;
+          token.name = user.name;
+        }
+      
+        return token;
+      },
+      
+      async session({ session, token, user }) {
+        // Include the token in the session
+        session.token = token;
+      
+        return session;
+      },
+      
+      async redirect({ url, baseUrl }, { session }) {
+        // Pass the token to the main site upon successful login
+        if (url === baseUrl) {
+          const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(session.token)}`;
+          return redirectUrl;
+        }
+      
+        return url;
       },
   },
   // Other NextAuth configuration
