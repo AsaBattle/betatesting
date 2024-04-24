@@ -7,7 +7,7 @@ just copied over this signIn code(and the rest of the entire file from Claude)
 */
 import axios from 'axios';
 import NextAuth from 'next-auth';
-import { signIn } from 'next-auth/client';
+import { signIn } from 'next-auth/react';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions = {
