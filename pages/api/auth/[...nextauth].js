@@ -30,7 +30,7 @@ export const authOptions = {
       }
 
       // Include the user data in the token
-      console.log("async jwt({ token, account, user }) - was called with token: ", token, " and user: ", user);
+      console.log("3async jwt({ token, account, user }) - was called with token: ", token, " and user: ", user);
       if (user) {
         console.log("user was NULL");
         token.user_id = user.user_id;
@@ -42,7 +42,7 @@ export const authOptions = {
     },
 
     async session({ session, token }) {
-      console.log("async session({ session, token }) - was called with session: ", session, " and token: ", token);
+      console.log("3async session({ session, token }) - was called with session: ", session, " and token: ", token);
       session.user_id = token.user_id;
       session.credits = token.credits;
       session.userName = token.name;
@@ -52,48 +52,47 @@ export const authOptions = {
 
  
     async signIn({ user, account, profile, email, credentials }) {
-      // Custom logic to check if the user exists in your database
-      const existingUser = await findUserByNextAuthID(user.id);
-
-      if (existingUser) {
-        console.log("async signIn(...) - found in the database with our database ID: ", existingUser.user_id);
-        // User found in the database, retrieve the user ID and credits
-        const user_id = existingUser.user_id;
-        const credits = existingUser.credits;
-
-        // Attach the user ID and credits to the user object
-        user.user_id = user_id;
-        user.credits = credits;
-
-        // Pass the JWT token to the main site upon successful login
-        const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(await NextAuth.jwt({ token: token }))}`;
-        window.location.href = redirectUrl;
-      } else {
-        console.log("async signIn(...) - User not found in the database, so creating a new user");
-        try {
-          // Create a new customer in your database
-          const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", {
-            email: user.email,
-            nextAuthUserName: user.name,
-            user_id: user.id,
-          });
-
+        // Custom logic to check if the user exists in your database
+        const existingUser = await findUserByNextAuthID(user.id);
+      
+        if (existingUser) {
+          console.log("3NEWUser found in the database with our database ID: ", existingUser.user_id);
+          // User found in the database, retrieve the user ID and credits
+          const user_id = existingUser.user_id;
+          const credits = existingUser.credits;
+      
           // Attach the user ID and credits to the user object
-          user.user_id = response.data.user_id;
-          user.credits = response.data.credits;
-
-          console.log("Response from create_customer_nextAuth: ", response.data);
-
-          // Pass the JWT token to the main site upon successful login
-          const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(await NextAuth.jwt({ token: token }))}`;
-          window.location.href = redirectUrl;
-        } catch (error) {
-          console.log("Error from create_customer_nextAuth: ", error);
+          user.user_id = user_id;
+          user.credits = credits;
+        } else {
+          console.log("3User not found in the database, so creating a new user");
+          try {
+            // Create a new customer in your database
+            const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", {
+              email: user.email,
+              nextAuthUserName: user.name,
+              user_id: user.id,
+            });
+      
+            // Attach the user ID and credits to the user object
+            user.user_id = response.data.user_id;
+            user.credits = response.data.credits;
+      
+            console.log("Response from create_customer_nextAuth: ", response.data);
+          } catch (error) {
+            console.log("Error from create_customer_nextAuth: ", error);
+          }
         }
-      }
-
-      return true; // Return true to allow sign-in to proceed
-    },
+      
+        // Get the JWT token using the getToken function
+        const { token } = await NextAuth.jwt({ req: { headers: { authorization: null } } });
+      
+        // Pass the JWT token to the main site upon successful login
+        const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(token)}`;
+        window.location.href = redirectUrl;
+      
+        return true; // Return true to allow sign-in to proceed
+      },
   },
   // Other NextAuth configuration
 };
