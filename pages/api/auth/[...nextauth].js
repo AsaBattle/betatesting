@@ -57,7 +57,7 @@ export const authOptions = {
         const existingUser = await findUserByNextAuthID(user.id);
       
         if (existingUser) {
-          console.log("2NEWUser found in the database with our database ID: ", existingUser.user_id);
+          console.log("3NEWUser found in the database with our database ID: ", existingUser.user_id);
           // User found in the database, retrieve the user ID and credits
           const user_id = existingUser.user_id;
           const credits = existingUser.credits;
