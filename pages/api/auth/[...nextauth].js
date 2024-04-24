@@ -7,7 +7,7 @@ just copied over this signIn code(and the rest of the entire file from Claude)
 */
 import axios from 'axios';
 import NextAuth from 'next-auth';
-import { getToken } from 'next-auth/jwt';
+import { signIn } from 'next-auth/client';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions = {
@@ -85,12 +85,9 @@ export const authOptions = {
           }
         }
       
-        // Get the JWT token using the getToken function
-        const token = await getToken({ req: { headers: { authorization: null } } });
-      
         // Pass the JWT token to the main site upon successful login
-        const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(token)}`;
-        window.location.href = redirectUrl;
+        const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth`;
+        await signIn('credentials', { redirect: false, callbackUrl: redirectUrl, token: user.token });
       
         return true; // Return true to allow sign-in to proceed
       },
