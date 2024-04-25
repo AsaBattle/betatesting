@@ -77,13 +77,14 @@ export const authOptions = {
         return session;
       },
       
-      async redirect({ url, baseUrl }, { session }) {
+      async redirect({ url, baseUrl }, { token }) {
         // Pass the token to the main site upon successful login
         if (url === baseUrl) {
-          const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(session.token)}`;
+          const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(token)}`;
           return redirectUrl;
         }
       
+        // Return the original URL if it's not the base URL
         return url;
       },
   },
