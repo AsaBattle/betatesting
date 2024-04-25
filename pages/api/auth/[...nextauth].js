@@ -44,10 +44,12 @@ export const authOptions = {
         return session;
       },
 
+      
       async signIn({ user, account, profile, email, credentials }) {
 
         console.log("2NEWsignIn was called with user: ", user, " and account: ", account, " and profile: ", profile, " and email: ", email, " and credentials: ", credentials);
 
+        /*
         // Custom logic to check if the user exists in your database
         const existingUser = await findUserByNextAuthID(user.id);
       
@@ -83,7 +85,6 @@ export const authOptions = {
           }
         }
 
-
         // call the express api www.fulljourney.ai/api/auth/nextauth route that uses passport to log the user in with the user object and token
         // this will create a cookie with the user object and token
         try {
@@ -97,7 +98,7 @@ export const authOptions = {
         } catch (error) {
             console.log("Error from /api/auth/nextauth: ", error);
         }
-
+        */
         
       
         return true; // Return true to allow sign-in to proceed
