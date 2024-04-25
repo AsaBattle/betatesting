@@ -45,6 +45,9 @@ export const authOptions = {
       },
 
       async signIn({ user, account, profile, email, credentials }) {
+
+        console.log("2NEWsignIn was called with user: ", user, " and account: ", account, " and profile: ", profile, " and email: ", email, " and credentials: ", credentials);
+
         // Custom logic to check if the user exists in your database
         const existingUser = await findUserByNextAuthID(user.id);
       
