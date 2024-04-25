@@ -90,7 +90,7 @@ export const authOptions = {
             console.log("2NEWcalling /api/auth/nextauth user is: ", user);
           const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
             user: user,
-            token: account.access_token,
+            token: "hello",
           });
       
           console.log("Response from /api/auth/nextauth: ", response.data);
