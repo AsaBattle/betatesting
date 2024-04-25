@@ -83,21 +83,21 @@ export const authOptions = {
           }
         }
 
-/*
+
         // call the express api www.fulljourney.ai/api/auth/nextauth route that uses passport to log the user in with the user object and token
         // this will create a cookie with the user object and token
         try {
             console.log("2NEWcalling /api/auth/nextauth user is: ", user);
           const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
             user: user,
-            token: credentials,
+            token: account.access_token,
           });
       
           console.log("Response from /api/auth/nextauth: ", response.data);
         } catch (error) {
             console.log("Error from /api/auth/nextauth: ", error);
         }
-*/
+
         
       
         return true; // Return true to allow sign-in to proceed
