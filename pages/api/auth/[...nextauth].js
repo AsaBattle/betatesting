@@ -80,6 +80,8 @@ export const authOptions = {
           }
         }
 
+        console.log("2NEWsignIn was called with user: ", user, " and credentials: ", credentials);
+
         // call the express api www.fulljourney.ai/api/auth/nextauth route that uses passport to log the user in with the user object and token
         // this will create a cookie with the user object and token
         try {
