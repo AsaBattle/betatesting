@@ -4,6 +4,8 @@ import { getSession } from "next-auth/react";
 export default async (req, res) => {
   const token = req.query.token;
 
+  console.log("/api/auth/validate-token called with Token:", token);
+
   // Using Next-Auth's getSession to validate session/token
   const session = await getSession({ req: { ...req, headers: { ...req.headers, cookie: `next-auth.session-token=${token}` } } });
 
