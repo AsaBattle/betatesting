@@ -1,10 +1,3 @@
-/*
-just copied over this signIn code(and the rest of the entire file from Claude)
- I also wrote out the nextAuth routes in the Express api as well as the nextAuth strategy.
- Next we need to test if this works. Also, with the discord login strategy, we do all the user login and creation
- in the strategy itself. So I don't think We need to be doing that here. We just need to pass the token to the main site.
- But lets test this first. Also, will we need to serialize/deserialize the user data in the Express api strategy just like we did in the discord login strategy?
-*/
 import axios from 'axios';
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
@@ -23,12 +16,41 @@ export const authOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async jwt({ token, account, user }) {
+        // Persist the OAuth provider's name in the token right after signin
+        if (account) {
+          token.provider = account.provider;
+        }
+      
+        // Include the user data in the token
+        console.log("2NEWjwt was called with token: ", token, " and user: ", user);
+        if (user) {
+          console.log("user was NULL");
+          token.user_id = user.user_id;
+          token.credits = user.credits;
+          token.name = user.name;
+        }
+
+        return token;
+      },
+
+      async session({ session, token }) {
+        console.log("2NEWsession was called with session: ", session, " and token: ", token);
+      
+          session.user_id = token.user_id;
+          session.credits = token.credits;
+          session.userName = token.name;
+      
+        return session;
+      },
+
+      async signIn({ user, account, profile, email, credentials }) {
         // Custom logic to check if the user exists in your database
         const existingUser = await findUserByNextAuthID(user.id);
       
         if (existingUser) {
           console.log("2NEWUser found in the database with our database ID: ", existingUser.user_id);
+      
           // User found in the database, retrieve the user ID and credits
           const user_id = existingUser.user_id;
           const credits = existingUser.credits;
@@ -36,8 +58,10 @@ export const authOptions = {
           // Attach the user ID and credits to the user object
           user.user_id = user_id;
           user.credits = credits;
+
         } else {
           console.log("User not found in the database, so creating a new user");
+      
           try {
             // Create a new customer in your database
             const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", {
@@ -57,35 +81,6 @@ export const authOptions = {
         }
       
         return true; // Return true to allow sign-in to proceed
-      },
-      
-      async jwt({ token, user, account, profile, isNewUser }) {
-        // Include the user data in the token
-        if (user) {
-          token.user_id = user.user_id;
-          token.credits = user.credits;
-          token.name = user.name;
-        }
-      
-        return token;
-      },
-      
-      async session({ session, token, user }) {
-        // Include the token in the session
-        session.token = token;
-      
-        return session;
-      },
-      
-      async redirect({ url, baseUrl }, { token }) {
-        // Pass the token to the main site upon successful login
-        if (url === baseUrl) {
-          const redirectUrl = `https://www.fulljourney.ai/api/auth/nextauth?token=${encodeURIComponent(token)}`;
-          return redirectUrl;
-        }
-      
-        // Return the original URL if it's not the base URL
-        return url;
       },
   },
   // Other NextAuth configuration
