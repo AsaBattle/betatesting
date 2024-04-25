@@ -25,7 +25,7 @@ export const authOptions = {
         // Include the user data in the token
         console.log("2NEWjwt was called with token: ", token, " and user: ", user);
         if (user) {
-          console.log("user was NULL");
+          console.log("user was not NULL");
           token.user_id = user.user_id;
           token.credits = user.credits;
           token.name = user.name;
@@ -80,11 +80,11 @@ export const authOptions = {
           }
         }
 
-        console.log("2NEWsignIn was called with user: ", user, " and credentials: ", credentials);
 
         // call the express api www.fulljourney.ai/api/auth/nextauth route that uses passport to log the user in with the user object and token
         // this will create a cookie with the user object and token
         try {
+            console.log("2NEWcalling /api/auth/nextauth user is: ", user);
           const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
             user: user,
             token: credentials,
