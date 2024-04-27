@@ -50,7 +50,6 @@ export const authOptions = {
 
         console.log("2NEWsignIn was called with user: ", user, " and account: ", account, " and profile: ", profile, " and email: ", email, " and credentials: ", credentials);
 
-/*
         try {
             console.log("2NEWcalling /api/auth/nextauth user is: ", user);
         const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
@@ -62,7 +61,7 @@ export const authOptions = {
         } catch (error) {
             console.log("Error from /api/auth/nextauth: ", error);
         }
-*/
+/*
         // Custom logic to check if the user exists in your database
         const existingUser = await findUserByNextAuthID(user.id);
       
@@ -111,7 +110,7 @@ export const authOptions = {
         } catch (error) {
             console.log("Error from /api/auth/nextauth: ", error);
         }
-      
+      */
         return true; // Return true to allow sign-in to proceed
       },
   },
