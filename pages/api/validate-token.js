@@ -2,7 +2,7 @@
 import { getSession } from "next-auth/react";
 
 export default async (req, res) => {
-  const token = req.query.token;
+  const token = req.body.token;
 
   console.log("/api/auth/validate-token called with Token:", token);
 
