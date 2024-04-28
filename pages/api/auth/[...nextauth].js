@@ -18,105 +18,54 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, account, user }) {
-        // Persist the OAuth provider's name in the token right after signin
-        if (account) {
-          token.provider = account.provider;
-        }
-      
-        // Include the user data in the token
-        console.log("2NEWjwt was called with token: ", token, " and user: ", user);
-        if (user) {
-          console.log("user was not NULL");
-          token.user_id = user.user_id;
-          token.credits = user.credits;
-          token.name = user.name;
-        }
+      // Capture the Google token and user details
+      if (account?.provider === 'google' && account.access_token) {
+        token.access_token = account.access_token;
+        token.provider = account.provider;
+      }
 
-        return token;
-      },
+      if (user) {
+        // Pass minimal user details
+        token.user_id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+      }
 
-      async session({ session, token }) {
-        console.log("2NEWsession was called with session: ", session, " and token: ", token);
-      
-          session.user_id = token.user_id;
-          session.credits = token.credits;
-          session.userName = token.name;
-      
-        return session;
-      },
+      return token;
+    },
 
+    async session({ session, token }) {
+      // Attach the Google token and user details to the session
+      session.access_token = token.access_token;
+      session.user_id = token.user_id;
+      session.email = token.email;
+      session.name = token.name;
 
-      async signIn({ user, account, profile, email, credentials }) {
+      return session;
+    },
 
-        console.log("2NEWsignIn was called with user: ", user, " and account: ", account, " and profile: ", profile, " and email: ", email, " and credentials: ", credentials);
-
-/*
-        try {
-            console.log("2NEWcalling /api/auth/nextauth user is: ", user);
+    async signIn({ user, account, profile, email, credentials }) {
+      // Forward user details and Google token to your main site's API for handling user lookup or creation
+      try {
         const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
-            user: user,
-            token: "hello",
+          user: {
+            user_id: user.id,
+            email: user.email,
+            name: user.name
+          },
+          token: account.access_token  // This is the Google token
         });
 
         console.log("Response from /api/auth/nextauth: ", response.data);
-        } catch (error) {
-            console.log("Error from /api/auth/nextauth: ", error);
-        }
-*/
-        // Custom logic to check if the user exists in your database
-        const existingUser = await findUserByNextAuthID(user.id);
-      
-        if (existingUser) {
-          console.log("2NEWUser found in the database with our database ID: ", existingUser.user_id);
-      
-          // User found in the database, retrieve the user ID and credits
-          const user_id = existingUser.user_id;
-          const credits = existingUser.credits;
-      
-          // Attach the user ID and credits to the user object
-          user.user_id = user_id;
-          user.credits = credits;
-
-        } else {
-          console.log("User not found in the database, so creating a new user");
-      
-          try {
-            // Create a new customer in your database
-            const response = await axios.post("https://www.fulljourney.ai/api/payment/create_customer_nextAuth", {
-              email: user.email,
-              nextAuthUserName: user.name,
-              user_id: user.id,
-            });
-      
-            // Attach the user ID and credits to the user object
-            user.user_id = response.data.user_id;
-            user.credits = response.data.credits;
-      
-            console.log("Response from create_customer_nextAuth: ", response.data);
-          } catch (error) {
-            console.log("Error from create_customer_nextAuth: ", error);
-          }
-        }
-
-        // call the express api www.fulljourney.ai/api/auth/nextauth route that uses passport to log the user in with the user object and token
-        // this will create a cookie with the user object and token
-        try {
-            console.log("2NEWcalling /api/auth/nextauth user is: ", user);
-          const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
-            user: user,
-            token: "hello",
-          });
-      
-          console.log("Response from /api/auth/nextauth: ", response.data);
-        } catch (error) {
-            console.log("Error from /api/auth/nextauth: ", error);
-        }
-      
-        return true; // Return true to allow sign-in to proceed
-      },
+        return response.data.success;  // Assume the main site's API responds with a success flag
+      } catch (error) {
+        console.error("Error from /api/auth/nextauth: ", error);
+        return false;
+      }
+    }
   },
-  // Other NextAuth configuration
 };
+
 
 // Returns the user from the database based on the user's next auth id
 async function findUserByNextAuthID(nextAuthID) {
