@@ -45,6 +45,9 @@ export const authOptions = {
     },
 
     async signIn({ user, account, profile, email, credentials }) {
+
+      console.log("signIn callback called with user: ", user, " and access token: ", account.access_token);
+
       // Forward user details and Google token to your main site's API for handling user lookup or creation
       try {
         const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {

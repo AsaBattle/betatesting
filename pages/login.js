@@ -29,9 +29,9 @@ const Login = () => {
 
     const renderStatus = () => {
         if (session)
-            console.log('5session:', session);
+            console.log('6session:', session);
         else
-            console.log('5session is null');
+            console.log('6session is null');
 
         if (status === 'authenticated' && session) {
             return (
