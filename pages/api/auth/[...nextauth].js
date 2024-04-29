@@ -45,27 +45,42 @@ export const authOptions = {
     },
 
     async signIn({ user, account, profile, email, credentials }) {
-
-      console.log("signIn callback called with user: ", user, " and access token: ", account.access_token);
-
-      // Forward user details and Google token to your main site's API for handling user lookup or creation
-      try {
-        const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
-          user: {
-            user_id: user.id,
-            email: user.email,
-            name: user.name
-          },
-          token: account.access_token  // This is the Google token
-        });
-
-        console.log("Response from /api/auth/nextauth: ", response.data);
-        return response.data.success;  // Assume the main site's API responds with a success flag
-      } catch (error) {
-        console.error("Error from /api/auth/nextauth: ", error);
-        return false;
-      }
+        console.log("signIn callback called with user: ", user, " and access token: ", account.access_token);
+    
+        // Forward user details and Google token to your main site's API for handling user lookup or creation
+        try {
+            const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
+                user: {
+                    user_id: user.id,
+                    email: user.email,
+                    name: user.name
+                },
+                token: account.access_token  // This is the Google token
+            });
+    
+            console.log("Response from /api/auth/nextauth: ", response.data);
+            if (response.data.success) {
+                // If authentication is successful, set a test session value
+                const sessionResponse = await axios.get("https://www.fulljourney.ai/api/auth/set-test", {
+                    withCredentials: true  // Ensure credentials are sent with the request
+                });
+    
+                console.log("Session test set response: ", sessionResponse.data);
+    
+                // Retrieve the test session value to confirm persistence
+                const testSessionResponse = await axios.get("https://www.fulljourney.ai/api/auth/get-test", {
+                    withCredentials: true
+                });
+    
+                console.log("Session test get response: ", testSessionResponse.data);
+            }
+            return response.data.success;  // Return the success status of the authentication
+        } catch (error) {
+            console.error("Error from /api/auth/nextauth: ", error);
+            return false;
+        }
     }
+    
   },
 };
 
