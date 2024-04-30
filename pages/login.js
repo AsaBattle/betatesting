@@ -68,6 +68,8 @@ const Login = () => {
             } catch (error) {
                 console.error("Error during external API authentication:", error);
             }
+        } else {
+            console.error("Error during NextAuth sign-in:", result);
         }
     };
 
@@ -92,7 +94,7 @@ const Login = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h3>aFullJourney Studio</h3>
+                <h3>bFullJourney Studio</h3>
                 <h3>Status is: {status}</h3> {/* Optional: Display authentication status */}
             </div>
             <div className={styles.text}>
