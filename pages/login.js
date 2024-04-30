@@ -30,6 +30,7 @@ const Login = () => {
     const handleGoogleSignIn = async () => {
         // This function will be invoked when the Google login button is clicked
         const result = await nextAuthSignIn('google', { redirect: false, callbackUrl: "/ImageMode" });
+        console.log("NextAuth sign-in result:", result);
         if (result?.url) {
             // Perform API call to your Express API with the received session data
             try {
@@ -94,7 +95,7 @@ const Login = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h3>bFullJourney Studio</h3>
+                <h3>cFullJourney Studio</h3>
                 <h3>Status is: {status}</h3> {/* Optional: Display authentication status */}
             </div>
             <div className={styles.text}>
