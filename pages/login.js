@@ -68,6 +68,8 @@ const Login = () => {
             } catch (error) {
                 console.error("Error during external API authentication:", error);
             }
+        } else {
+            console.error("Error during NextAuth sign-in:", result);
         }
     };
 
