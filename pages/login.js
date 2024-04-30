@@ -1,22 +1,22 @@
 import { useRef, useState, useEffect } from "react";
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signIn as nextAuthSignIn, signOut } from 'next-auth/react';
+import axios from 'axios';
 
 import styles from './login.module.css';
 
 const Login = () => {
-    const router = useRouter(); 
+    const router = useRouter();
     const { message } = router.query;
     const { data: session, status } = useSession();
 
     useEffect(() => {
-    // check to see if the user is already logged in, if so, redirect them to the ImageMode page
-    if (status === 'authenticated' && session) {
-
-        console.log('User is already logged in, redirecting to ImageMode page');
-        router.push('/ImageMode');
-    }
+        // Check to see if the user is already logged in, if so, redirect them to the ImageMode page
+        if (status === 'authenticated' && session) {
+            console.log('User is already logged in, redirecting to ImageMode page');
+            router.push('/ImageMode');
+        }
     }, [status, session]);
 
     const handleFullJourneyClick = () => {
@@ -27,12 +27,33 @@ const Login = () => {
         window.location.href = 'https://www.fulljourney.ai/api/auth/nextjsbeta';
     };
 
-    const renderStatus = () => {
-        if (session)
-            console.log('10session:', session);
-        else
-            console.log('10session is null');
+    const handleGoogleSignIn = async () => {
+        // This function will be invoked when the Google login button is clicked
+        const result = await nextAuthSignIn('google', { redirect: false, callbackUrl: "/ImageMode" });
+        if (result?.url) {
+            // Perform API call to your Express API with the received session data
+            try {
+                const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
+                    user: {
+                        user_id: result.user.id,
+                        email: result.user.email,
+                        name: result.user.name
+                    },
+                    token: result.user.access_token  // Assuming this is available; adjust according to your token setup
+                }, { withCredentials: true });
+    
+                if (response.data.success) {
+                    console.log("Authentication successful", response.data);
+                    // Additional steps as needed
+                    window.location.href = response.data.redirectUrl || '/ImageMode';
+                }
+            } catch (error) {
+                console.error("Error during external API authentication:", error);
+            }
+        }
+    };
 
+    const renderStatus = () => {
         if (status === 'authenticated' && session) {
             return (
               <div>
@@ -44,7 +65,7 @@ const Login = () => {
             );
         } else {
             return (
-                <button className={`${styles.button} ${styles.googleButton}`} onClick={() => signIn('google')}>Login with your Google Account</button>
+                <button className={`${styles.button} ${styles.googleButton}`} onClick={handleGoogleSignIn}>Login with your Google Account</button>
                 // Add other provider sign-in buttons here as needed
             );
         }
@@ -54,7 +75,7 @@ const Login = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h3>FullJourney Studio</h3>
-                <h3>status is: {status}</h3> {/* Optional: Display authentication status */}
+                <h3>Status is: {status}</h3> {/* Optional: Display authentication status */}
             </div>
             <div className={styles.text}>
                 <p>{message}</p>
