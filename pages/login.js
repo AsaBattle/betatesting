@@ -61,7 +61,10 @@ const Login = () => {
 
                     // Additional steps as needed
                     window.location.href = response.data.redirectUrl || '/ImageMode';
+                } else {
+                    console.error("External API authentication failed:", response.data);
                 }
+
             } catch (error) {
                 console.error("Error during external API authentication:", error);
             }
@@ -89,7 +92,7 @@ const Login = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h3>FullJourney Studio</h3>
+                <h3>aFullJourney Studio</h3>
                 <h3>Status is: {status}</h3> {/* Optional: Display authentication status */}
             </div>
             <div className={styles.text}>
