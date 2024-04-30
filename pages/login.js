@@ -95,7 +95,7 @@ const Login = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h3>bFullJourney Studio</h3>
+                <h3>cFullJourney Studio</h3>
                 <h3>Status is: {status}</h3> {/* Optional: Display authentication status */}
             </div>
             <div className={styles.text}>
