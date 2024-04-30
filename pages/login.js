@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useSession, signIn as nextAuthSignIn, signOut } from 'next-auth/react';
+import { useSession, signIn as nextAuthSignIn, signOut, getSession } from 'next-auth/react';
 import axios from 'axios';
 
 import styles from './login.module.css';
@@ -29,48 +29,16 @@ const Login = () => {
 
     const handleGoogleSignIn = async () => {
         // This function will be invoked when the Google login button is clicked
-        const result = await nextAuthSignIn('google', { redirect: false, callbackUrl: "/ImageMode" });
-        console.log("NextAuth sign-in result:", result);
-        if (result?.url) {
-            // Perform API call to your Express API with the received session data
-            try {
-                const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
-                    user: {
-                        user_id: result.user.id,
-                        email: result.user.email,
-                        name: result.user.name
-                    },
-                    token: result.user.access_token  // Assuming this is available; adjust according to your token setup
-                }, { withCredentials: true });
-    
-                if (response.data.success) {
-                    console.log("Authentication successful", response.data);
-
-                        // If authentication is successful, set a test session value
-                        const sessionResponse = await axios.get("https://www.fulljourney.ai/api/auth/set-test", {
-                            withCredentials: true  // Ensure credentials are sent with the request
-                        });
-            
-                        console.log("Session test set response: ", sessionResponse.data);
-            
-                        // Retrieve the test session value to confirm persistence
-                        const testSessionResponse = await axios.get("https://www.fulljourney.ai/api/auth/get-test", {
-                            withCredentials: true
-                        });
-            
-                        console.log("Session test get response: ", testSessionResponse.data);
-
-                    // Additional steps as needed
-                    window.location.href = response.data.redirectUrl || '/ImageMode';
-                } else {
-                    console.error("External API authentication failed:", response.data);
-                }
-
-            } catch (error) {
-                console.error("Error during external API authentication:", error);
+        try {
+            const result = await nextAuthSignIn('google', { redirect: false });
+            if (result.url) {
+                // Redirect user to the NextAuth callback URL to handle session creation
+                window.location.href = result.url;
+            } else {
+                console.error("SignIn did not result in redirection. This could indicate a configuration issue.");
             }
-        } else {
-            console.error("Error during NextAuth sign-in:", result);
+        } catch (error) {
+            console.error("Error during sign-in:", error);
         }
     };
 
@@ -92,10 +60,43 @@ const Login = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchSessionAndAuthenticate = async () => {
+            const session = await getSession();
+            console.log("Session obtained post sign-in:", session);
+    
+            if (session) {
+                // Now make the API call to your Express server
+                try {
+                    const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
+                        user: {
+                            user_id: session.user.id,
+                            email: session.user.email,
+                            name: session.user.name
+                        },
+                        token: session.accessToken  // Assuming your session object includes the accessToken
+                    }, { withCredentials: true });
+    
+                    console.log("Response from API:", response.data);
+                    if (response.data.success) {
+                        // Additional logic if needed based on successful authentication
+                        window.location.href = '/ImageMode';  // Redirect or handle the response
+                    }
+                } catch (error) {
+                    console.error("Error during API call to authenticate user:", error);
+                }
+            }
+        };
+    
+        if (status === 'authenticated') {
+            fetchSessionAndAuthenticate();
+        }
+    }, [status]);
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h3>cFullJourney Studio</h3>
+                <h3>dFullJourney Studio</h3>
                 <h3>Status is: {status}</h3> {/* Optional: Display authentication status */}
             </div>
             <div className={styles.text}>
