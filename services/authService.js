@@ -41,6 +41,9 @@ const AuthService = {
       // If the user isn't already logged in via their discord proceed to check for a NextAuth session
     }
 
+
+    
+
     // *** NEXTAUTH LOGIN check ***
     // Check if the user is logged through a NextAuth's session
     // This could have been any of the providers we offer on our login screen(Right now it's just Google)
