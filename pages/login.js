@@ -44,6 +44,21 @@ const Login = () => {
     
                 if (response.data.success) {
                     console.log("Authentication successful", response.data);
+
+                        // If authentication is successful, set a test session value
+                        const sessionResponse = await axios.get("https://www.fulljourney.ai/api/auth/set-test", {
+                            withCredentials: true  // Ensure credentials are sent with the request
+                        });
+            
+                        console.log("Session test set response: ", sessionResponse.data);
+            
+                        // Retrieve the test session value to confirm persistence
+                        const testSessionResponse = await axios.get("https://www.fulljourney.ai/api/auth/get-test", {
+                            withCredentials: true
+                        });
+            
+                        console.log("Session test get response: ", testSessionResponse.data);
+
                     // Additional steps as needed
                     window.location.href = response.data.redirectUrl || '/ImageMode';
                 }
