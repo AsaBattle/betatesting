@@ -301,6 +301,11 @@ export default function Home(theUserData) {
       }
     };
 
+    const handleLogin = async () => {
+      console.log("Logging in the user...");
+
+    };
+
 
     const handleLogout = async () => {
 
@@ -647,7 +652,7 @@ const handleSubmit = async (e) => {
     } else {
       return (
         <button
-          onClick={router.push('/Login')}
+          onClick={handleLogin}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         >
           Login
@@ -669,7 +674,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI9j Studio</strong>
+          <strong>FullJourney.AI9k Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
