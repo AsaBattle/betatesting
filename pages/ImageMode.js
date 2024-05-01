@@ -78,14 +78,14 @@ export default function Home(theUserData) {
     function checkUserLoginAndCreditsForChange() {
       console.log("checkUserLoginAndCreditsForChange is being called");
       if (theUserData.userData) {
-        console.log("OK theUserData that is available is this:", theUserData);
-        /*
-        console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
+        //console.log("OK theUserData that is available is this:", theUserData);
+        
+        //console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (parseInt(theUserData.userData.credits) > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
         else
          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
-        */
+        
       } else {
         console.log("theUserData is not available");
         const userId = localStorage.getItem('userId');
@@ -674,7 +674,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI9l Studio</strong>
+          <strong>FullJourney.AI9m Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
