@@ -29,7 +29,7 @@ const Login = () => {
 
     const handleGoogleSignIn = async () => {
         // This function will be invoked when the Google login button is clicked
-        try {
+       // try {
             const result = await nextAuthSignIn('google', { redirect: false });
             if (result.url) {
                 // Redirect user to the NextAuth callback URL to handle session creation
@@ -37,9 +37,9 @@ const Login = () => {
             } else {
                 console.error("SignIn did not result in redirection. This could indicate a configuration issue.");
             }
-        } catch (error) {
-            console.error("Error during sign-in:", error);
-        }
+       // } catch (error) {
+       //     console.error("Error during sign-in:", error);
+       // }
     };
 
     const renderStatus = () => {
