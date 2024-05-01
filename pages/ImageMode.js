@@ -303,7 +303,7 @@ export default function Home(theUserData) {
 
     const handleLogin = async () => {
       console.log("Logging in the user...");
-
+      router.push('/login');
     };
 
 
