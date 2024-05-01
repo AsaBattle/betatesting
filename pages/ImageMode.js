@@ -301,6 +301,11 @@ export default function Home(theUserData) {
       }
     };
 
+    const handleLogin = async () => {
+      console.log("Logging in the user...");
+
+    };
+
 
     const handleLogout = async () => {
 
@@ -647,7 +652,7 @@ const handleSubmit = async (e) => {
     } else {
       return (
         <button
-          onClick={() => {router.push('/Login')}}
+          onClick={handleLogin}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         >
           Login
