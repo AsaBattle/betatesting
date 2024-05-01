@@ -135,7 +135,7 @@ export default function Home(theUserData) {
     const updateCanvasPosition = () => {
         // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
 
-          console.log("1hamburgerVisible is: " + hamburgerVisible);
+         //console.log("1hamburgerVisible is: " + hamburgerVisible);
        
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
@@ -180,11 +180,6 @@ export default function Home(theUserData) {
     }, []);
 
 
-    useEffect(() => {
-      console.log("is loading is: ", isLoading);
-    }, [isLoading]);
-
-  
     useEffect(() => {
         const handleScroll = () => {
             updateCanvasPosition();
@@ -365,7 +360,7 @@ export default function Home(theUserData) {
 
     // Position the toolbar based on the viewport and canvas container
     useEffect(() => {
-      console.log("2hamburgerVisible is: " + hamburgerVisible);
+     // console.log("2hamburgerVisible is: " + hamburgerVisible);
       
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
@@ -661,7 +656,7 @@ const handleSubmit = async (e) => {
     }
   }
 
-  
+  // just got the google login session working, 
 
   return (
     <div className={styles.layout}>

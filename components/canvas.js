@@ -114,7 +114,7 @@ const Canvas = forwardRef((props, ref) => {
       return;
     }
     
-    console.log('Canvas.js: Setting cursor to: ', currentTool.cursor);
+    //console.log('Canvas.js: Setting cursor to: ', currentTool.cursor);
     canvasContainer.style.cursor = currentTool.cursor;
   }, [currentToolName]);
 
@@ -134,13 +134,13 @@ const Canvas = forwardRef((props, ref) => {
 
   const handleCanvasClick = (event) => {
     const cc = document.getElementById('canvasContainer');
-    console.log('Canvascontainer: ', cc);
+    //console.log('Canvascontainer: ', cc);
   
     // Get the bounding rectangle of the image container
     const rect = event.target.getBoundingClientRect();
   
     // Log the rendered size of the element
-    console.log('Rendered size:', rect.width, 'x', rect.height);
+    //console.log('Rendered size:', rect.width, 'x', rect.height);
   
     // Assuming the image ref holds the currentPredictionImage
     currentPredictionImageRef.current = (currentPredictionMagicWandMask)?currentPredictionMagicWandMask:currentPredictionImage;
@@ -183,7 +183,7 @@ const Canvas = forwardRef((props, ref) => {
           clientY: event.clientY,
         };
   
-        console.log('Canvas.js: modifiedEvent: ', modifiedEvent);
+        //console.log('Canvas.js: modifiedEvent: ', modifiedEvent);
 
         // Call the tool's process function with the modified event
         currentTool.processTool(dispatch, modifiedEvent, imageSrc, mask, setMask, setMagicWandResultImg, magicWandTolerance, controlKeyDown);
@@ -239,7 +239,7 @@ useImperativeHandle(ref, () => ({
     // If the magic wand tool has been used, then combine its results
     // with the ReactSketchCanvas mask if it exists
     if (magicWandResultImg && sketchMask) {
-        console.log('magicWandResultImg and sketchMask exist, combining images');
+        //console.log('magicWandResultImg and sketchMask exist, combining images');
         const tmp = await addBackgroundToPNG(magicWandResultImg);
         combinedImage = await combineImages(tmp, sketchMask, width, height);
     }
@@ -277,7 +277,7 @@ const onChange = async () => {
     if (data !== canvasStateRef.current) {
       canvasStateRef.current = data;
       dataWasSet = true;
-      console.log("Set props.onDraw(data) in Canvas.js");
+     //console.log("Set props.onDraw(data) in Canvas.js");
       setSketchMask(data);
       //props.onDraw(data);
     }

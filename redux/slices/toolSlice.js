@@ -23,16 +23,16 @@ export const toolbarSlice = createSlice({
     },
     setToolbarVisibility: (state, action) => {
       state.toolbarVisibility = action.payload;
-      if (action.payload)
-        console.log('Toolbar is visible');
-      else
-        console.log('Toolbar is hidden');
+      //if (action.payload)
+      //  console.log('Toolbar is visible');
+      //else
+      //  console.log('Toolbar is hidden');
     },
     setPredictionModelName: (state, action) => {
       state.modelName = action.payload;
     },
     setTheViewMaskActive: (state, action) => {
-      console.log('dispatch called for setViewMaskActive: ', action.payload);
+      //console.log('dispatch called for setViewMaskActive: ', action.payload);
       state.viewMaskActive = action.payload;
     },
     setWandSelector: (state, action) => {
@@ -60,7 +60,7 @@ export const toolbarSlice = createSlice({
       state.brushSize = action.payload;
     },
     setAspectRatio: (state, action) => {
-      console.log('dispatch called for setAspectRatio: ', action.payload);
+      //console.log('dispatch called for setAspectRatio: ', action.payload);
       state.aspectRatioName = action.payload;
     },
   },
