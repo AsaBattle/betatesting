@@ -632,6 +632,30 @@ const handleSubmit = async (e) => {
   }, [generateClicked]);
 
 
+   
+  const LogINOUTButton = () => {
+
+    if (theUserData.userData) {
+      return (
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Logout
+        </button>
+      );
+    } else {
+      return (
+        <button
+          onClick={router.push('/Login')}
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Login
+        </button>
+      );
+    }
+  }
+
   
 
   return (
@@ -645,7 +669,7 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI9i Studio</strong>
+          <strong>FullJourney.AI9j Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
@@ -695,12 +719,7 @@ const handleSubmit = async (e) => {
           </div>
         </main>
         <footer className="text-center my-4">
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Logout
-          </button>
+          {LogINOUTButton()}
         </footer>
         {error && (
             <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">

@@ -37,13 +37,11 @@ const AuthService = {
       console.error('*** User IS logged in!!! with Discord cookie***');
       return userData;
     } catch (error) {
-      console.error('User was not logged in via Fulljourneys discord login process', error);
+      console.error('User was not logged in', error);
       // If the user isn't already logged in via their discord proceed to check for a NextAuth session
     }
 
-
-    
-
+    /*
     // *** NEXTAUTH LOGIN check ***
     // Check if the user is logged through a NextAuth's session
     // This could have been any of the providers we offer on our login screen(Right now it's just Google)
@@ -54,7 +52,7 @@ const AuthService = {
       console.error('*** User IS logged in!!! With nextauthsession ***');
       console.log('Session:', session);
       return session;
-    }
+    }*/
     
     // If no authentication method succeeded, return null
     console.error('*** User is not logged in ***');
