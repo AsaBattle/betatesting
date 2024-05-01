@@ -35,7 +35,7 @@ const VerticalToolbar = (props) => {
 
   // Set hamburger visibility based on screen size
   useEffect(() => {
-    console.log('VerticalToolbar: Setting hamburger visibility: ', isSmallScreen);
+    //console.log('VerticalToolbar: Setting hamburger visibility: ', isSmallScreen);
     dispatch(setHamburgerVisible(isSmallScreen));
     dispatch(setToolbarVisibility(!isSmallScreen)); // Hide toolbar on small screens
   }, [isSmallScreen]);
@@ -49,7 +49,7 @@ const VerticalToolbar = (props) => {
     //tool.setup(props.canvasRef)
 
     
-    console.log(`Switched to tool: ${tool.name}`);
+    //console.log(`Switched to tool: ${tool.name}`);
   };
 
   return (

@@ -121,7 +121,7 @@ useEffect(() => {
 
   // Deactivate the view mask button if there's no mask, or activate if there is
   useEffect(() => {
-    console.log('useEffect setting: currentPredictionImageMask: ', currentPredictionImageMask);
+    //console.log('useEffect setting: currentPredictionImageMask: ', currentPredictionImageMask);
     setViewMaskActive(currentPredictionImageMask !== null);
     
     // if there's no mask, the view mask button's state to off
@@ -141,7 +141,7 @@ useEffect(() => {
 
 
   useEffect(() => {
-    console.log('dispatch is being called for setViewMaskRadioButton: ', viewMaskRadioButton);
+   // console.log('dispatch is being called for setViewMaskRadioButton: ', viewMaskRadioButton);
    dispatch(setTheViewMaskActive(viewMaskRadioButton));
   }, [viewMaskRadioButton]);
 
