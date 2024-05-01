@@ -665,11 +665,11 @@ const handleSubmit = async (e) => {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>FullJourney.AI Studio Beta 1.2</title>
+          <title>FullJourney.AI Studio Beta 1.3</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI Beta Studio</strong>
+          <strong>FullJourney.AI 0.1 Beta Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
           {userLoginNameAndCredits}
