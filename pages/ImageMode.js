@@ -73,7 +73,7 @@ export default function Home(theUserData) {
 
     const [clearMask, setClearMask] = useState(false);
     const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
-
+    const [localUserCredits, setLocalUserCredits] = useState(0);
 
     function checkUserLoginAndCreditsForChange() {
       console.log("checkUserLoginAndCreditsForChange is being called");
@@ -146,7 +146,25 @@ export default function Home(theUserData) {
 
         //localStorage.setItem('imageTokens', 3);
     };
-    
+
+
+    // Get ip address
+    // user ip to log into express api's freeuser route
+    // this returns their user info based on ip address
+    // we store this in its localUserCredits var
+    useEffect(() => {
+      const getIP = async () => {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        const ip = data.ip;
+        console.log("IP address is: ", ip);
+        const userCredits = await AuthService.getFreeUserCredits(ip);
+        console.log("User credits are: ", userCredits);
+        setLocalUserCredits(userCredits);
+      }
+      getIP();
+
+      }, []);
 
     // We keep track of each user with a unique identifier, stored in a cookie and local storage
     useEffect(() => {
