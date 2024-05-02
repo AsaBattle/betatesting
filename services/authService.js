@@ -58,6 +58,12 @@ const AuthService = {
     console.error('*** User is not logged in ***');
     return null;
   },
+
+  getFreeUserCredits: async (req, res) => {
+
+    return 5; // this is a placeholder for now
+  }
+
 };
 
 export default AuthService;
