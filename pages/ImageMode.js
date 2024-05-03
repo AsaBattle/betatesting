@@ -153,9 +153,9 @@ export default function Home(theUserData) {
     // use ip to log into express api's freeuser route
     // this returns their credits based on ip address
     // we store this in its localUserCredits var
-    uuseEffect(() => {
+    useEffect(() => {
       const getIP = async () => {
-        console.log("getIP is Getting IP address...");
+        console.log("asa getIP is Getting IP address...");
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
         console.log("Response from ipify.org is: ", data);
@@ -167,7 +167,7 @@ export default function Home(theUserData) {
       }
       getIP();
     }, []);
-    
+
     useEffect(() => {
       console.log("localUserIp is: ", localUserIp);
       console.log("localUserCredits is: ", localUserCredits);
