@@ -158,6 +158,7 @@ export default function Home(theUserData) {
         console.log("getIP is Getting IP address...");
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
+        console.log("Response from ipify.org is: ", data);
         setLocalUserIp(data.ip);
         console.log("IP address is: ", localUserIp);
         const userCredits = await AuthService.getFreeUserCredits(localUserIp);
