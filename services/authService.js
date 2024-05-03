@@ -71,7 +71,7 @@ const AuthService = {
         ipAddress: ipAddress, 
       });
 
-      console.log('User credits:', response.data);
+      console.log('User credits:', response);
       return response.data;
     } catch (error) {
       console.error('Error getting user credits:', error);
