@@ -155,7 +155,7 @@ export default function Home(theUserData) {
     // we store this in its localUserCredits var
     useEffect(() => {
       const getIP = async () => {
-        console.log("asa getIP is Getting IP address...");
+        console.log("asa t getIP is Getting IP address...");
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
         console.log("Response from ipify.org is: ", data);
