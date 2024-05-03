@@ -101,7 +101,7 @@ export default function Home(theUserData) {
     useEffect(() => {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
       checkUserLoginAndCreditsForChange();
-    }, [theUserData],[localUserCredits]);
+    }, [theUserData, localUserCredits]);
 
 
 
@@ -166,6 +166,11 @@ export default function Home(theUserData) {
       }
       getIP();
       }, []);
+
+    useEffect(() => {
+      console.log("localUserIp is: ", localUserIp);
+      console.log("localUserCredits is: ", localUserCredits);
+    }, [localUserIp, localUserCredits]);
 
 
     // We keep track of each user with a unique identifier, stored in a cookie and local storage
