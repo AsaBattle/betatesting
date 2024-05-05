@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
     userData = req.body.userId;
 
-    console.log("req.body.userId: ", req.body.userId);
+    console.log("Inside of predictions with req.body.userId: ", req.body.userId);
     
     // If the user is logged in via ip(since they don't have an account yet)
     
@@ -122,6 +122,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
 
     // If the user is logged in via ip(since they don't have an account yet)
   if (ipUser === true) {
+    console.log("IS a local user, so we're using the ip address to log them in.")
     // grab the user's current credits
     console.log("CheckAndSubtractCredits --- Ip address User id:", userID);
     try {
@@ -151,6 +152,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     }
   }
 
+  console.log("IS a user with an ACCOUNT, so we're using the user's id to log them in.")
 
   // grab the user's current credits(userData has only the initial call to the server when the user logged in so it's not updated)
   try {
