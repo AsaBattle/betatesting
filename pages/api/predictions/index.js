@@ -139,7 +139,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
       return {worked: false, reasonCode: 7, reason: "IPUser - Not enough credits for image."};
 
     try {
-      response = await axios.post(`http://www.fulljourney.ai/api/auth/modifyfreeusercredits`, {
+      response = await axios.post(`https://www.fulljourney.ai/api/auth/modifyfreeusercredits`, {
         ipAddress: userID,
         credits: -creditsToSubtract,
       });
