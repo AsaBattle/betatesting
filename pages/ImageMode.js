@@ -575,11 +575,11 @@ const handleSubmit = async (e) => {
 
       // If the user isn't logged in(we are using their ip address to keep track of them)
       if (ipUser === true) {
-        const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
+        const userCredits = await AuthService.getFreeUserCredits(theLocalUserId); // directly use data.ip here
         console.log("User credits are: ", userCredits);
         setLocalUserCredits(userCredits);
       }
-      
+
       // clear the mask
       clearMaskImage();
       setGenerateClicked(true); 
