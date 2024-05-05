@@ -141,7 +141,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     try {
       response = await axios.post(`https://www.fulljourney.ai/api/auth/modifyfreeusercredits`, {
         ipAddress: userID,
-        credits: -creditsToSubtract,
+        modifyCreditsBy: -creditsToSubtract,
       });
 
       return true;
