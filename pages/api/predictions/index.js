@@ -121,6 +121,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     // If the user is logged in via ip(since they don't have an account yet)
   if (ipUser === true) {
     // grab the user's current credits
+    console.log("CheckAndSubtractCredits --- Ip address User id:", userID);
     try {
         response = await axios.post('https://www.fulljourney.ai/api/auth/getFreeUserCredits', {
         ipAddress: userID, 
