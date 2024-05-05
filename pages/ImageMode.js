@@ -77,7 +77,7 @@ export default function Home(theUserData) {
     const [localUserIp, setLocalUserIp] = useState('');
 
     function checkUserLoginAndCreditsForChange() {
-      console.log("checkUserLoginAndCreditsForChange is being called");
+      console.log("NEWcheckUserLoginAndCreditsForChange is being called");
       if (theUserData.userData) {
         //console.log("OK theUserData that is available is this:", theUserData);
         
