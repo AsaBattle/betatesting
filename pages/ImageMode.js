@@ -77,7 +77,7 @@ export default function Home(theUserData) {
     const [localUserIp, setLocalUserIp] = useState('');
 
     function checkUserLoginAndCreditsForChange() {
-      console.log("***-*-*-*-***checkUserLoginAndCreditsForChange is being called");
+      console.log("AAAAAAAAAAAAAAAAAAcheckUserLoginAndCreditsForChange is being called");
       if (theUserData.userData) {
         //console.log("OK theUserData that is available is this:", theUserData);
         
@@ -482,6 +482,7 @@ const handleSubmit = async (e) => {
     theLocalUserId = localUserIp;
     ipUser = true;
   } else {
+    ipUser = false;
     console.log("User is logged in, so we are using their user id of ", theUserData.userData.user_id);
     theLocalUserId = theUserData.userData.user_id;
   }
