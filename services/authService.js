@@ -59,12 +59,11 @@ const AuthService = {
     return null;
   },
 
+  // calls our express api's endpoint/route to get the user's credits, route is getFreeUserCredits(freeUsersIpAddress) 
+  // and this route will return the user's credits asoociated with the ip address, or if
+  // the ip address is not found, it will create a new user with the given number of credits a free user starts with
+  // and return those 
   getFreeUserCredits: async ( ipAddress ) => {
-
-    // calls our express api's endpoint/route to get the user's credits, route is getFreeUserCredits(freeUsersIpAddress) 
-    // and this route will return the user's credits asoociated with the ip address, or if
-    // the ip address is not found, it will create a new user with the given number of credits a free user starts with
-    // and return those 
     console.log('Getting user credits for ip address:', ipAddress);
     try {
       const response = await axios.post('https://www.fulljourney.ai/api/auth/getFreeUserCredits', {
@@ -77,7 +76,6 @@ const AuthService = {
       console.error('Error getting user credits:', error);
       return null;
     }
-
 
     return 5; // this is a placeholder for now
   }

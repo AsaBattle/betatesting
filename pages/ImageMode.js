@@ -168,12 +168,8 @@ export default function Home(theUserData) {
       getIP();
     }, []);
 
-    useEffect(() => {
-      console.log("localUserIp is: ", localUserIp);
-      console.log("localUserCredits is: ", localUserCredits);
-    }, [localUserIp, localUserCredits]);
-
-
+    /*
+    the old way of setting the user id and image tokens
     // We keep track of each user with a unique identifier, stored in a cookie and local storage
     useEffect(() => {
       // Check if the user identifier exists in cookie
@@ -203,7 +199,7 @@ export default function Home(theUserData) {
           console.log("User already had an imageTokens value: ", currentCredits);
         }
       }
-    }, []);
+    }, []);*/
 
 
     useEffect(() => {
@@ -463,7 +459,6 @@ export default function Home(theUserData) {
           console.log("(newCredits >= 0");
           return true;
         }
-    
     };
 
 
@@ -477,14 +472,23 @@ const handleSubmit = async (e) => {
   const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
  
   let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  let ipUser = false;
 
   console.log("Here we are about to check theUserData: ", theUserData);
 
+  if (!theUserData.userData)
+  {
+    console.log("User is not logged in, so we are using the local user ip as their id");
+    theLocalUserId = localUserIp;
+    ipUser = true;
+  }
+
+  /*
   // If the user is not logged in, then see if they have any free image gens left 
   if (!theUserData.userData)
     {
       console.log("User is not logged in, so we need to check if they have any free image gens left");
-     
+
       if (SubtractAndCheckLocalUserCredits(theLocalUserId,1) === false) {
         console.log("Local User DOES NOT have Enough Credits");
         
@@ -504,6 +508,7 @@ const handleSubmit = async (e) => {
     } else {
       console.log("User is logged in, so we're good here");
     }
+  */
 
   console.log("ok, we checked it!");
 
@@ -515,6 +520,7 @@ const handleSubmit = async (e) => {
     height, // Include height
     aspectRatioName: currentAspectRatioName,
     userId: theLocalUserId,
+    ipUser: ipUser,
   };
 
   setCurrentPredictionStatus("Server warming up...");
@@ -532,26 +538,25 @@ const handleSubmit = async (e) => {
       
       // The user doesn't exist, so we need to do our image count processing
       if (response.status === 404) {
-        console.log("User doesn't exist, but we've already done the local user image count processing");
-        /*
-        if (SubtractAndCheckLocalUserCredits(theLocalUserId,1) === false) {
-          console.log("Local User DOES NOT have Enough Credits");
-          setError(prediction.detail);
-          setIsLoading(false);
-          router.push('/Subscribe');
-          return;
-        } else { 
-          console.log("Local User DOES HAVE enough credits, proceeding with image generation");
-        } */
+        console.log("User doesn't exist!!!");
+        return;
       } 
       // User exists but not enough credits
       else if (response.status === 403) {
         console.log("User exists but not enough credits");
-        setError({ message: prediction.detail });
+        setError({ message: "You have run out of credits, please subscribe or buy more credits" });
         setIsLoading(false);
         router.push('/Subscribe');
         return;
       }
+      else if (response.status === 402) {
+        console.log("Free user does not enough credits");
+        setError({ message: "You have run out of credits, please login to continue" });
+        setIsLoading(false);
+        router.push('/login');
+        return;
+      }
+
     }      
   }
 
