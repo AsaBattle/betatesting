@@ -24,7 +24,9 @@ export default async function handler(req, res) {
     cookies = parse(req.headers.cookie || '');
 
     // Deserialize the user data from the cookie
-    userData = JSON.parse(cookies.user || '{}');
+    //userData = JSON.parse(cookies.user || '{}');
+
+    userData = req.body.userId;
 
     console.log("req.body.userId: ", req.body.userId);
     
