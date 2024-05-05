@@ -171,7 +171,8 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     return  {worked: false, reasonCode: 5, reason: "User doesn't exist."};
   }
 
-  if (newCredits < 0) {
+
+  if (currentCredits <= 0) {
     return {worked: false, reasonCode: 6, reason: "Not enough credits for image."};
   }
 
