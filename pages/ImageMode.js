@@ -481,6 +481,9 @@ const handleSubmit = async (e) => {
     console.log("User is not logged in, so we are using the local user ip as their id");
     theLocalUserId = localUserIp;
     ipUser = true;
+  } else {
+    console.log("User is logged in, so we are using their user id of ", theUserData.userData.user_id);
+    theLocalUserId = theUserData.userData.user_id;
   }
 
   const body = {
