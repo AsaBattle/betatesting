@@ -483,35 +483,6 @@ const handleSubmit = async (e) => {
     ipUser = true;
   }
 
-  /*
-  // If the user is not logged in, then see if they have any free image gens left 
-  if (!theUserData.userData)
-    {
-      console.log("User is not logged in, so we need to check if they have any free image gens left");
-
-      if (SubtractAndCheckLocalUserCredits(theLocalUserId,1) === false) {
-        console.log("Local User DOES NOT have Enough Credits");
-        
-        // pop up a message window to tell the use to make an account
-        //setError({ message: "Please make a FREE account to generate more images.", route: '/login' });
-        setIsLoading(false);
-        
-        router.push({
-          pathname: '/login',
-          query: { message: "Please make a FREE account to generate more images." }
-        });
-
-        return;
-      } else {
-        console.log("Local User DOES HAVE enough credits, proceeding with image generation...");
-      }
-    } else {
-      console.log("User is logged in, so we're good here");
-    }
-  */
-
-  console.log("ok, we checked it!");
-
   const body = {
     prompt: e.target.prompt.value,
     image: combinedMask ? currentPredictionOutput : null,
@@ -602,6 +573,13 @@ const handleSubmit = async (e) => {
       // Call a function to handle the successful prediction
       settheUpdatedPrediction(updatedPrediction);
 
+      // If the user isn't logged in(we are using their ip address to keep track of them)
+      if (ipUser === true) {
+        const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
+        console.log("User credits are: ", userCredits);
+        setLocalUserCredits(userCredits);
+      }
+      
       // clear the mask
       clearMaskImage();
       setGenerateClicked(true); 
