@@ -1,20 +1,20 @@
 import { useRef, useState, useEffect } from "react";
 import React from 'react';
+import { FaUser, FaLock } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import { useSession, signIn as nextAuthSignIn, signOut, getSession } from 'next-auth/react';
 import axios from 'axios';
+import styles from './loginform.module.css';
 
-import styles from './login.module.css';
-
-const Login = () => {
-    const router = useRouter();
-    const { message } = router.query;
-    const { data: session, status } = useSession();
-
+const LoginForm = () => {
+   // const router = useRouter();
+    //const { message } = router.query;
+   // const { data: session, status } = useSession();
+/*
     useEffect(() => {
         // Check to see if the user is already logged in, if so, redirect them to the ImageMode page
         if (status === 'authenticated' && session) {
-            console.log('User is already logged in, redirect ing to ImageMode page');
+            console.log('User is already logged in, redirecting to ImageMode page');
             router.push('/ImageMode');
         }
     }, [status, session]);
@@ -48,7 +48,7 @@ const Login = () => {
               <div>
                 <h1>Hi {session.user.name}</h1>
                 <img src={session.user.image} alt={`${session.user.name}'s photo`} />
-                <p>Signed in with: {session.user.provider}</p> {/* Provider information displayed */}
+                <p>Signed in with: {session.user.provider}</p>
                 <button onClick={() => signOut()}>Sign out</button>
               </div>
             );
@@ -92,26 +92,35 @@ const Login = () => {
             fetchSessionAndAuthenticate();
         }
     }, [status]);
-
-    return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h3>dFullJourney Studio</h3>
-                <h3>Status is: {status}</h3> {/* Optional: Display authentication status */}
-            </div>
-            <div className={styles.text}>
-                <p>{message}</p>
-            </div>
-            <div className={styles.footer}>
-                {renderStatus()}
-                <button className={`${styles.button} ${styles.fulljourneyButton}`} onClick={handleFullJourneyClick}>Login with your FullJourney.Ai account</button>
-                <button className={`${styles.button} ${styles.discordButton}`} onClick={handleDiscordClick}>Login with your Discord account</button>
-            </div>
+*/
+return (
+    <div className={styles.body}>
+    <div className={styles.wrapper}>
+      <form action="">
+      <h1 className={styles['poppins-bold']}>Login</h1>
+        <div className={styles.inputBox}>
+          <input type="text" placeholder="Username" required />
+          <FaUser className={styles.icon} />
         </div>
-    );
+        <div className={styles.inputBox}>
+          <input type="password" placeholder="Password" required />
+          <FaLock className={styles.icon} />
+        </div>
+        <div className={styles.rememberForgot}>
+          <label><input type="checkbox" />Remember Me</label>
+          <a href="#">Forgot Password</a>
+        </div>
+        <button type="submit">Login</button>    
+        <div className={styles.registerLink}>
+          <p>Don't have an account? <a href="#">Register</a></p>
+        </div>
+      </form>
+    </div>
+    </div>
+  );
 };
 
 
  
 
-export default Login;
+export default LoginForm;
