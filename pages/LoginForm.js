@@ -101,41 +101,42 @@ const LoginForm = () => {
 
 return (
     <div className={styles.body}>
-    <div className={styles.wrapper}>
-      <form action="">
-      <h1 className={styles['poppins-bold']}>Login</h1>
-      <div className={styles.socialLogin}>
-              <div className={styles.socialButtons}>
-                <button className={styles.discordBtn} onClick={handleDiscordClick}>
-                  <FaDiscord className={styles.icon} />
-                  Discord
-                </button>
-                <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
-                  <FcGoogle className={styles.icon} />
-                  Google
-                </button>
-              </div>
-        </div>
-        <div className={styles.inputBox}>
-          <input type="text" placeholder="Username" autoComplete="username"/>
-          <FaUser className={styles.icon} />
-        </div>
-        <div className={styles.inputBox}>
-          <input type="password" placeholder="Password" autoComplete="current-password"/>
-          <FaLock className={styles.icon} />
-        </div>
-      
+        <div className={styles.wrapper}>
+        <h1 className={styles['poppins-bold']}>Login</h1>
 
-        <div className={styles.rememberForgot}>
-          <label><input type="checkbox" autoComplete="on"/>Remember Me</label>
-          <a href="#">Forgot Password</a>
+            <div className={styles.socialLogin}>
+            <div className={styles.socialButtons}>
+            <button className={styles.discordBtn} onClick={handleDiscordClick}>
+                <FaDiscord className={styles.icon} />
+                Discordd
+            </button>
+            <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
+                <FcGoogle className={styles.icon} />
+                Google
+            </button>
+            </div>
+            </div>
+            <form action="">
+                <div className={styles.inputBox}>
+                <input type="text" placeholder="Username" autoComplete="username"/>
+                <FaUser className={styles.icon} />
+                </div>
+                <div className={styles.inputBox}>
+                <input type="password" placeholder="Password" autoComplete="current-password"/>
+                <FaLock className={styles.icon} />
+                </div>
+            
+
+                <div className={styles.rememberForgot}>
+                <label><input type="checkbox" autoComplete="on"/>Remember Me</label>
+                <a href="#">Forgot Password</a>
+                </div>
+                <button type="submit">Login</button>    
+                <div className={styles.registerLink}>
+                <p>{"Don't have an account?"} <a href="#">Register</a></p>
+                </div>
+            </form>
         </div>
-        <button type="submit">Login</button>    
-        <div className={styles.registerLink}>
-          <p>{"Don't have an account?"} <a href="#">Register</a></p>
-        </div>
-      </form>
-    </div>
     </div>
   );
 };
