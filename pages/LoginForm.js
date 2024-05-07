@@ -103,12 +103,11 @@ return (
     <div className={styles.body}>
         <div className={styles.wrapper}>
         <h1 className={styles['poppins-bold']}>Login</h1>
-
             <div className={styles.socialLogin}>
             <div className={styles.socialButtons}>
             <button className={styles.discordBtn} onClick={handleDiscordClick}>
                 <FaDiscord className={styles.icon} />
-                Discordd
+                Discord
             </button>
             <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
                 <FcGoogle className={styles.icon} />
@@ -116,7 +115,7 @@ return (
             </button>
             </div>
             </div>
-            <form action="">
+           {/*} <form action="">
                 <div className={styles.inputBox}>
                 <input type="text" placeholder="Username" autoComplete="username"/>
                 <FaUser className={styles.icon} />
@@ -135,7 +134,7 @@ return (
                 <div className={styles.registerLink}>
                 <p>{"Don't have an account?"} <a href="#">Register</a></p>
                 </div>
-            </form>
+            </form>*/}
         </div>
     </div>
   );
