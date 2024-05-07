@@ -14,7 +14,7 @@ const Login = () => {
     useEffect(() => {
         // Check to see if the user is already logged in, if so, redirect them to the ImageMode page
         if (status === 'authenticated' && session) {
-            console.log('User is already logged in, redirecting to ImageMode page');
+            console.log('User is already logged in, redirect ing to ImageMode page');
             router.push('/ImageMode');
         }
     }, [status, session]);
@@ -110,5 +110,8 @@ const Login = () => {
         </div>
     );
 };
+
+
+ 
 
 export default Login;
