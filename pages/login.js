@@ -17,6 +17,9 @@ const Login = () => {
             console.log('User is already logged in, redirect ing to ImageMode page');
             router.push('/ImageMode');
         }
+
+        console.log("Status: ", status);
+        
     }, [status, session]);
 
     const handleFullJourneyClick = () => {
