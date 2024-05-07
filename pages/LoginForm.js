@@ -121,7 +121,7 @@ return (
           <FaUser className={styles.icon} />
         </div>
         <div className={styles.inputBox}>
-          <input type="password" placeholder="Password"/>
+          <input type="password" placeholder="Password" autoComplete="current-password"/>
           <FaLock className={styles.icon} />
         </div>
       
