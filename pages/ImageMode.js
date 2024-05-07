@@ -320,7 +320,7 @@ export default function Home(theUserData) {
 
     const handleLogin = async () => {
       console.log("Logging in the user...");
-      router.push('/login');
+      router.push('/LoginForm');
     };
 
 
@@ -528,7 +528,7 @@ const handleSubmit = async (e) => {
         console.log("Free user does not enough credits");
         setError({ message: "You have run out of credits, please login to continue" });
         setIsLoading(false);
-        router.push('/login');
+        router.push('/LoginForm');
         return;
       }
 

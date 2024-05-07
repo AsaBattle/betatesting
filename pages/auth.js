@@ -21,7 +21,7 @@ export default function Auth({ isAuthenticated }) {
       console.log('------------------Auth: isAuthenticated is FALSE!!!!!!!-----------------');
       dispatch(setUserIsLoggedInWithAccount(true));
       
-      router.push('/login');
+      router.push('/LoginForm');
     }
   }, [router, isAuthenticated]);
 
