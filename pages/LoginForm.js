@@ -11,7 +11,6 @@ import styles from './loginform.module.css';
 
 const LoginForm = () => {
     const router = useRouter();
-    const { message } = router.query;
     const { data: session, status } = useSession();
 
     useEffect(() => {
@@ -19,7 +18,9 @@ const LoginForm = () => {
         if (status === 'authenticated' && session) {
             console.log('User is already logged in, redirect ing to ImageMode page');
             router.push('/ImageMode');
-        }
+        } 
+            console.log("Status: ", status);
+
     }, [status, session]);
 
     const handleFullJourneyClick = () => {
