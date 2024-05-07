@@ -48,7 +48,7 @@ const Login = () => {
               <div>
                 <h1>Hi {session.user.name}</h1>
                 <img src={session.user.image} alt={`${session.user.name}'s photo`} />
-                <p>Signed in with: {session.user.provider}</p> {/* Provider information displayed */}
+                <p>Signed in with: {session.user.provider}</p> 
                 <button onClick={() => signOut()}>Sign out</button>
               </div>
             );
