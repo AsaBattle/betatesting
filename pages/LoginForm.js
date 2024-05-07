@@ -28,10 +28,12 @@ const LoginForm = () => {
     };
 
     const handleDiscordClick = () => {
+        console.log("Discord Sign In Clicked");
         window.location.href = 'https://www.fulljourney.ai/api/auth/nextjsbeta';
     };
 
     const handleGoogleSignIn = async () => {
+        console.log("Google Sign In Clicked");
         // This function will be invoked when the Google login button is clicked
        // try {
             const result = await nextAuthSignIn('google', { redirect: false });
