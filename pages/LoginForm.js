@@ -114,11 +114,11 @@ return (
               </div>
         </div>
         <div className={styles.inputBox}>
-          <input type="text" placeholder="Username" required />
+          <input type="text" placeholder="Username"/>
           <FaUser className={styles.icon} />
         </div>
         <div className={styles.inputBox}>
-          <input type="password" placeholder="Password" required />
+          <input type="password" placeholder="Password"/>
           <FaLock className={styles.icon} />
         </div>
       
