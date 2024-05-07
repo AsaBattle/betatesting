@@ -117,7 +117,7 @@ return (
               </div>
         </div>
         <div className={styles.inputBox}>
-          <input type="text" placeholder="Username"/>
+          <input type="text" placeholder="Username" autoComplete="username"/>
           <FaUser className={styles.icon} />
         </div>
         <div className={styles.inputBox}>
@@ -127,7 +127,7 @@ return (
       
 
         <div className={styles.rememberForgot}>
-          <label><input type="checkbox" />Remember Me</label>
+          <label><input type="checkbox" autoComplete="on"/>Remember Me</label>
           <a href="#">Forgot Password</a>
         </div>
         <button type="submit">Login</button>    
