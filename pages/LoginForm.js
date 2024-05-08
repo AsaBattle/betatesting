@@ -80,7 +80,7 @@ const LoginForm = () => {
                         </button>
                         <button className={styles.discordBtn} onClick={handleFirebaseSignIn}>  {/* Style this button appropriately */}
                             <GiJourney className={styles.icon} />
-                            Firebase
+                            FJ
                         </button>
                     </div>
                 </div>
