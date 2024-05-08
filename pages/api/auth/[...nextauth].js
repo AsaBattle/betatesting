@@ -14,7 +14,7 @@ export const authOptions = {
             response_type: "code",
           },
         },
-        // Add the correct callback URL
+        // Add the corr ect callback URL
         callbackUrl: "/api/auth/callback/google",
       }),
     // Add other providers as needed
