@@ -64,7 +64,7 @@ const credentialsProvider = CredentialsProvider({
 });
 
 export default async (req, res) => {
-  const providers = [authOptions.providers, credentialsProvider];
+  const providers = [authOptions.providers];
   return await NextAuth(req, res, { ...authOptions, providers });
 };
 
