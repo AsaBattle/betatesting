@@ -5,9 +5,18 @@ import GoogleProvider from 'next-auth/providers/google';
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GCI,
-      clientSecret: process.env.GS,
-    }),
+        clientId: process.env.GCI,
+        clientSecret: process.env.GS,
+        authorization: {
+          params: {
+            prompt: "consent",
+            access_type: "offline",
+            response_type: "code",
+          },
+        },
+        // Add the correct callback URL
+        callbackUrl: "/api/auth/callback/google",
+      }),
     // Add other providers as needed
   ],
 
@@ -37,7 +46,6 @@ CredentialsProvider({
     }),
 
 */
-
 
   
   debug: true,
