@@ -32,14 +32,20 @@ const LoginForm = () => {
         window.location.href = 'https://www.fulljourney.ai/api/auth/nextjsbeta';
     };
 
-    const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
         console.log("Google Sign In Clicked");
-        const result = await nextAuthSignIn('google', { redirect: false });
-        if (result.url) {
-            window.location.href = result.url;
-        } else {
-            console.error("SignIn did not result in redirection. This could indicate a configuration issue.");
-        }
+        // This function will be invoked when the Google login button is clicked
+       // try {
+            const result = await nextAuthSignIn('google', { redirect: false });
+            if (result.url) {
+                // Redirect user to the NextAuth callback URL to handle session creation
+                window.location.href = result.url;
+            } else {
+                console.error("SignIn did not result in redirection. This could indicate a configuration issue.");
+            }
+       // } catch (error) {
+       //     console.error("Error during sign-in:", error);
+       // }
     };
 
     const handleFirebaseSignIn = async () => {
@@ -80,7 +86,7 @@ const LoginForm = () => {
                         </button>
                         <button className={styles.discordBtn} onClick={handleFirebaseSignIn}>  {/* Style this button appropriately */}
                             <GiJourney className={styles.icon} />
-                            FJ
+                            FJa
                         </button>
                     </div>
                 </div>
