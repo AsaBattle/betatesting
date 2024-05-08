@@ -1,4 +1,3 @@
-/*
 import axios from 'axios';
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
@@ -56,7 +55,9 @@ async function findUserByNextAuthID(nextAuthID) {
 }
 
 export default NextAuth(authOptions);
-*/
+
+
+/*
 import axios from 'axios';
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
@@ -135,3 +136,4 @@ async function findUserByNextAuthID(nextAuthID) {
 
 export default NextAuth(authOptions);
 
+*/
