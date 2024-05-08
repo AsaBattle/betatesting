@@ -20,8 +20,6 @@ import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut } from "next-auth/react";
 import AuthService from '../services/authService';
 
-import { v4 as uuidv4 } from 'uuid';
-import { set } from "lodash";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -40,7 +38,7 @@ export default function Home(theUserData) {
     const placeholderHandler = () => console.log('Handler not implemented yet.');
     const undoStack = useSelector((state) => state.history.undoStack);
     const [isLoading, setIsLoading] = useState(false);
-    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 }); // New state for canvas size
+    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
     const [loadedAspectRatio, setLoadedAspectRatio] = useState('default');
     const [currentPredictionStatus, setCurrentPredictionStatus] = useState('idle');
     const [theupdatedPrediction, settheUpdatedPrediction] = useState(null);
@@ -56,9 +54,8 @@ export default function Home(theUserData) {
     const toolbaroptionsRef = useRef(null);
     const canvasRef = useRef();
     const toolbarRef = useRef(null);
-    const index = useSelector((state) => state.history.index - 1); // Access index from history slice
-
-    const belowCanvasRef = useRef(null); // This ref would be attached to your below-canvas element
+    const index = useSelector((state) => state.history.index - 1); 
+    const belowCanvasRef = useRef(null); 
     const updatedPrediction = null;
 
     const [generateClicked, setGenerateClicked] = useState(false); // Keep track of the generate button click, so that canvas knows when to reset it mask data
@@ -76,12 +73,10 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
+
+    
     function checkUserLoginAndCreditsForChange() {
-      console.log("AAAAAAAAAAAAAAAAAAcheckUserLoginAndCreditsForChange is being called");
       if (theUserData.userData) {
-        //console.log("OK theUserData that is available is this:", theUserData);
-        
-        //console.log("theUserData is available:", theUserData.userData.discordname, " Credits: ", theUserData.userData.credits);
         if (parseInt(theUserData.userData.credits) > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
         else
@@ -89,15 +84,10 @@ export default function Home(theUserData) {
         
       } else {
         console.log("theUserData is not available, so using ip address to get credits: ", localUserCredits);
-        
-        //const userId = localStorage.getItem('userId');
-        //const imageTokens = localStorage.getItem('imageTokens');
-        
         setUserLoginNameAndCredits(`FREE Credits Remaining: ${localUserCredits}`);
       }
     }
     
-
     useEffect(() => {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
       checkUserLoginAndCreditsForChange();
@@ -168,40 +158,7 @@ export default function Home(theUserData) {
       getIP();
     }, []);
 
-    /*
-    the old way of setting the user id and image tokens
-    // We keep track of each user with a unique identifier, stored in a cookie and local storage
-    useEffect(() => {
-      // Check if the user identifier exists in cookie
-      const userIdCookie = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      
-      if (!userIdCookie) {
-        // Generate a unique user identifier
-        const userId = uuidv4();
-
-        console.log("User did not yet have a userId, so we are setting it to: ", userId);
-
-        // Store the user identifier in a cookie
-        document.cookie = `userId=${userId}; path=/`;
-        
-        // You can also store it in local storage if needed
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('imageTokens', 3);
-      } else {
-        console.log("User already had a userId: ", userIdCookie);
-
-        // check if the user has an imageTokens value in local storage
-        let currentCredits = localStorage.getItem('imageTokens');
-        if (!currentCredits) {
-          console.log("User did not yet have an imageTokens value, so we are setting it to 3");
-          localStorage.setItem('imageTokens', 3);
-        } else {
-          console.log("User already had an imageTokens value: ", currentCredits);
-        }
-      }
-    }, []);*/
-
-
+    
     useEffect(() => {
         const handleScroll = () => {
             updateCanvasPosition();
