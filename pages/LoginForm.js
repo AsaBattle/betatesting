@@ -70,6 +70,40 @@ const LoginForm = () => {
         }
     };
 
+
+    useEffect(() => {
+        const fetchSessionAndAuthenticate = async () => {
+            const session = await getSession();
+            console.log("Session obtained post sign-in:", session);
+    
+            if (session) {
+                // Now make the API call to your Express server
+                try {
+                    const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
+                        user: {
+                            user_id: session.user.id,
+                            email: session.user.email,
+                            name: session.user.name
+                        },
+                        token: session.accessToken  // Assuming your session object includes the accessToken
+                    }, { withCredentials: true });
+    
+                    console.log("Response from API:", response.data);
+                    if (response.data.success) {
+                        // Additional logic if needed based on successful authentication
+                        window.location.href = '/ImageMode';  // Redirect or handle the response
+                    }
+                } catch (error) {
+                    console.error("Error during API call to authenticate user:", error);
+                }
+            }
+        };
+    
+        if (status === 'authenticated') {
+            fetchSessionAndAuthenticate();
+        }
+    }, [status]);
+
     return (
         <div className={styles.body}>
             <div className={styles.wrapper}>
