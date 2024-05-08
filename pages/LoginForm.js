@@ -33,10 +33,11 @@ const LoginForm = () => {
     };
 
   const handleGoogleSignIn = async () => {
+    let result = null;
         console.log("Google Sign In Clicked");
         // This function will be invoked when the Google login button is clicked
         try {
-            const result = await nextAuthSignIn('google', { redirect: false });
+            result = await nextAuthSignIn('google', { redirect: false });
             if (result.url) {
                 console.log("Redirecting to NextAuth callback URL to handle session creation: ", result.url);
                 // Redirect user to the NextAuth callback URL to handle session creation
@@ -45,7 +46,7 @@ const LoginForm = () => {
                 console.error("SignIn did not result in redirection. This could indicate a configuration issue.");
             }
         } catch (error) {
-            console.error("Error during sign-in:", error);
+            console.error("Error during sign-in:", error, " Result: ", result);
         }
     };
 
@@ -121,7 +122,7 @@ const LoginForm = () => {
                         </button>
                         <button className={styles.discordBtn} onClick={handleFirebaseSignIn}>
                             <GiJourney className={styles.icon} />
-                            FJe
+                            FJf
                         </button>
                     </div>
                 </div>
