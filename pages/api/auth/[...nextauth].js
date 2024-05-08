@@ -2,7 +2,7 @@ import axios from 'axios';
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import firebase from '../../../utils/firebase'; // Ensure this path is correct for your Firebase setup
+import { auth } from '../../../utils/firebase';
 
 export const authOptions = {
   providers: [
@@ -50,7 +50,7 @@ const credentialsProvider = CredentialsProvider({
   },
   authorize: async (credentials) => {
     try {
-      const userCredential = await firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password);
+      const userCredential = await auth.signInWithEmailAndPassword(credentials.email, credentials.password);
       const user = userCredential.user;
       if (user) {
         return { id: user.uid, name: user.displayName || user.email, email: user.email };
