@@ -38,6 +38,7 @@ const LoginForm = () => {
         try {
             const result = await nextAuthSignIn('google', { redirect: false });
             if (result.url) {
+                console.log("Redirecting to NextAuth callback URL to handle session creation: ", result.url);
                 // Redirect user to the NextAuth callback URL to handle session creation
                 window.location.href = result.url;
             } else {
