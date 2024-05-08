@@ -1,4 +1,4 @@
-/*import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
+import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { GiJourney } from "react-icons/gi";
 import { useEffect } from "react";
@@ -130,7 +130,7 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-*/
+/*
 
 //code before adding the new firebase login code
 import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
@@ -252,10 +252,10 @@ return (
                 <div className={styles.registerLink}>
                 <p>{"Don't have an account?"} <a href="#">Register</a></p>
                 </div>
-</form> */}
+</form> }
         </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default LoginForm;*/
