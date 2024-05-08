@@ -2,7 +2,7 @@ import axios from 'axios';
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { auth } from '../../../utils/firebase';
+import { fauth } from '../../../utils/firebase';
 
 export default async function auth(req, res) {
   const providers = [
@@ -26,7 +26,7 @@ export default async function auth(req, res) {
       },
       authorize: async (credentials) => {
         try {
-          const userCredential = await auth.signInWithEmailAndPassword(credentials.email, credentials.password);
+          const userCredential = await fauth.signInWithEmailAndPassword(credentials.email, credentials.password);
           const user = userCredential.user;
           if (user) {
             return { id: user.uid, name: user.displayName || user.email, email: user.email };
