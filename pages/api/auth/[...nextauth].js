@@ -17,35 +17,29 @@ export const authOptions = {
         // Add the correct callback URL
         callbackUrl: "/api/auth/callback/google",
       }),
-    // Add other providers as needed
+      CredentialsProvider({
+        name: 'Credentials',
+        credentials: {
+          email: { label: "Email", type: "text", placeholder: "Enter your email" },
+          password: { label: "Password", type: "password", placeholder: "Enter your password" }
+        },
+        authorize: async (credentials) => {
+          try {
+            const userCredential = await firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password);
+            const user = userCredential.user;
+            if (user) {
+              // Return the user object for NextAuth to use
+              return { id: user.uid, name: user.displayName || user.email, email: user.email };
+            } else {
+              return null;  // Return null if user data is not found
+            }
+          } catch (error) {
+            throw new Error(error.message);
+          }
+        }
+      }),
   ],
 
-// for some reason, addin in the credentials provider causes the app to crash when I try to login with google
-// maybe something to do with the uncaught promise error that happens even when the google login works
-/*
-CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: "Email", type: "text", placeholder: "Enter your email" },
-        password: { label: "Password", type: "password", placeholder: "Enter your password" }
-      },
-      authorize: async (credentials) => {
-        try {
-          const userCredential = await firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password);
-          const user = userCredential.user;
-          if (user) {
-            // Return the user object for NextAuth to use
-            return { id: user.uid, name: user.displayName || user.email, email: user.email };
-          } else {
-            return null;  // Return null if user data is not found
-          }
-        } catch (error) {
-          throw new Error(error.message);
-        }
-      }
-    }),
-
-*/
 
   
   debug: true,
