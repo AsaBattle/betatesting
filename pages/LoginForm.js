@@ -152,7 +152,7 @@ const LoginForm = () => {
                     </div>
                     <button type="submit">Login</button>
                     <div className={styles.registerLink}>
-                        <p>{"Don't have an account?"} <Link to="/SignUpForm">Register</Link></p>
+                        <p>{"Don't haave an account?"} <Link to="/SignUpForm">Register</Link></p>
                     </div>
                 </form>
             </div>
