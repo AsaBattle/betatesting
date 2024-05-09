@@ -151,7 +151,7 @@ const LoginForm = () => {
                     </div>
                     <button type="submit">Login</button>
                     <div className={styles.registerLink}>
-                        <p>{"Don't have an account?"} <a href="#">Register</a></p>
+                        <p>{"Don't have an account?"} <a href="/SignUpForm">Register</a></p>
                     </div>
                 </form>
             </div>
