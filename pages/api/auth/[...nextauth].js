@@ -28,8 +28,10 @@ export const authOptions = {
         try {
           const userCredential = await signInWithEmailAndPassword(fauth, credentials.email, credentials.password);
           const user = userCredential.user;
+          console.log('Firebase login SUCCESS - User:', user);
           return user ? { id: user.uid, name: user.displayName || user.email, email: user.email } : null;
         } catch (error) {
+        console.error('Firebase login ERROR:', error);
           throw new Error(error.message);
         }
       }
