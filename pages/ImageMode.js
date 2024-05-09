@@ -17,7 +17,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
-import { getSession, signOut } from "next-auth/react";
+import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
+import { getAuth, signOut as firebaseSignOut } from "firebase/auth";
+
 import AuthService from '../services/authService';
 
 
@@ -74,7 +76,7 @@ export default function Home(theUserData) {
     const [localUserIp, setLocalUserIp] = useState('');
 
 
-    
+
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
         if (parseInt(theUserData.userData.credits) > 100)
@@ -280,7 +282,42 @@ export default function Home(theUserData) {
       router.push('/LoginForm');
     };
 
+    const handleLogout = async () => {
+      console.log("Logging out the user...");
+  
+      try {
+          // Logout from NextAuth first
+          await nextAuthSignOut({ redirect: false });
+          console.log("NextAuth sign-out successful.");
+  
+          // Then logout from Firebase
+          const auth = getAuth();
+          await firebaseSignOut(auth);
+          console.log("Firebase Sign-out successful.");
+  
+          // Clear the user data cookie by setting an expired cookie
+          const expiredUserDataCookie = serialize('user', '', {
+              httpOnly: true,
+              secure: process.env.NODE_ENV !== 'development',
+              sameSite: 'strict',
+              expires: new Date(0),  // Set the expiration date to the past
+              path: '/',
+          });
+  
+          // Set the expired cookie in the document
+          document.cookie = expiredUserDataCookie;
+          console.log("User cookie cleared.");
+  
+          // Finally, redirect the user
+          window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+      } catch (error) {
+          console.log("Error during sign out process:", error);
+      }
+  };
+  
 
+    // old logout code
+    /*
     const handleLogout = async () => {
 
       console.log("Logging out the user...");
@@ -297,10 +334,20 @@ export default function Home(theUserData) {
       // Set the expired cookie in the document
       document.cookie = expiredUserDataCookie;
 
-      signOut();
+      nextAuthSignOut({redirect: false});
+    
+      const auth = getAuth();
+      firebaseSignOut(auth).then(() => {
+        // Sign-out successful.
+        console.log("Firebase Sign-out successful.");
+      }).catch((error) => {
+        console.log("Firebase Sign-out error: ", error);
+        // An error happened.
+      });
       console.log("finished");
       window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
     };
+    */
 
     // See if the user is logged in, if 
     useEffect(() => {
