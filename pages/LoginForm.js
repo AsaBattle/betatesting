@@ -5,7 +5,6 @@ import { useState,useEffect } from "react";
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useSession, signIn as nextAuthSignIn, signOut, getSession } from 'next-auth/react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 import styles from './loginform.module.css';
@@ -152,7 +151,7 @@ const LoginForm = () => {
                     </div>
                     <button type="submit">Login</button>
                     <div className={styles.registerLink}>
-                        <p>{"Don't haave an account?"} <Link to="/SignUpForm">Register</Link></p>
+                        <p>{"Don't have an account?"} <a href="/SignUpForm">Register</a></p>
                     </div>
                 </form>
             </div>
