@@ -153,7 +153,7 @@ export default function Home(theUserData) {
         const data = await response.json();
         console.log("Response from ipify.org is: ", data);
         setLocalUserIp(data.ip);
-        console.log("IP address is: ", data.ip);
+        console.log("Your IP address is: ", data.ip);
         const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
         console.log("User credits are: ", userCredits);
         setLocalUserCredits(userCredits);
