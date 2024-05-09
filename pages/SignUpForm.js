@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { useSession, signIn as nextAuthSignIn, signOut, getSession } from 'next-auth/react';
 import axios from 'axios';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { fauth } from '../../../utils/firebase'; // Adjust the path as necessary
+import { fauth } from '../utils/firebase';
 
 
 import styles from './signupform.module.css';
