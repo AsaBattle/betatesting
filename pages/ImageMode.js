@@ -19,7 +19,7 @@ import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust th
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
-import { fAuth } from "../utils/firebase";
+import { fauth } from "../utils/firebase";
 
 import AuthService from '../services/authService';
 
@@ -292,7 +292,7 @@ export default function Home(theUserData) {
           console.log("NextAuth sign-out successful.");
   
           // Then logout from Firebase
-          await signOut(fAuth);
+          await signOut(fauth);
           console.log("Firebase Sign-out successful.");
   
           // Clear the user data cookie by setting an expired cookie
