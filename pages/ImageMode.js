@@ -18,7 +18,8 @@ import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccoun
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
-import { getAuth, signOut as firebaseSignOut } from "firebase/auth";
+import { signOut as firebaseSignOut } from "firebase/auth";
+import { fAuth } from "../utils/firebase";
 
 import AuthService from '../services/authService';
 
@@ -291,8 +292,7 @@ export default function Home(theUserData) {
           console.log("NextAuth sign-out successful.");
   
           // Then logout from Firebase
-          const auth = getAuth();
-          await firebaseSignOut(auth);
+          await firebaseSignOut(fAuth);
           console.log("Firebase Sign-out successful.");
   
           // Clear the user data cookie by setting an expired cookie
