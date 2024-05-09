@@ -1,7 +1,7 @@
 import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { GiJourney } from "react-icons/gi";
-import { useEffect } from "react";
+import { useState,useEffect } from "react";
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useSession, signIn as nextAuthSignIn, signOut, getSession } from 'next-auth/react';
