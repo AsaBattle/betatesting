@@ -120,12 +120,30 @@ const LoginForm = () => {
                             <FcGoogle className={styles.icon} />
                             Google
                         </button>
-                        <button className={styles.discordBtn} onClick={handleFirebaseSignIn}>
+                        {/*<button className={styles.discordBtn} onClick={handleFirebaseSignIn}>
                             <GiJourney className={styles.icon} />
                             FJm
-                        </button>
+                        </button>*/}
                     </div>
                 </div>
+                <form action="">
+                <div className={styles.inputBox}>
+                <input type="text" placeholder="Username" autoComplete="username"/>
+                <FaUser className={styles.icon} />
+                </div>
+                <div className={styles.inputBox}>
+                <input type="password" placeholder="Password" autoComplete="current-password"/>
+                <FaLock className={styles.icon} />
+                </div>            
+                <div className={styles.rememberForgot}>
+                <label><input type="checkbox" autoComplete="on"/>Remember Me</label>
+                <a href="#">Forgot Password</a>
+                </div>
+                <button type="submit">Login</button>    
+                <div className={styles.registerLink}>
+                <p>{"Don't have an account?"} <a href="#">Register</a></p>
+                </div>
+</form>
             </div>
         </div>
     );
