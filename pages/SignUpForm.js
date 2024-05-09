@@ -23,7 +23,7 @@ const SignUpForm = () => {
     useEffect(() => {
         // Check to see if the user is already logged in, if so, redirect them to the ImageMode page
         if (status === 'authenticated' && session) {
-            console.log('User is already logged in, redirecting to ImageMode page');
+            console.log('User is logged in.');
             router.push('/ImageMode');
         } 
         console.log("Status: ", status);
@@ -47,6 +47,7 @@ const SignUpForm = () => {
                     password: password
                 });
                 if (result.url) {
+                    console.log("Redirecting to NextAuth callback URL:", result.url);
                     router.push(result.url); // Use Next.js router to redirect
                 } else {
                     console.error("NextAuth sign-in did not result in redirection.");
