@@ -15,7 +15,6 @@ import styles from './signupform.module.css';
 const SignUpForm = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
-    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
 
@@ -34,7 +33,7 @@ const SignUpForm = () => {
 
     const handleSignUp = async () => {
         console.log("SignUp Clicked");
-        if (username && password && email) {
+        if (password && email) {
             try {
                 const userCredential = await createUserWithEmailAndPassword(fauth, email, password);
                 const user = userCredential.user;
@@ -104,16 +103,6 @@ const SignUpForm = () => {
                     e.preventDefault();
                     handleSignUp();
                 }}>
-                    <div className={styles.inputBox}>
-                        <input
-                            type="text"
-                            placeholder="Name"
-                            autoComplete="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                        <FaUser className={styles.icon} />
-                    </div>
                     <div className={styles.inputBox}>
                         <input
                             type="text"
