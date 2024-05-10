@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { GiJourney } from "react-icons/gi";
@@ -108,6 +109,10 @@ const LoginForm = () => {
 
     return (
         <div className={styles.body}>
+            <Head>
+                <title>FullJourney.AI Studio Beta Login</title>
+                <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
+            </Head>
             <div className={styles.wrapper}>
                 <h1 className={styles['poppins-bold']}>Login</h1>
                 <div className={styles.socialLogin}>
