@@ -38,7 +38,7 @@ const EmailVerification = () => {
     return (
         <div className={styles.body}>
             <div className={styles.wrapper}>
-                <h1 className={styles['poppins-bold']}>Please Verify You Email Address To Login</h1>
+                <h1 className={styles['poppins-bold']}>Please Verify Your Email Address To Login</h1>
             </div>
         </div>
     );
