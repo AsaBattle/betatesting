@@ -62,7 +62,11 @@ const LoginForm = () => {
                 password
             });
             if (result.error) {
-                alert("Error logging in: " + result.error);
+                if (result.error === 'Email not verified') {
+                    router.push('/EmailVerification');
+                } else {
+                    alert("Error logging in: " + result.error);
+                }
             } else if (result.url) {
                 window.location.href = result.url;
             } else {
