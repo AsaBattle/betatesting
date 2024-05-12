@@ -10,7 +10,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { fauth } from '../utils/firebase';
 
 
-import styles from './emailverification.module.css';
+import styles from './EmailVerification.module.css';
 
 const EmailVerification = () => {
     const router = useRouter();
