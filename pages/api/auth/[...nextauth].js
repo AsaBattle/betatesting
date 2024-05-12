@@ -26,12 +26,23 @@ export const authOptions = {
       },
       authorize: async (credentials) => {
         try {
-          const userCredential = await signInWithEmailAndPassword(fauth, credentials.email, credentials.password);
-          const user = userCredential.user;
-          console.log('Firebase login SUCCESS - User:', user);
-          return user ? { id: user.uid, name: user.displayName || user.email, email: user.email } : null;
+            const userCredential = await signInWithEmailAndPassword(fauth, credentials.email, credentials.password);
+            const user = userCredential.user;
+         
+            if (user) {
+                if (user.emailVerified) {
+                    console.log('Firebase login SUCCESS - User:', user);
+                    return { id: user.uid, name: user.displayName || user.email, email: user.email };
+                } else {
+                    console.error('Firebase login ERROR - Email not verified:', user);
+                    throw new Error('Email not verified');
+                }
+            } else {
+                console.error('Firebase login ERROR - User not found:', user);
+                throw new Error('User not found');
+            }
         } catch (error) {
-        console.error('Firebase login ERROR:', error);
+          console.error('Firebase login ERROR:', error);
           throw new Error(error.message);
         }
       }
