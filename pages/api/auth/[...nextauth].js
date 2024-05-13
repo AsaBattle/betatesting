@@ -34,7 +34,14 @@ export const authOptions = {
                     console.log('Firebase login SUCCESS - User:', user);
                     return { id: user.uid, name: user.displayName || user.email, email: user.email };
                 } else {
-                    console.error('Firebase login ERROR - Email not verified:', user);
+
+                    // Send email verification
+                    await sendEmailVerification(user)
+                    .then(() => {
+                        console.log("Email verification was sent!");
+                    })
+
+                    console.error('Email not yet verified, please check your email to verify you account!', user);
                     throw new Error('Email not verified');
                 }
             } else {
