@@ -3,7 +3,7 @@ import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { fauth } from '../../../utils/firebase'; // Make sure this path is correctly pointing to your firebase.js file
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
 export const authOptions = {
   providers: [
