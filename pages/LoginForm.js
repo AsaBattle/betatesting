@@ -114,7 +114,7 @@ const LoginForm = () => {
     return (
         <div className={styles.body}>
             <Head>
-                <title>FullJourney.AI Studio Beta2 Login</title>
+                <title>FullJourney.AI Studio Beta3 Login</title>
                 <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
             </Head>
             <div className={styles.wrapper}>
