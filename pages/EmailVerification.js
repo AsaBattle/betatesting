@@ -1,22 +1,14 @@
-import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
-import { FcGoogle } from 'react-icons/fc';
-import { GiJourney } from "react-icons/gi";
 import { useState,useEffect } from "react";
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useSession, signIn as nextAuthSignIn, signOut, getSession } from 'next-auth/react';
-import axios from 'axios';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useSession, getSession } from 'next-auth/react';
+import { sendEmailVerification } from 'firebase/auth';
 import { fauth } from '../utils/firebase';
-
-
 import styles from './EmailVerification.module.css';
 
 const EmailVerification = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
-    const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
 
     // Check to see if the user is already logged in, if so, redirect them to the ImageMode page
     useEffect(() => {
@@ -28,17 +20,27 @@ const EmailVerification = () => {
 
     }, [status, session]);
 
+    const SendVerificationEmail = async () => {
+        console.log("Verification email sent, awaiting reply ...");
+        // Add your email verification logic here
 
-
-    const handleSignUp = async () => {
-        console.log("SignUp Clicked");
+        await sendEmailVerification(fauth.currentUser)
+        .then(() => {
+            console.log("Email verification was sent!");
+        })
     };
-
-
     return (
         <div className={styles.body}>
             <div className={styles.wrapper}>
-                <h1 className={styles['poppins-bold']}>Please Verify Your Email Address To Login</h1>
+                <div className={styles.logo}>
+                    <img src="/favicon.png" alt="FullJourney.ai Logo" />
+                </div>
+                <h1 className={styles['poppins-bold']}>Verify your email address</h1>
+                <p className={styles['poppins-regular']}>In order to start using your FullJourney.ai account, you need to confirm your email address.</p>
+                <button className={styles.verifyButton} onClick={SendVerificationEmail}>
+                   Send Email Verification
+                </button>
+                <p className={styles.note}>If you did not sign up for this account you can ignore this email and the account will be deleted.</p>
             </div>
         </div>
     );
