@@ -24,10 +24,7 @@ const EmailVerification = () => {
         console.log("Verification email sent, awaiting reply ...");
         // Add your email verification logic here
 
-        await sendEmailVerification(fauth.currentUser)
-        .then(() => {
-            console.log("Email verification was sent!");
-        })
+        
     };
     return (
         <div className={styles.body}>
@@ -40,7 +37,7 @@ const EmailVerification = () => {
                 <button className={styles.verifyButton} onClick={SendVerificationEmail}>
                    Send Email Verification
                 </button>
-                <p className={styles.note}>If you did not sign up for this account you can ignore this email and the account will be deleted.</p>
+                <p className={styles.note}>If you did not get an email verification yet, please click above to send one</p>
             </div>
         </div>
     );
