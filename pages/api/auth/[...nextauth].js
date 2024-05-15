@@ -49,15 +49,13 @@ export const authOptions = {
                 throw new Error('User not found');
             }
         } catch (error) {
-            if (error.message === '(auth/invalid-credential')
-                {
-                    
-                // Also, I just deleted the asabattle account and recreated it, but here was a problem once I verified the email
-                console.error('Bad  username or password');
-                }
-          console.error("Exact error message is '" + error.message + "'");
-          throw new Error(error.message);
-          
+            if (error.message === 'Firebase: Error (auth/invalid-credential).') {
+                 console.error('Bad username or password');
+                 throw new Error('Bad username or password');
+            } else {
+                console.error("Exact error message is '" + error.message + "'");
+                throw new Error(error.message);
+            }
         }
       }
     })
