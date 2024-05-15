@@ -143,7 +143,7 @@ const LoginForm = () => {
                     <div className={styles.socialButtons}>
                         <button className={styles.discordBtn} onClick={handleDiscordClick}>
                             <FaDiscord className={styles.icon} />
-                            Discord
+                            DDDiscord
                         </button>
                         <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
                             <FcGoogle className={styles.icon} />

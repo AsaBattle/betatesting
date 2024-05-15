@@ -55,7 +55,7 @@ export const authOptions = {
                 // Also, I just deleted the asabattle account and recreated it, but here was a problem once I verified the email
                 console.error('Bad  username or password');
                 }
-          console.error("Firebase login ERROR:'", error, "'",);
+          console.error("Exact error message is '" + error.message + "'");
           throw new Error(error.message);
           
         }
