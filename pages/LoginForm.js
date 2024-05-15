@@ -37,7 +37,7 @@ const LoginForm = () => {
                         console.log('...User email is verified!!!');
                         const result = await nextAuthSignIn('credentials', {
                             redirect: false,
-                            email: user.email,
+                            email: username,
                             password: password
                         });
                         if (result.error) {
