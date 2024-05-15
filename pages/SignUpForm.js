@@ -49,7 +49,10 @@ const SignUpForm = () => {
                     console.log("Redirecting to NextAuth callback URL:", result.url);
                     router.push(result.url); // Use Next.js router to redirect
                 } else {
-                    console.error("NextAuth sign-in did not result in redirection.");
+                    console.error("NextAuth sign-in did not result in redirection: ", result);
+
+                    // If the sign-in did not result in redirection, check the status and handle accordingly
+                    
                 }
             } catch (error) {
                 console.error("Error creating user:", error);
