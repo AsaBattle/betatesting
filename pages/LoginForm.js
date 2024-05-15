@@ -66,10 +66,9 @@ const LoginForm = () => {
             if (result.error) {
                 if (result.error === 'Email not verified') {
                     setAwaitingEmailVerification(true);
-
-                } else {
-                    alert("Error logging in: " + result.error);
                 }
+                
+                    alert("This is the error '" + result.error + "'");
             } else if (result.url) {
                 window.location.href = result.url;
             } else {
@@ -129,6 +128,8 @@ const LoginForm = () => {
         )
         }
     }
+
+
 
     return (
         <div className={styles.body}>
