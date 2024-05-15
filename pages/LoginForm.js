@@ -59,7 +59,7 @@ const LoginForm = () => {
         return () => {
             clearInterval(interval); // Clean up the interval on component unmount
         };
-    }, [email, password, status, session]);
+    }, [username, password, status, session]);
 
     const handleFullJourneyClick = () => {
         window.location.href = 'https://www.fulljourney.ai/login';
