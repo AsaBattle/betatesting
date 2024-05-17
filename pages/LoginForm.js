@@ -109,8 +109,10 @@ const LoginForm = () => {
             if (result.error) {
                 if (result.error === 'Email not verified') {
                     setAwaitingEmailVerification(true);
-                }
-                
+                } else
+                if (result.error === 'Invalid email') {
+                    setMainPromptText('Invalid email. Please try again.');
+                } else
                 if (result.error === 'Bad username or password') {
                     setMainPromptText('Invalid username or password. Please try again.');
                 }
