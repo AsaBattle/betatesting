@@ -52,6 +52,10 @@ export const authOptions = {
                 throw new Error('User not found');
             }
         } catch (error) {
+            if (error.message === 'Firebase: Error (auth/invalid-email).') {
+                console.error('Invalid email');
+                throw new Error('Invalid email');
+            }
             if (error.message === 'Firebase: Error (auth/invalid-credential).') {
                  console.error('Bad username or password');
                  throw new Error('Bad username or password');
