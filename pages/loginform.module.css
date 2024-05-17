@@ -158,7 +158,6 @@
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    margin-top: 20px;
   }
   
   .discordBtn {
@@ -174,4 +173,10 @@
   
   .icon {
     margin-right: 10px;
+  }
+
+  .orUse {
+    text-align: center;
+    color: white;
+    margin: 20px 0;
   }

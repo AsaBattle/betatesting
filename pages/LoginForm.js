@@ -21,6 +21,14 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [awaitingEmailVerification, setAwaitingEmailVerification] = useState(false);
 
+    useEffect(() => {
+        const { error } = router.query;
+        if (error) {
+          setErrorMessage("Invalid username or password. Please try again.");
+        }
+        console.log("Error: ", error);
+      }, [router.query]);
+
 
     useEffect(() => {
         if (status === 'authenticated' && session) {
@@ -31,6 +39,8 @@ const LoginForm = () => {
     
         const checkEmailVerification = async () => {
             console.log('Checking email verification status...');
+
+            // the following line doesn't seem to fire even after the user authenticates!!!
             onAuthStateChanged(fauth, async (user) => {
                 if (user) {
                     if (user.emailVerified) {
@@ -100,7 +110,12 @@ const LoginForm = () => {
                     setAwaitingEmailVerification(true);
                 }
                 
+                if (result.error === 'Bad username or password') {
+                    alert("Bad username or password");
+                }
+                else
                     alert("This is the error '" + result.error + "'");
+                
             } else if (result.url) {
                 window.location.href = result.url;
             } else {
@@ -173,18 +188,6 @@ const LoginForm = () => {
             </Head>
             <div className={styles.wrapper}>
                 {MainPrompt()}
-                <div className={styles.socialLogin}>
-                    <div className={styles.socialButtons}>
-                        <button className={styles.discordBtn} onClick={handleDiscordClick}>
-                            <FaDiscord className={styles.icon} />
-                            iscord
-                        </button>
-                        <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
-                            <FcGoogle className={styles.icon} />
-                            Google
-                        </button>
-                    </div>
-                </div>
                 <form action="" onSubmit={(e) => {
                     e.preventDefault();
                     handleFirebaseSignIn();
@@ -214,6 +217,23 @@ const LoginForm = () => {
                         <a href="#">Forgot Password</a>
                     </div>
                     <button type="submit">Login</button>
+
+                    {/*make a new div that is just the text "--------------------- or use ---------------------" on its own line*/}
+                    <div className={styles.orUse}>
+                        <p>- OR -</p>
+                    </div>
+                    <div className={styles.socialLogin}>
+                        <div className={styles.socialButtons}>
+                            <button className={styles.discordBtn} onClick={handleDiscordClick}>
+                                <FaDiscord className={styles.icon} />
+                                iscord
+                            </button>
+                            <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
+                                <FcGoogle className={styles.icon} />
+                                Google
+                            </button>
+                        </div>
+                    </div>
                     <div className={styles.registerLink}>
                         <p>{"Don't have an account?"} <Link href="/SignUpForm"><a>Register</a></Link></p>
                     </div>
