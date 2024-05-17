@@ -6,6 +6,9 @@ import { fauth } from '../../../utils/firebase'; // Make sure this path is corre
 import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
 export const authOptions = {
+    pages: {
+        signIn: "/LoginForm", // Use the LoginForm component as the sign-in page
+      },
   providers: [
     GoogleProvider({
       clientId: process.env.GCI,
