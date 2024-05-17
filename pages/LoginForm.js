@@ -20,6 +20,7 @@ const LoginForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [awaitingEmailVerification, setAwaitingEmailVerification] = useState(false);
+    const [mainPromptText, setMainPromptText] = useState('Login');
 
     useEffect(() => {
         const { error } = router.query;
@@ -111,7 +112,7 @@ const LoginForm = () => {
                 }
                 
                 if (result.error === 'Bad username or password') {
-                    alert("Bad username or password");
+                    setMainPromptText('Invalid username or password. Please try again.');
                 }
                 else
                     alert("This is the error '" + result.error + "'");
@@ -171,8 +172,7 @@ const LoginForm = () => {
             );
         } else {
         return (
-            <h1 className={styles['poppins-bold']}>Login</h1>
-        )
+            <h1 className={styles['poppins-bold']}>{mainPromptText}</h1>        );
         }
     }
 
@@ -226,7 +226,7 @@ const LoginForm = () => {
                         <div className={styles.socialButtons}>
                             <button className={styles.discordBtn} onClick={handleDiscordClick}>
                                 <FaDiscord className={styles.icon} />
-                                iscord
+                                MrDiscord
                             </button>
                             <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
                                 <FcGoogle className={styles.icon} />
