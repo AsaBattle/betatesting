@@ -32,42 +32,35 @@ const LoginForm = () => {
       }, [router.query]);
 
 
+      const checkEmailVerification = async (user) => {
+        console.log('Checking email verification status...');
+        await user.reload();
+        if (user.emailVerified) {
+            console.log('User email is verified');
+            const result = await nextAuthSignIn('credentials', {
+                redirect: false,
+                email: email,
+                password: password,
+            });
+            if (result.error) {
+                console.error('Error logging in:', result.error);
+            } else if (result.url) {
+                window.location.href = result.url;
+            } else {
+                console.error('SignIn did not result in redirection');
+            }
+        } else {
+            console.log('User email is not verified');
+            setTimeout(() => checkEmailVerification(user), 5000);
+        }
+    };
+
     useEffect(() => {
         if (status === 'authenticated' && session) {
             console.log('User is logged in.');
             router.push('/ImageMode');
         } 
-        console.log("Status: ", status);
-    
-        const checkEmailVerification = async (user) => {
-            console.log('Checking email verification status...');
-            await user.reload();
-            if (user.emailVerified) {
-                console.log('User email is verified');
-                const result = await nextAuthSignIn('credentials', {
-                    redirect: false,
-                    email: email,
-                    password: password,
-                });
-                if (result.error) {
-                    console.error('Error logging in:', result.error);
-                } else if (result.url) {
-                    window.location.href = result.url;
-                } else {
-                    console.error('SignIn did not result in redirection');
-                }
-            } else {
-                console.log('User email is not verified');
-                setTimeout(() => checkEmailVerification(user), 5000);
-            }
-        };
-    
-    
-        const interval = setInterval(checkEmailVerification, 5000); // Check every 5 seconds
-    
-        return () => {
-            clearInterval(interval); // Clean up the interval on component unmount
-        };
+        console.log("Status: ", status);     
     }, [username, password, status, session]);
 
     const handleFullJourneyClick = () => {
@@ -107,6 +100,7 @@ const LoginForm = () => {
             if (result.error) {
                 if (result.error === 'Email not verified') {
                     setAwaitingEmailVerification(true);
+                    checkEmailVerification();
                 } else
                 if (result.error === 'Invalid email') {
                     setMainPromptColor('red');
