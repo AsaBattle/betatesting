@@ -6,7 +6,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { useSession, signIn as nextAuthSignIn, signOut, getSession } from 'next-auth/react';
 import axios from 'axios';
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { fauth } from '../utils/firebase';
 
 
@@ -57,6 +57,12 @@ const SignUpForm = () => {
                 const user = userCredential.user;
                 console.log('Firebase user created successfully:', user);
 
+                await sendEmailVerification(user)
+                .then(() => {
+                    console.log("Email verification was sent!");
+                })
+
+
                 // Start checking for email verification
                 checkEmailVerification(user);
             } catch (error) {
@@ -104,7 +110,7 @@ const SignUpForm = () => {
     return (
         <div className={styles.body}>
             <div className={styles.wrapper}>
-                <h1 className={styles['poppins-bold']}>SSSign Up</h1>
+                <h1 className={styles['poppins-bold']}>Sign Up</h1>
               
                 <form action="" onSubmit={(e) => {
                     e.preventDefault();
