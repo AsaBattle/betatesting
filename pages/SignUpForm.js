@@ -12,12 +12,21 @@ import { fauth } from '../utils/firebase';
 
 import styles from './signupform.module.css';
 
+
 const SignUpForm = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
+    const [mainPromptText, setMainPromptText] = useState('Sign Up');
 
+    const MainPrompt = () => {
+
+        return (
+            <h1 className={styles['poppins-bold']}>{mainPromptText}</h1>
+        );
+    }
+    
     useEffect(() => {
         if (status === 'authenticated' && session) {
             console.log('User is logged in.');
@@ -62,6 +71,7 @@ const SignUpForm = () => {
                     console.log("Email verification was sent!");
                 })
 
+                setMainPromptText('Email Verification Sent! Please verify your email address');
 
                 // Start checking for email verification
                 checkEmailVerification(user);
@@ -110,7 +120,7 @@ const SignUpForm = () => {
     return (
         <div className={styles.body}>
             <div className={styles.wrapper}>
-                <h1 className={styles['poppins-bold']}>Sign Up</h1>
+                {MainPrompt()}
               
                 <form action="" onSubmit={(e) => {
                     e.preventDefault();
