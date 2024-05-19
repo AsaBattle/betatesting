@@ -110,7 +110,7 @@ const SignUpForm = () => {
     return (
         <div className={styles.body}>
             <div className={styles.wrapper}>
-                <h1 className={styles['poppins-bold']}>SSSign Up</h1>
+                <h1 className={styles['poppins-bold']}>Sign Up</h1>
               
                 <form action="" onSubmit={(e) => {
                     e.preventDefault();
