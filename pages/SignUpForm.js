@@ -18,46 +18,36 @@ const SignUpForm = () => {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
 
-
     useEffect(() => {
         if (status === 'authenticated' && session) {
-          console.log('User is logged in.');
-          router.push('/ImageMode');
+            console.log('User is logged in.');
+            router.push('/ImageMode');
         }
         console.log('Status: ', status);
-    
-        const checkEmailVerification = async () => {
-          console.log('Checking email verification status...');
-    
-          const user = fauth.currentUser;
-          if (user) {
-            await user.reload();
-            if (user.emailVerified) {
-              console.log('User email is verified');
-              const result = await nextAuthSignIn('credentials', {
+    }, [status, session, router]);
+
+    const checkEmailVerification = async (user) => {
+        console.log('Checking email verification status...');
+        await user.reload();
+        if (user.emailVerified) {
+            console.log('User email is verified');
+            const result = await nextAuthSignIn('credentials', {
                 redirect: false,
                 email: email,
                 password: password,
-              });
-              if (result.error) {
+            });
+            if (result.error) {
                 console.error('Error logging in:', result.error);
-              } else if (result.url) {
+            } else if (result.url) {
                 window.location.href = result.url;
-              } else {
-                console.error('SignIn did not result in redirection');
-              }
             } else {
-              console.log('User email is not verified');
-              setTimeout(checkEmailVerification, 5000);
+                console.error('SignIn did not result in redirection');
             }
-          }
-        };
-    
-        if (email && password) {
-          checkEmailVerification();
+        } else {
+            console.log('User email is not verified');
+            setTimeout(() => checkEmailVerification(user), 5000);
         }
-      }, [email, password, status, session]);
-
+    };
 
     const handleSignUp = async () => {
         console.log("SignUp Clicked");
@@ -66,25 +56,9 @@ const SignUpForm = () => {
                 const userCredential = await createUserWithEmailAndPassword(fauth, email, password);
                 const user = userCredential.user;
                 console.log('Firebase user created successfully:', user);
-    
-                // After successful registration, sign in the user with NextAuth
-                const result = await nextAuthSignIn('credentials', {
-                    redirect: false,
-                    email: email,
-                    password: password
-                });
-                if (result.url) {
-                    console.log("Redirecting to NextAuth callback URL:", result.url);
-                    router.push(result.url); // Use Next.js router to redirect
-                } else {
-                    //console.error("NextAuth sign-in did not result in redirection: ", result);
 
-                    // If the sign-in did not result in redirection...
-                    // is it because they need to verify their email?
-                    // send the user to the 
-                    console.log("User needs to verify email. So display the message to verify email.");
-
-                }
+                // Start checking for email verification
+                checkEmailVerification(user);
             } catch (error) {
                 console.error("Error creating user:", error);
                 alert("Failed to create user: " + error.message);
@@ -93,7 +67,6 @@ const SignUpForm = () => {
             console.log("SignUp cancelled. Make sure all fields are filled.");
         }
     };
-
 
     // Once the user is authenticated, make an API call to our Express server to authenticate the user there or create a new user(if needed)
     useEffect(() => {
