@@ -21,45 +21,42 @@ const SignUpForm = () => {
 
     useEffect(() => {
         if (status === 'authenticated' && session) {
-            console.log('User is logged in.');
-            router.push('/ImageMode');
-        } 
-        console.log("Status: ", status);
+          console.log('User is logged in.');
+          router.push('/ImageMode');
+        }
+        console.log('Status: ', status);
     
         const checkEmailVerification = async () => {
-            console.log('Checking email verification status...');
-
-            // the following line doesn't seem to fire even after the user authenticates!!!
-            onAuthStateChanged(fauth, async (user) => {
-                if (user) {
-                    if (user.emailVerified) {
-                        console.log('...User email is verified!!!');
-                        const result = await nextAuthSignIn('credentials', {
-                            redirect: false,
-                            email: email,
-                            password: password
-                        });
-                        if (result.error) {
-                            console.error('Error logging in:', result.error);
-                        } else if (result.url) {
-                            window.location.href = result.url;
-                        } else {
-                            console.error('SignIn did not result in redirection');
-                        }
-                    } else {
-                        console.log('User email is not verified');
-                    }
-                }
-            });
+          console.log('Checking email verification status...');
+    
+          const user = fauth.currentUser;
+          if (user) {
+            await user.reload();
+            if (user.emailVerified) {
+              console.log('User email is verified');
+              const result = await nextAuthSignIn('credentials', {
+                redirect: false,
+                email: email,
+                password: password,
+              });
+              if (result.error) {
+                console.error('Error logging in:', result.error);
+              } else if (result.url) {
+                window.location.href = result.url;
+              } else {
+                console.error('SignIn did not result in redirection');
+              }
+            } else {
+              console.log('User email is not verified');
+              setTimeout(checkEmailVerification, 5000);
+            }
+          }
         };
     
-        const interval = setInterval(checkEmailVerification, 5000); // Check every 5 seconds
-    
-        return () => {
-            clearInterval(interval); // Clean up the interval on component unmount
-        };
-    }, [email, password, status, session]);
-
+        if (email && password) {
+          checkEmailVerification();
+        }
+      }, [email, password, status, session]);
 
 
     const handleSignUp = async () => {
