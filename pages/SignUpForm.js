@@ -20,14 +20,45 @@ const SignUpForm = () => {
 
 
     useEffect(() => {
-        // Check to see if the user is already logged in, if so, redirect them to the ImageMode page
         if (status === 'authenticated' && session) {
             console.log('User is logged in.');
             router.push('/ImageMode');
         } 
         console.log("Status: ", status);
+    
+        const checkEmailVerification = async () => {
+            console.log('Checking email verification status...');
 
-    }, [status, session]);
+            // the following line doesn't seem to fire even after the user authenticates!!!
+            onAuthStateChanged(fauth, async (user) => {
+                if (user) {
+                    if (user.emailVerified) {
+                        console.log('...User email is verified!!!');
+                        const result = await nextAuthSignIn('credentials', {
+                            redirect: false,
+                            email: email,
+                            password: password
+                        });
+                        if (result.error) {
+                            console.error('Error logging in:', result.error);
+                        } else if (result.url) {
+                            window.location.href = result.url;
+                        } else {
+                            console.error('SignIn did not result in redirection');
+                        }
+                    } else {
+                        console.log('User email is not verified');
+                    }
+                }
+            });
+        };
+    
+        const interval = setInterval(checkEmailVerification, 5000); // Check every 5 seconds
+    
+        return () => {
+            clearInterval(interval); // Clean up the interval on component unmount
+        };
+    }, [email, password, status, session]);
 
 
 
@@ -49,10 +80,13 @@ const SignUpForm = () => {
                     console.log("Redirecting to NextAuth callback URL:", result.url);
                     router.push(result.url); // Use Next.js router to redirect
                 } else {
-                    console.error("NextAuth sign-in did not result in redirection: ", result);
+                    //console.error("NextAuth sign-in did not result in redirection: ", result);
 
-                    // If the sign-in did not result in redirection, check the status and handle accordingly
-                    
+                    // If the sign-in did not result in redirection...
+                    // is it because they need to verify their email?
+                    // send the user to the 
+                    console.log("User needs to verify email. So display the message to verify email.");
+
                 }
             } catch (error) {
                 console.error("Error creating user:", error);
@@ -114,6 +148,7 @@ const SignUpForm = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
+                        <FaUser className={styles.icon} />
                         <FaUser className={styles.icon} />
                     </div>
                     <div className={styles.inputBox}>
