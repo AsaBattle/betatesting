@@ -214,7 +214,6 @@ const LoginForm = () => {
                     </div>
                     <button type="submit">Login</button>
 
-                    {/*make a new div that is just the text "--------------------- or use ---------------------" on its own line*/}
                     <div className={styles.orUse}>
                         <p>- ORs -</p>
                     </div>
