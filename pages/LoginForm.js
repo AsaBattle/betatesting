@@ -214,7 +214,6 @@ const LoginForm = () => {
                     </div>
                     <button type="submit">Login</button>
 
-                    {/*make a new div that is just the text "--------------------- or use ---------------------" on its own line*/}
                     <div className={styles.orUse}>
                         <p>- ORs -</p>
                     </div>
@@ -222,7 +221,7 @@ const LoginForm = () => {
                         <div className={styles.socialButtons}>
                             <button className={styles.discordBtn} onClick={handleDiscordClick}>
                                 <FaDiscord className={styles.icon} />
-                                MrsDiscord
+                                Discord
                             </button>
                             <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
                                 <FcGoogle className={styles.icon} />
