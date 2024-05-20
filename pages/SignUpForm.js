@@ -11,6 +11,7 @@ import { fauth } from '../utils/firebase';
 
 
 import styles from './signupform.module.css';
+import { set } from 'lodash';
 
 
 const SignUpForm = () => {
@@ -19,12 +20,22 @@ const SignUpForm = () => {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [mainPromptText, setMainPromptText] = useState('Sign Up');
+    const [verifyEmail, setVerifyEmail] = useState(false);
 
     const MainPrompt = () => {
 
-        return (
-            <h1 className={styles['poppins-bold']}>{mainPromptText}</h1>
-        );
+        if (!verifyEmail) {
+            return (
+                <h1 className={styles['poppins-bold']}>{mainPromptText}</h1>
+            );
+        } else {
+            return (
+                <div>
+                    <h1 className={styles['poppins-bold']}>{mainPromptText}</h1>
+                    <button className={styles.verifyButton} onClick={checkEmailVerification}> I verified my email </button>
+                </div>
+            );
+        }
     }
     
     useEffect(() => {
@@ -72,11 +83,13 @@ const SignUpForm = () => {
                 })
 
                 setMainPromptText('Email Verification Sent! Please verify your email address');
+                setVerifyEmail(true);
 
                 // Start checking for email verification
                 checkEmailVerification(user);
             } catch (error) {
                 console.error("Error creating user:", error);
+                setMainPromptText(error.message);
                 alert("Failed to create user: " + error.message);
             }
         } else {
