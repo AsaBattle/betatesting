@@ -279,6 +279,7 @@ export default function Home(theUserData) {
     };
 
     const handleLogin = async () => {
+      await handleLogout();
       console.log("Logging in the user...");
       router.push('/LoginForm');
     };
