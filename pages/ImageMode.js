@@ -279,12 +279,12 @@ export default function Home(theUserData) {
     };
 
     const handleLogin = async () => {
-      await handleLogout();
+      await handleLogout(false);
       console.log("Logging in the user...");
       router.push('/LoginForm');
     };
 
-    const handleLogout = async () => {
+    const handleLogout = async (redirect) => {
       console.log("Logging out the user...");
   
       try {
@@ -310,7 +310,8 @@ export default function Home(theUserData) {
           console.log("User cookie cleared.");
   
           // Finally, redirect the user
-          window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+          if (redirect)
+            window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
       } catch (error) {
           console.log("Error during sign out process:", error);
       }
@@ -656,7 +657,7 @@ const handleSubmit = async (e) => {
     if (theUserData.userData) {
       return (
         <button
-          onClick={handleLogout}
+          onClick={handleLogout(true)}
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
         >
           Logout
