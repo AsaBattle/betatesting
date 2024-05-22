@@ -279,7 +279,6 @@ export default function Home(theUserData) {
     };
 
     const handleLogin = async () => {
-      await handleLogout(false);
       console.log("Logging in the user...");
       router.push('/LoginForm');
     };
@@ -669,7 +668,7 @@ const handleSubmit = async (e) => {
           onClick={handleLogin}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         >
-          Logins
+          Login
         </button>
       );
     }
