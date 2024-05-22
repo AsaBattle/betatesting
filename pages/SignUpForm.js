@@ -21,6 +21,8 @@ const SignUpForm = () => {
     const [email, setEmail] = useState('');
     const [mainPromptText, setMainPromptText] = useState('Sign Up');
     const [verifyEmail, setVerifyEmail] = useState(false);
+    const [showInputs, setShowInputs] = useState(true);
+    const [userCredential, setUserCredential] = useState(null);
 
     const MainPrompt = () => {
 
@@ -46,34 +48,59 @@ const SignUpForm = () => {
         console.log('Status: ', status);
     }, [status, session, router]);
 
+    
+    const ReCheckEmailVerification = async () => {
+        console.log('Checking email verification status AGAIN...');
+
+        let result = null;
+        await userCredential.reload();
+        if (userCredential.emailVerified) {
+            console.log('User email is NOW VERIFIED');
+            result = await AttemptCredentialsLogin();
+        } else {
+            console.log('User email is STILL not verified');
+        }
+    };
+
     const checkEmailVerification = async (user) => {
         console.log('Checking email verification status...');
         await user.reload();
         if (user.emailVerified) {
             console.log('User email is verified');
-            const result = await nextAuthSignIn('credentials', {
-                redirect: false,
-                email: email,
-                password: password,
-            });
-            if (result.error) {
-                console.error('Error logging in:', result.error);
-            } else if (result.url) {
-                window.location.href = result.url;
-            } else {
-                console.error('SignIn did not result in redirection');
-            }
+           AttemptCredentialsLogin();
         } else {
             console.log('User email is not verified');
             setTimeout(() => checkEmailVerification(user), 5000);
         }
     };
 
+
+    const AttemptCredentialsLogin = async () => {
+        const result = await nextAuthSignIn('credentials', {
+            redirect: false,
+            email: email,
+            password: password,
+        });
+        if (result.error) {
+            console.error('Error logging in:', result.error);
+        } else if (result.url) {
+            window.location.href = result.url;
+        } else {
+            console.error('SignIn did not result in redirection');
+        }
+
+        return result;
+    }
+    
+
     const handleSignUp = async () => {
         console.log("SignUp Clicked");
         if (password && email) {
+
+            setShowInputs(false);
             try {
                 const userCredential = await createUserWithEmailAndPassword(fauth, email, password);
+                setUserCredential(userCredential);
                 const user = userCredential.user;
                 console.log('Firebase user created successfully:', user);
 
@@ -82,7 +109,8 @@ const SignUpForm = () => {
                     console.log("Email verification was sent!");
                 })
 
-                setMainPromptText('Email Verification Sent! Please verify your email address');
+                //setMainPromptText('Email Verification Sent! Please verify your email address');
+                setMainPromptText('We Sent You A Verification Email. Please go open it and verify to continue.');
                 setVerifyEmail(true);
 
                 // Start checking for email verification
@@ -135,33 +163,35 @@ const SignUpForm = () => {
             <div className={styles.wrapper}>
                 {MainPrompt()}
               
-                <form action="" onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSignUp();
-                }}>
-                    <div className={styles.inputBox}>
-                        <input
-                            type="text"
-                            placeholder="Email"
-                            autoComplete="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <FaUser className={styles.icon} />
-                        <FaUser className={styles.icon} />
-                    </div>
-                    <div className={styles.inputBox}>
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <FaLock className={styles.icon} />
-                    </div>
-                    <button type="submit">SignUp</button>
-                </form>
+                {showInputs && (
+                    <form action="" onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSignUp();
+                    }}>
+                        <div className={styles.inputBox}>
+                            <input
+                                type="text"
+                                placeholder="Email"
+                                autoComplete="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <FaUser className={styles.icon} />
+                            <FaUser className={styles.icon} />
+                        </div>
+                        <div className={styles.inputBox}>
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                autoComplete="current-password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <FaLock className={styles.icon} />
+                        </div>
+                        <button type="submit">SignUp</button>
+                    </form>
+                )}
             </div>
         </div>
     );
