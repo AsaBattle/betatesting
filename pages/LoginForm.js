@@ -210,7 +210,7 @@ const LoginForm = () => {
                     </div>
                     <div className={styles.rememberForgot}>
                         <label><input type="checkbox" autoComplete="on"/>Remember Me</label>
-                        <a href="#">Forgot Password</a>
+                        <Link href="/ForgotPassword">Forgot Password?</Link>
                     </div>
                     <button type="submit">Login</button>
 
