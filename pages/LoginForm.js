@@ -95,6 +95,9 @@ const LoginForm = () => {
     useEffect(() => {
         const storedUsername = localStorage.getItem('FullJourneyUserName');
         const storedPassword = localStorage.getItem('FullJourneyPassword');
+        
+        console.log("Stored Username: ", storedUsername);
+        console.log("Stored Password: ", storedPassword);
         if (storedUsername) {
             setUsername(storedUsername);
         }
@@ -104,9 +107,12 @@ const LoginForm = () => {
     }, []);
 
     useEffect(() => {
+        console.log("isChecked is: ", isChecked);
+
         if (isChecked) {
             localStorage.setItem('FullJourneyUserName', username);
             localStorage.setItem('FullJourneyPassword', password);
+            alert("Your username and password have been saved as username: " + username + " and password: " + password);
         } else {
             localStorage.removeItem('FullJourneyUserName');
             localStorage.removeItem('FullJourneyPassword');
@@ -187,6 +193,7 @@ const LoginForm = () => {
 
 
     const handleRememberMe = (event) => {
+        console.log("Remember Me Clicked and isChecked is: ", event.target.checked);
         setIsChecked(event.target.checked);
     };
 
