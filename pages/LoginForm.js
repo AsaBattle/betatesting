@@ -23,7 +23,7 @@ const LoginForm = () => {
     const [mainPromptText, setMainPromptText] = useState('Login');
     const [mainPromptColor, setMainPromptColor] = useState('white');
     const [showPassword, setShowPassword] = useState(false);
-    const [isChecked, setIsChecked] = useState(false);
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('FullJourneyUserName') !== null);
 
     useEffect(() => {
         const { error } = router.query;
@@ -106,20 +106,7 @@ const LoginForm = () => {
         }
     }, []);
 
-    useEffect(() => {
-        console.log("isChecked is: ", isChecked);
-
-        if (isChecked) {
-            localStorage.setItem('FullJourneyUserName', username);
-            localStorage.setItem('FullJourneyPassword', password);
-            alert("Your username and password have been saved as username: " + username + " and password: " + password);
-        } else {
-            localStorage.removeItem('FullJourneyUserName');
-            localStorage.removeItem('FullJourneyPassword');
-        }
-    }, [isChecked, username, password]);
-
-
+    
     const handleFirebaseSignIn = async () => {
         console.log("Firebase Sign In Clicked");
         if (username && password) {
@@ -193,9 +180,18 @@ const LoginForm = () => {
 
 
     const handleRememberMe = (event) => {
-        console.log("Remember Me Clicked and isChecked is: ", event.target.checked);
-        setIsChecked(event.target.checked);
-    };
+        console.log("Remember Me Clicked and isChecked: ", event.target.checked);
+        const isChecked = event.target.checked;
+        setIsChecked(isChecked);
+      
+        if (isChecked) {
+          localStorage.setItem('FullJourneyUserName', username);
+          localStorage.setItem('FullJourneyPassword', password);
+        } else {
+          localStorage.removeItem('FullJourneyUserName');
+          localStorage.removeItem('FullJourneyPassword');
+        }
+      };
 
     const MainPrompt = () => {
 
