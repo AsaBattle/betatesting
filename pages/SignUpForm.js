@@ -1,4 +1,4 @@
-import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
+import { FaUser, FaLock, FaDiscord, FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { GiJourney } from "react-icons/gi";
 import { useState,useEffect } from "react";
@@ -23,6 +23,7 @@ const SignUpForm = () => {
     const [verifyEmail, setVerifyEmail] = useState(false);
     const [showInputs, setShowInputs] = useState(true);
     const [userCredential, setUserCredential] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const MainPrompt = () => {
 
@@ -160,41 +161,52 @@ const SignUpForm = () => {
 
     return (
         <div className={styles.body}>
-            <div className={styles.wrapper}>
-                {MainPrompt()}
-              
-                {showInputs && (
-                    <form action="" onSubmit={(e) => {
-                        e.preventDefault();
-                        handleSignUp();
-                    }}>
-                        <div className={styles.inputBox}>
-                            <input
-                                type="text"
-                                placeholder="Email"
-                                autoComplete="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <FaUser className={styles.icon} />
-                            <FaUser className={styles.icon} />
-                        </div>
-                        <div className={styles.inputBox}>
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                autoComplete="current-password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <FaLock className={styles.icon} />
-                        </div>
-                        <button type="submit">SignUp</button>
-                    </form>
-                )}
-            </div>
+          <div className={styles.wrapper}>
+            {MainPrompt()}
+    
+            {showInputs && (
+              <form action="" onSubmit={(e) => {
+                e.preventDefault();
+                handleSignUp();
+              }}>
+                <div className={styles.inputBox}>
+                  <input
+                    type="text"
+                    placeholder="Email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <FaUser className={styles.icon} />
+                  <FaUser className={styles.icon} />
+                </div>
+                <div className={`${styles.inputBox} relative`}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <FaLock className={styles.icon} />
+                  {showPassword ? (
+                    <FaRegEye
+                      className={`${styles.eyeIcon} ${styles.clickableIcon}`}
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  ) : (
+                    <FaRegEyeSlash
+                      className={`${styles.eyeIcon} ${styles.clickableIcon}`}
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  )}
+                </div>
+                <button type="submit">SignUp</button>
+              </form>
+            )}
+          </div>
         </div>
-    );
+      );
 };
 
 export default SignUpForm;

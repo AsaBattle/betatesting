@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { FaUser, FaLock, FaDiscord } from 'react-icons/fa';
+import { FaUser, FaLock, FaDiscord, FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { GiJourney } from "react-icons/gi";
 import { useState,useEffect } from "react";
@@ -22,6 +22,7 @@ const LoginForm = () => {
     const [awaitingEmailVerification, setAwaitingEmailVerification] = useState(false);
     const [mainPromptText, setMainPromptText] = useState('Login');
     const [mainPromptColor, setMainPromptColor] = useState('white');
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         const { error } = router.query;
@@ -200,13 +201,24 @@ const LoginForm = () => {
                     </div>
                     <div className={styles.inputBox}>
                         <input
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
                             autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <FaLock className={styles.icon} />
+                        {showPassword ? (
+                            <FaRegEye
+                            className={`${styles.eyeIcon} ${styles.clickableIcon}`}
+                            onClick={() => setShowPassword(!showPassword)}
+                            />
+                        ) : (
+                            <FaRegEyeSlash
+                            className={`${styles.eyeIcon} ${styles.clickableIcon}`}
+                            onClick={() => setShowPassword(!showPassword)}
+                            />
+                        )}
                     </div>
                     <div className={styles.rememberForgot}>
                         <label><input type="checkbox" autoComplete="on"/>Remember Me</label>

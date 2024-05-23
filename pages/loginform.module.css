@@ -180,3 +180,17 @@
     color: white;
     margin: 20px 0;
   }
+
+  
+.eyeIcon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%) translateX(-175%);
+    color: #fff;
+    font-size: 20px;
+  }
+  
+.clickableIcon {
+    cursor: pointer;
+}

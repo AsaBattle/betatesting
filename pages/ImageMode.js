@@ -280,10 +280,12 @@ export default function Home(theUserData) {
 
     const handleLogin = async () => {
       console.log("Logging in the user...");
+
+      await handleLogout(false);
       router.push('/LoginForm');
     };
 
-    const handleLogout = async (redirect) => {
+    const handleLogout = async (redirect = false) => {
       console.log("Logging out the user...");
   
       try {
@@ -656,7 +658,7 @@ const handleSubmit = async (e) => {
     if (theUserData.userData) {
       return (
         <button
-          onClick={handleLogout(true)}
+          onClick={handleLogout}
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
         >
           Logout
