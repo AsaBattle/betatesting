@@ -23,7 +23,7 @@ const LoginForm = () => {
     const [mainPromptText, setMainPromptText] = useState('Login');
     const [mainPromptColor, setMainPromptColor] = useState('white');
     const [showPassword, setShowPassword] = useState(false);
-    const [isChecked, setIsChecked] = useState(localStorage.getItem('FullJourneyUserName') !== null);
+    const [isChecked, setIsChecked] = useState(false);
 
     useEffect(() => {
         const { error } = router.query;
@@ -267,7 +267,7 @@ const LoginForm = () => {
                     <button type="submit">Login</button>
 
                     <div className={styles.orUse}>
-                        <p>- ORs -</p>
+                        <p>- OR -</p>
                     </div>
                     <div className={styles.socialLogin}>
                         <div className={styles.socialButtons}>
