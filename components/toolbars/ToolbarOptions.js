@@ -470,6 +470,13 @@ useEffect(() => {
           </div>
         </div>
       )}
+      {currentTool?.name === 'NoTool' && (
+        <div className={styles.toolbarContainer}>
+              <Typography className="text-center mt-2">
+              No Tool Selected
+              </Typography>
+        </div>
+      )}
     </div>
   );
 };
