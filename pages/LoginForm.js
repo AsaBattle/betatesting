@@ -98,6 +98,8 @@ const LoginForm = () => {
         
         console.log("Stored Username: ", storedUsername);
         console.log("Stored Password: ", storedPassword);
+
+        setIsChecked(storedUsername || storedPassword);
         if (storedUsername) {
             setUsername(storedUsername);
         }
