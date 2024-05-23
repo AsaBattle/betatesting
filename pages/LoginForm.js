@@ -23,6 +23,7 @@ const LoginForm = () => {
     const [mainPromptText, setMainPromptText] = useState('Login');
     const [mainPromptColor, setMainPromptColor] = useState('white');
     const [showPassword, setShowPassword] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
 
     useEffect(() => {
         const { error } = router.query;
@@ -90,6 +91,29 @@ const LoginForm = () => {
             console.error("Error during sign-in:", error, " Result: ", result);
         }
     };
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('FullJourneyUserName');
+        const storedPassword = localStorage.getItem('FullJourneyPassword');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+        if (storedPassword) {
+            setPassword(storedPassword);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isChecked) {
+            localStorage.setItem('FullJourneyUserName', username);
+            localStorage.setItem('FullJourneyPassword', password);
+        } else {
+            localStorage.removeItem('FullJourneyUserName');
+            localStorage.removeItem('FullJourneyPassword');
+        }
+    }, [isChecked, username, password]);
+
+
     const handleFirebaseSignIn = async () => {
         console.log("Firebase Sign In Clicked");
         if (username && password) {
@@ -158,6 +182,14 @@ const LoginForm = () => {
         }
     }, [status]);
 
+
+
+
+
+    const handleRememberMe = (event) => {
+        setIsChecked(event.target.checked);
+    };
+
     const MainPrompt = () => {
 
         if (awaitingEmailVerification) {
@@ -172,9 +204,6 @@ const LoginForm = () => {
             <h1 className={styles['poppins-bold']} style={{ color: mainPromptColor }}>{mainPromptText}</h1>        );
         }
     }
-
-
-
 
 
     return (
@@ -221,7 +250,15 @@ const LoginForm = () => {
                         )}
                     </div>
                     <div className={styles.rememberForgot}>
-                        <label><input type="checkbox" autoComplete="on"/>Remember Me</label>
+                        <label>
+                            <input 
+                                type="checkbox" 
+                                autoComplete="on"
+                                checked={isChecked}
+                                onChange={handleRememberMe}
+                            />
+                            Remember Me
+                        </label>
                         <Link href="/ForgotPassword">Forgot Password?</Link>
                     </div>
                     <button type="submit">Login</button>
