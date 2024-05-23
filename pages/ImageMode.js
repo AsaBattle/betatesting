@@ -178,6 +178,14 @@ export default function Home(theUserData) {
     }, [hamburgerVisible]);
 
 
+    useEffect(() => {
+      const storedUsername = localStorage.getItem('FullJourneyUserName');
+      const storedPassword = localStorage.getItem('FullJourneyPassword');
+      
+      console.log("Stored Username: ", storedUsername);
+      console.log("Stored Password: ", storedPassword);
+    }, []);
+
 
     const FSAMTest = async () => {
       console.log("FSAMTest is being called");
@@ -318,40 +326,6 @@ export default function Home(theUserData) {
       }
   };
   
-
-    // old logout code
-    /*
-    const handleLogout = async () => {
-
-      console.log("Logging out the user...");
-
-      // Clear the user data cookie by setting an expired cookie
-      const expiredUserDataCookie = serialize('user', '', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'strict',
-        expires: new Date(0), // Set the expiration date to the past
-        path: '/',
-      });
-    
-      // Set the expired cookie in the document
-      document.cookie = expiredUserDataCookie;
-
-      nextAuthSignOut({redirect: false});
-    
-      const auth = getAuth();
-      firebaseSignOut(auth).then(() => {
-        // Sign-out successful.
-        console.log("Firebase Sign-out successful.");
-      }).catch((error) => {
-        console.log("Firebase Sign-out error: ", error);
-        // An error happened.
-      });
-      console.log("finished");
-      window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
-    };
-    */
-
     // See if the user is logged in, if 
     useEffect(() => {
         checkUserLogin();
@@ -781,101 +755,3 @@ const handleSubmit = async (e) => {
   // Return empty props if not authenticated
   return { props: {} };
 }
-
-
-/* Before adding in Google login stuff
-export async function getServerSideProps(context) {
-  const { req, res } = context;
-  const cookies = req.headers.cookie || '';
-
-  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
-    console.log("false Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-    console.log("Sending request for the users login data to the server...")
-    try {
-      const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
-        headers: { Cookie: cookies },
-        withCredentials: true,
-      });
-
-      console.log("response.data is: ", response.data);
-      const userData = response.data;
-
-      // Serialize the user data into a cookie string
-      const userDataCookie = serialize('user', JSON.stringify(userData), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
-        sameSite: 'strict',
-        maxAge: 3600, // 1 hour
-        path: '/',
-      });
-
-      // Set the cookie in the response header
-      res.setHeader('Set-Cookie', userDataCookie);
-
-      return { props: { userData } };
-    } catch (error) {
-      console.error('No user data, this must be a first time user Error message:', error);
-      
-      // Allow first-time users to access the page
-      return { props: {} };
-    }
-  } else {
-    console.log("true Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-
-    return {
-      props: {
-        isAuthenticated: true,
-      },
-    };
-  }
-}*/
-
-/* Code before letting users try the site without having to log in
-export async function getServerSideProps(context) {
-  const { req, res } = context;
-  const cookies = req.headers.cookie || '';
-  
-  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'false') {
-    console.log("false Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-    console.log("Sending request for the users login data to the server...")
-    try {
-      const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
-        headers: { Cookie: cookies },
-        withCredentials: true,
-      });
-
-      console.log("response.data is: ", response.data);
-      const userData = response.data;
-
-      // Serialize the user data into a cookie string
-      const userDataCookie = serialize('user', JSON.stringify(userData), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development', // Use secure cookie in production
-        sameSite: 'strict',
-        maxAge: 3600, // 1 hour
-        path: '/',
-      });
-
-      // Set the cookie in the response header
-      res.setHeader('Set-Cookie', userDataCookie);
-
-      return { props: { userData } };
-    } catch (error) {
-      console.error('No user data!!! Error:', error);
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
-    }
-  } else {
-    console.log("true Inside getServerSideProps in index.js NEXT_PUBLIC_WORKING_LOCALLY is: " + process.env.NEXT_PUBLIC_WORKING_LOCALLY);
-
-    return {
-      props: {
-        isAuthenticated: true,
-      },
-    };
-  }
-}*/
