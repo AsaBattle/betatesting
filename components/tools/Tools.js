@@ -1,5 +1,5 @@
 import { set } from 'lodash';
-import { Wand2, Brush, ZoomIn, Divide } from 'lucide-react';
+import { Wand2, Brush, ZoomIn, Divide, CircleOff } from 'lucide-react';
 
 function concatMasks(mask, old) {
 	let 
