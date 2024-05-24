@@ -1,5 +1,5 @@
 import { set } from 'lodash';
-import { Wand2, Brush, ZoomIn, Divide, CircleOff } from 'lucide-react';
+import { Wand2, Brush, ZoomIn, Divide, X } from 'lucide-react';
 
 function concatMasks(mask, old) {
 	let 
@@ -424,7 +424,7 @@ export const tools = [
   { 
     name: 'NoTool',
     label: 'No Tool Selected',
-    icon: <CircleOff />, 
+    icon: <X />, 
     renderInToolbar: true, 
     cursor: 'zoom-in',
    setup: (canvasReference) => {
