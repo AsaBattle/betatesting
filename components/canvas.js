@@ -111,9 +111,10 @@ const Canvas = forwardRef((props, ref) => {
      console.log('Drawing is Disabled because currentToolName is NoTool'); 
     setAllowDrawing(false);
     }
-    else
+    else {
+      console.log('Drawing is Enabled because currentToolName is not NoTool');
      setAllowDrawing(currentToolName === 'MaskPainter');
-  
+    }
     const canvasContainer = document.getElementById('canvasContainer');
     if (!canvasContainer) {
       console.error('Canvas container id not found');
