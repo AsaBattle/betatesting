@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo, Eraser } from 'lucide-react';
+import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo, Eraser, Ban } from 'lucide-react';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
@@ -468,6 +468,13 @@ useEffect(() => {
               </Button>
             </div>
           </div>
+        </div>
+      )}
+      {currentTool?.name === 'NoTool' && (
+        <div className={styles.toolbarContainer}>
+              <Typography className="text-center mt-2">
+              No Tool Selected
+              </Typography>
         </div>
       )}
     </div>

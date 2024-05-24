@@ -1,5 +1,5 @@
 import { set } from 'lodash';
-import { Wand2, Brush, ZoomIn, Divide } from 'lucide-react';
+import { Wand2, Brush, ZoomIn, Divide, X } from 'lucide-react';
 
 function concatMasks(mask, old) {
 	let 
@@ -419,6 +419,21 @@ export const tools = [
     },
     processTool: function (dispatch, event) {
       console.log('Processing aspect ratio');
+    }
+  },
+  { 
+    name: 'NoTool',
+    label: 'No Tool Selected',
+    icon: <X />, 
+    renderInToolbar: true, 
+    cursor: 'zoom-in',
+   setup: (canvasReference) => {
+      canvasRef = canvasReference
+      console.log('Setting No Tool selected tool');
+    },
+
+    processTool: (dispatch,event) => {
+      console.log('Processing No Tool selected tool');
     }
   },
    /*{ 
