@@ -580,6 +580,9 @@ const handleSubmit = async (e) => {
 
 
     const startOver = () => {
+
+        canvasRef.current.ClearMaskLines();
+        canvasRef.current.ClearMagicWandResult();
         setPredictions([]);
         setError(null);
         setMaskImage(null);
