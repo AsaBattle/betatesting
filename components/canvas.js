@@ -100,13 +100,19 @@ const Canvas = forwardRef((props, ref) => {
     };
   }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
+
   useEffect(() => {
     if (!currentTool) {
       console.error('Current tool is not defined.');
       return;
     }
 
-    setAllowDrawing(currentToolName === 'MaskPainter');
+    if (currentToolName === 'NoTool') {
+     console.log('Drawing is Disabled because currentToolName is NoTool'); 
+    setAllowDrawing(false);
+    }
+    else
+     setAllowDrawing(currentToolName === 'MaskPainter');
   
     const canvasContainer = document.getElementById('canvasContainer');
     if (!canvasContainer) {
