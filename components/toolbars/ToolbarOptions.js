@@ -151,6 +151,7 @@ useEffect(() => {
   };
 
 
+
   const incrementZoom = () => dispatch(alterZoomWidth(10));
   const decrementZoom = () => dispatch(alterZoomWidth(-10));
 
