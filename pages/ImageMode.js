@@ -98,6 +98,9 @@ export default function Home(theUserData) {
 
 
 
+    
+
+
     // Function to clear the mask
     const clearMaskImage = () => {
       setMaskImage(null); // or setMaskImage('');
