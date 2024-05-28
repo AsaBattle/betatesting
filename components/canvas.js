@@ -375,16 +375,15 @@ useEffect(() => {
       )}
   
       {!predicting && (
-        <ReactSketchCanvas
-          ref={canvasRef}
-          strokeWidth={props.brushSize}
-          strokeColor="white"
-          canvasColor="transparent"
-          onChange={onChange}
-          allowOnlyPointerType={allowDrawing ? 'all' : 'none'}
-          readOnly={  allowDrawing}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
-        />
+      <ReactSketchCanvas
+        ref={canvasRef}
+        strokeWidth={props.brushSize}
+        strokeColor="white"
+        canvasColor="transparent"
+        onChange={onChange}
+        disabled={!allowDrawing}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
+      />
       )}
 
       {/* Magic Wand Selection Image */}
