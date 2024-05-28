@@ -141,6 +141,12 @@ const Canvas = forwardRef((props, ref) => {
 
 
   const handleCanvasClick = (event) => {
+    if (!allowDrawing) {
+      console.log('Drawing is disabled');
+      return;
+    }  
+
+
     const cc = document.getElementById('canvasContainer');
     //console.log('Canvascontainer: ', cc);
   
