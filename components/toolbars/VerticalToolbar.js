@@ -45,8 +45,9 @@ const VerticalToolbar = (props) => {
   const handleButtonClick = (tool) => {
     dispatch(setCurrentTool(tool.name));
     setIsToolbarVisible(false); // Hide toolbar after selection on small screens
-    dispatch(setToolbarVisibility(false)); // Hide toolbar on small screens
-    //tool.setup(props.canvasRef)
+    dispatch(setToolbarVisibility(false)); // Hide toolbar on small screens\
+    
+    tool.setup(dispatch,props.canvasRef)
 
     
     //console.log(`Switched to tool: ${tool.name}`);

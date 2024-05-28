@@ -345,6 +345,7 @@ useEffect(() => {
       onClick={handleCanvasClick}
       onContextMenu={handleCanvasClick} // This is for right-clicks
     >
+      
       {/* PREDICTION IMAGE */}
       {currentPredictionImage && !viewMaskActive && (
         <Image
@@ -381,10 +382,11 @@ useEffect(() => {
           canvasColor="transparent"
           onChange={onChange}
           allowOnlyPointerType={allowDrawing ? 'all' : 'none'}
+          readOnly={  allowDrawing}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
         />
       )}
-  
+
       {/* Magic Wand Selection Image */}
       {magicWandResultImg && (
         <Image
@@ -393,21 +395,7 @@ useEffect(() => {
         />
       )}
   
-  
       <Cursor brushSize={props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
-
-
-      {/* Combined Image 
-      {combinedImg && (
-        <div style={{ position: 'relative', width: '100%', paddingTop: '100%', marginTop: '1rem' }}>
-          <Image
-            src={combinedImg}
-            layout="fill"
-            objectFit="contain"
-            className="animate-in fade-in"
-          />
-        </div>
-      )*/}
     </div>
   );
 });

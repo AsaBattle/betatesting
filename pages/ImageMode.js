@@ -45,6 +45,7 @@ export default function Home(theUserData) {
     const [loadedAspectRatio, setLoadedAspectRatio] = useState('default');
     const [currentPredictionStatus, setCurrentPredictionStatus] = useState('idle');
     const [theupdatedPrediction, settheUpdatedPrediction] = useState(null);
+    const canDrawToCanvas = useSelector((state) => state.toolbar.canDrawToCanvas);
 
 
     // Get the current aspect ratio's width and height
@@ -96,6 +97,12 @@ export default function Home(theUserData) {
       checkUserLoginAndCreditsForChange();
     }, [theUserData, localUserCredits]);
 
+
+
+    useEffect(() => {      
+    console.log("Can draw to canvas is: ", canDrawToCanvas);
+    }, [canDrawToCanvas]);
+    
 
 
     // Function to clear the mask
