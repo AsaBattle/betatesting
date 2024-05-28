@@ -64,7 +64,6 @@ const Cursor = ({ brushSize, isDrawing }) => {
                 mixBlendMode: 'difference',
                 transform: 'translate(-50%, -50%)',
             }}
-            hello
         />
     );
 };

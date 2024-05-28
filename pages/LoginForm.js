@@ -214,7 +214,7 @@ const LoginForm = () => {
     return (
         <div className={styles.body}>
             <Head>
-                <title>FullJourney.AI Studio Beta4 Login</title>
+                <title>FullJourney.AI Studio Beta Login</title>
                 <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
             </Head>
             <div className={styles.wrapper}>
@@ -275,7 +275,7 @@ const LoginForm = () => {
                         <div className={styles.socialButtons}>
                             <button className={styles.discordBtn} onClick={handleDiscordClick}>
                                 <FaDiscord className={styles.icon} />
-                                Discord
+                                Discorda
                             </button>
                             <button className={styles.googleBtn} onClick={handleGoogleSignIn}>
                                 <FcGoogle className={styles.icon} />

@@ -1,5 +1,7 @@
 import { set } from 'lodash';
 import { Wand2, Brush, ZoomIn, Divide, X } from 'lucide-react';
+import { setCanvasDrawingEnabled } from '../../redux/slices/toolSlice';
+
 
 function concatMasks(mask, old) {
 	let 
@@ -358,7 +360,7 @@ const magicWandTool = {
   icon: <Wand2 />,
   renderInToolbar: true,
   cursor: `url('/wand2.png'), auto`,
-  setup: function (canvasReference) {
+  setup: function () {
     // setup function can remain empty if all logic is in processTool
   },
 
@@ -400,10 +402,12 @@ export const tools = [
     icon: <Brush />,
     cursor: `url('/pen-cursor(w)2.png'), auto`,
     renderInToolbar: true,
-    setup: function (canvasReference) {
+    setup: function (dispatch) {
+      dispatch(setCanvasDrawingEnabled(true));
       console.log('Setting up MaskPainter');
     },
     processTool: function (dispatch, event) {
+
       console.log('Processing MaskPainter');
     }
   },
@@ -414,10 +418,12 @@ export const tools = [
     icon: <Divide />,
     renderInToolbar: true,
     cursor: 'zoom-in',
-    setup: function (canvasReference) {
+    setup: function (dispatch) {
+      dispatch(setCanvasDrawingEnabled(false));
       console.log('Setting up aspect ratio');
     },
     processTool: function (dispatch, event) {
+
       console.log('Processing aspect ratio');
     }
   },
@@ -427,8 +433,8 @@ export const tools = [
     icon: <X />, 
     renderInToolbar: true, 
     cursor: 'zoom-in',
-   setup: (canvasReference) => {
-      canvasRef = canvasReference
+   setup: (dispatch) => {
+      dispatch(setCanvasDrawingEnabled(false));
       console.log('Setting No Tool selected tool');
     },
 
