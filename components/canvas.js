@@ -101,6 +101,8 @@ const Canvas = forwardRef((props, ref) => {
   }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
 
+
+
   useEffect(() => {
     if (!currentTool) {
       console.error('Current tool is not defined.');
@@ -108,20 +110,19 @@ const Canvas = forwardRef((props, ref) => {
     }
 
     if (currentToolName === 'NoTool') {
-     console.log('Drawing is Disabled because currentToolName is NoTool'); 
-    setAllowDrawing(false);
-    }
-    else {
+      console.log('Drawing is Disabled because currentToolName is NoTool');
+      setAllowDrawing(false);
+    } else {
       console.log('Drawing is Enabled because currentToolName is not NoTool');
-     setAllowDrawing(currentToolName === 'MaskPainter');
+      setAllowDrawing(currentToolName !== 'NoTool');
     }
+
     const canvasContainer = document.getElementById('canvasContainer');
     if (!canvasContainer) {
       console.error('Canvas container id not found');
       return;
     }
     
-    //console.log('Canvas.js: Setting cursor to: ', currentTool.cursor);
     canvasContainer.style.cursor = currentTool.cursor;
   }, [currentToolName]);
 
@@ -375,14 +376,15 @@ useEffect(() => {
       )}
   
       {!predicting && (
-      <ReactSketchCanvas
-        ref={canvasRef}
-        strokeWidth={props.brushSize}
-        strokeColor="white"
-        canvasColor="transparent"
-        onChange={onChange}
-        canDraw={allowDrawing}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
+        <ReactSketchCanvas
+          ref={canvasRef}
+          strokeWidth={props.brushSize}
+          strokeColor="white"
+          canvasColor="transparent"
+          onChange={onChange}
+          allowOnlyPointerType={allowDrawing ? 'all' : 'none'}
+          readOnly={allowDrawing}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
         />
       )}
 
