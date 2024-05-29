@@ -14,6 +14,7 @@ import Spinner from 'components/spinner';
 import { tools, getResolution } from './tools/Tools'; // Adjust the import path as necessary
 import Cursor from './cursor';
 import { useSelector, useDispatch } from 'react-redux';
+import { setCanvasDrawingEnabled } from '../redux/slices/toolSlice';
 
 const addBackgroundToPNG = require("lib/add-background-to-png");
 
