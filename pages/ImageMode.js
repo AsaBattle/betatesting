@@ -45,7 +45,7 @@ export default function Home(theUserData) {
     const [loadedAspectRatio, setLoadedAspectRatio] = useState('default');
     const [currentPredictionStatus, setCurrentPredictionStatus] = useState('idle');
     const [theupdatedPrediction, settheUpdatedPrediction] = useState(null);
-    const canDrawToCanvas = useSelector((state) => state.toolbar.canDrawToCanvas);
+    const canDrawToCanvas = useSelector((state) => state.toolbar.canvasDrawingEnabled);
 
 
     // Get the current aspect ratio's width and height
