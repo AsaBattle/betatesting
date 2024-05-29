@@ -19,7 +19,7 @@ const addBackgroundToPNG = require("lib/add-background-to-png");
 
 const Canvas = forwardRef((props, ref) => {
   const canvasRef = useRef(null);
-  const [allowDrawing, setAllowDrawing] = useState(true);
+  const allowDrawing = useSelector((state) => state.toolbar.canvasDrawingEnabled);
   const [controlKeyDown, setControlKeyDown] = useState(false);
   const viewMaskActive = useSelector((state) => state.toolbar.viewMaskActive);
   const canvasStateRef = useRef(''); // Initialize with an empty string or appropriate initial state
@@ -111,10 +111,10 @@ const Canvas = forwardRef((props, ref) => {
 
     if (currentToolName === 'NoTool') {
       console.log('Drawing is Disabled because currentToolName is NoTool');
-      setAllowDrawing(false);
+      dispatch(setCanvasDrawingEnabled(false));
     } else {
       console.log('Drawing is Enabled because currentToolName is not NoTool');
-      setAllowDrawing(currentToolName !== 'NoTool');
+      dispatch(setCanvasDrawingEnabled(currentToolName !== 'NoTool'));
     }
 
     const canvasContainer = document.getElementById('canvasContainer');
@@ -127,15 +127,15 @@ const Canvas = forwardRef((props, ref) => {
   }, [currentToolName]);
 
   useEffect(() => {
-    setAllowDrawing(!isToolbarVisible);
+    dispatch(setCanvasDrawingEnabled(!isToolbarVisible));
   }, [isToolbarVisible]);
 
 
   useEffect(() => {
     if (props.predictions.length <= 0) {
-      setAllowDrawing(false);
+      dispatch(setCanvasDrawingEnabled(false));
     } else {
-      setAllowDrawing(true);
+      dispatch(setCanvasDrawingEnabled(true));
     }
   }, [props.predictions.length]);
 
