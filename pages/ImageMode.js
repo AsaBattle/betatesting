@@ -94,7 +94,9 @@ export default function Home(theUserData) {
     
     useEffect(() => {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
+      console.log("allowing user to draw to canvas is: ", canDrawToCanvas);
       checkUserLoginAndCreditsForChange();
+
     }, [theUserData, localUserCredits]);
 
 
