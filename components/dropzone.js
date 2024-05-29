@@ -100,8 +100,6 @@ export default function Dropzone(props) {
       } catch (error) {
         console.error("Error preloading image: ", error);
       }
-
-      monkey
     },
     [onImageDropped, dispatch]
   );
