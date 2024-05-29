@@ -128,6 +128,12 @@ const Canvas = forwardRef((props, ref) => {
   }, [currentToolName]);
 
   useEffect(() => {
+    if (isToolbarVisible ===currentToolName !== 'NoTool')
+
+    // We don't want to set drawing enabled if the toolbar is visible or if the current tool is NoTool
+    if (currentToolName === 'NoTool') 
+      return;
+    
     dispatch(setCanvasDrawingEnabled(!isToolbarVisible));
   }, [isToolbarVisible]);
 
