@@ -133,7 +133,8 @@ const Canvas = forwardRef((props, ref) => {
     // We don't want to set drawing enabled if the toolbar is visible or if the current tool is NoTool
     if (currentToolName === 'NoTool') 
       return;
-    
+
+    console.log('Inside isToolbarVisible ---> Setting canvas drawing enabled:', !isToolbarVisible);
     dispatch(setCanvasDrawingEnabled(!isToolbarVisible));
   }, [isToolbarVisible]);
 
