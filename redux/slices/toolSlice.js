@@ -20,6 +20,7 @@ export const toolbarSlice = createSlice({
   },
   reducers: {
     setCanvasDrawingEnabled: (state, action) => {
+      console.log("setCanvasDrawingEnabled() called. Settting to: ", action.payload);
       state.canvasDrawingEnabled = action.payload;
     },
     setUserIsLoggedInWithAccount: (state, action) => {

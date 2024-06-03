@@ -102,6 +102,9 @@ const Canvas = forwardRef((props, ref) => {
   }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
 
+  useEffect(() => {
+    console.log("Version 1.0.0");
+  }, []);
 
 
   useEffect(() => {
