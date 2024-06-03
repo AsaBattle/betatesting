@@ -103,7 +103,7 @@ const Canvas = forwardRef((props, ref) => {
 
 
   useEffect(() => {
-    console.log("Version 1.0.0");
+    console.log("Version 1.0.1");
   }, []);
 
 
