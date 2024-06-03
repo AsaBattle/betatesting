@@ -94,11 +94,10 @@ export default function Home(theUserData) {
     
     useEffect(() => {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
-      console.log("allowing use r to draw to canvas is: ", canDrawToCanvas);
+      console.log("allowing use rto draw to canvas is: ", canDrawToCanvas);
       checkUserLoginAndCreditsForChange();
 
     }, [theUserData, localUserCredits]);
-
 
 
     useEffect(() => {      
@@ -160,11 +159,11 @@ export default function Home(theUserData) {
         console.log("asa t getIP is Getting IP address...");
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
-        console.log("Response from ipify.org is: ", data);
+        //console.log("Response from ipify.org is: ", data);
         setLocalUserIp(data.ip);
-        console.log("Yours IP address is: ", data.ip);
+        //console.log("Yours IP address is: ", data.ip);
         const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
-        console.log("User credits are: ", userCredits);
+        //console.log("User credits are: ", userCredits);
         setLocalUserCredits(userCredits);
       }
       getIP();
@@ -191,8 +190,8 @@ export default function Home(theUserData) {
       const storedUsername = localStorage.getItem('FullJourneyUserName');
       const storedPassword = localStorage.getItem('FullJourneyPassword');
       
-      console.log("Stored Username: ", storedUsername);
-      console.log("Stored Password: ", storedPassword);
+      //console.log("Stored Username: ", storedUsername);
+      //console.log("Stored Password: ", storedPassword);
     }, []);
 
 
@@ -335,9 +334,23 @@ export default function Home(theUserData) {
       }
   };
   
-    // See if the user is logged in, if 
+    // See if the user is logged in 
     useEffect(() => {
         checkUserLogin();
+    }, []);
+
+
+    // When the current tool changes, set it up properly
+    useEffect(() => {
+      // Call the setup of the current tool
+      const currentTool = tools.find(tool => tool.name === currentToolName);
+      if (currentTool) {
+        console.log("ImageMode.js: Setting up the current tool: ", currentToolName);
+        currentTool.setup(dispatch);
+      }
+      else {
+        console.log("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
+      }
     }, []);
 
 
@@ -346,18 +359,18 @@ export default function Home(theUserData) {
      const checkUserLogin = async () => {
 
         if (!theUserData) {
-          console.log("Loging check requted in setUserIsLoggedInWithAccount to false!!!");
+          //console.log("In checkUserLogin -  setUserIsLoggedInWithAccount to false!!!");
           dispatch(setUserIsLoggedInWithAccount(false));
         } else {
 
          // console.log("checking login - theUserData is: ", theUserData);
             if (theUserData.userData) {
-          console.log("Loging check requted in setUserIsLoggedInWithAccount to  true :)");
+                //console.log("In checkUserLogin - setUserIsLoggedInWithAccount to  true :)");
                 
                 dispatch(setUserIsLoggedInWithAccount(true));
                 setUserData(theUserData.userData);
             } else {
-             console.log("Loging check requted in setUserIsLoggedInWithAccount to false!!!");
+             //console.log("In checkUserLogin - setUserIsLoggedInWithAccount to false!!!");
 
                 dispatch(setUserIsLoggedInWithAccount(false));
             }
