@@ -61,7 +61,7 @@ export default function Dropzone(props) {
           // Update Redux store with the closest aspect ratio
           aspectRatioName = calculateAspectRatio(width, height);
 
-          console.log('Setting aspect ratio to: ', aspectRatioName);
+          //console.log('Setting aspect ratio to: ', aspectRatioName);
           dispatch(setAspectRatio(aspectRatioName));
 
           if (width > maxSide || height > maxSide) {

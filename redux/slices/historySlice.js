@@ -21,7 +21,7 @@ export const historySlice = createSlice({
       }
     },
     setIndex: (state, action) => {
-      console.log('setIndex is executing and setting to: ' + action.payload);
+      //console.log('setIndex is executing and setting to: ' + action.payload);
       state.index = action.payload;
     },
     pushToUndo: (state, action) => {
