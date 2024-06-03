@@ -115,9 +115,11 @@ const Canvas = forwardRef((props, ref) => {
 
     if (currentToolName === 'NoTool') {
       console.log('Drawing is Disabled because currentToolName is NoTool');
+      console.log("canvas.js line 118");
       dispatch(setCanvasDrawingEnabled(false));
     } else {
       console.log('Drawing is Enabled because currentToolName is not NoTool');
+      console.log("canvas.js line 122");
       dispatch(setCanvasDrawingEnabled(currentToolName !== 'NoTool'));
     }
 
@@ -137,14 +139,17 @@ const Canvas = forwardRef((props, ref) => {
       return;
 
     console.log('Inside isToolbarVisible ---> Setting canvas drawing enabled:', !isToolbarVisible);
+    console.log("canvas.js line 140");
     dispatch(setCanvasDrawingEnabled(!isToolbarVisible));
   }, [isToolbarVisible]);
 
 
   useEffect(() => {
     if (props.predictions.length <= 0) {
+      console.log("canvas.js line 149");
       dispatch(setCanvasDrawingEnabled(false));
     } else {
+      console.log("canvas.js line 152");
       dispatch(setCanvasDrawingEnabled(true));
     }
   }, [props.predictions.length]);
