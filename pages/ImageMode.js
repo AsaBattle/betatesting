@@ -344,12 +344,13 @@ export default function Home(theUserData) {
     useEffect(() => {
       // Call the setup of the current tool
       const currentTool = tools.find(tool => tool.name === currentToolName);
-      if (currentTool) 
+      if (currentTool) {
+        console.log("ImageMode.js: Setting up the current tool: ", currentToolName);
         currentTool.setup(dispatch);
-      else
-        {
-          console.log("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
-        }
+      }
+      else {
+        console.log("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
+      }
     }, []);
 
 
