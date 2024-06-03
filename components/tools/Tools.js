@@ -403,7 +403,6 @@ export const tools = [
     cursor: `url('/pen-cursor(w)2.png'), auto`,
     renderInToolbar: true,
     setup: function (dispatch) {
-      console.log("tools.js line 406");
       dispatch(setCanvasDrawingEnabled(true));
       console.log('Setting up MaskPainter');
     },
@@ -420,7 +419,6 @@ export const tools = [
     renderInToolbar: true,
     cursor: 'zoom-in',
     setup: function (dispatch) {
-      console.log("tools.js line 422");
       dispatch(setCanvasDrawingEnabled(false));
       console.log('Setting up aspect ratio');
     },
@@ -436,7 +434,6 @@ export const tools = [
     renderInToolbar: true, 
     cursor: 'zoom-in',
    setup: (dispatch) => {
-      console.log("tools.js line 437");
       dispatch(setCanvasDrawingEnabled(false));
       console.log('Setting No Tool selected tool');
     },
