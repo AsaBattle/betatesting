@@ -394,7 +394,7 @@ useEffect(() => {
       {!predicting && (
         <ReactSketchCanvas
           ref={canvasRef}
-          strokeWidth={props.brushSize}
+          strokeWidth={(currentToolName !== 'MaskPainter')?0:props.brushSize}
           strokeColor="white"
           canvasColor="transparent"
           onChange={onChange}
@@ -412,7 +412,7 @@ useEffect(() => {
         />
       )}
   
-      <Cursor brushSize={props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
+      <Cursor brushSize={(currentToolName !== 'MaskPainter')?0:props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
     </div>
   );
 });

@@ -43,11 +43,22 @@ const VerticalToolbar = (props) => {
 
 
   const handleButtonClick = (tool) => {
+
+    if (currentToolName === tool.name) {
+      console.log(`Tool already selected: ${tool.name} - Unselecting tool`);
+
+      // Set the current tool to 'NoTool'
+      dispatch(setCurrentTool('NoTool'));
+      setIsToolbarVisible(false);            // Hide toolbar after selection on small screens
+      dispatch(setToolbarVisibility(false)); // Hide toolbar on small screens\
+      tool.setup(dispatch);
+      return;
+    }
+
     dispatch(setCurrentTool(tool.name));
     setIsToolbarVisible(false); // Hide toolbar after selection on small screens
     dispatch(setToolbarVisibility(false)); // Hide toolbar on small screens\
-    
-    tool.setup(dispatch)
+    tool.setup(dispatch);
     console.log(`Tool selected: ${tool.name}`); // Add detailed debugging log
   };
 

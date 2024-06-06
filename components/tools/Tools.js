@@ -431,7 +431,7 @@ export const tools = [
     name: 'NoTool',
     label: 'No Tool Selected',
     icon: <X />, 
-    renderInToolbar: true, 
+    renderInToolbar: false, 
     cursor: 'zoom-in',
    setup: (dispatch) => {
       dispatch(setCanvasDrawingEnabled(false));
