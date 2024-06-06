@@ -48,7 +48,7 @@ const Cursor = ({ brushSize, isDrawing }) => {
         };
     }, [brushSize, isDrawing, hasMouse]);
 
-    if (!cursorPos) return null; // Don't render if no cursor position is set
+    if (!cursorPos || !isDrawing) return null; // Don't render if no cursor position is set
 
     return (
         <div
