@@ -20,6 +20,7 @@ import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
+import { Storage } from '@google-cloud/storage';
 
 import AuthService from '../services/authService';
 
