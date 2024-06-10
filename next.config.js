@@ -18,6 +18,11 @@ const nextConfig = {
       },
     ],
   },
+  node: {
+    net: 'empty',
+    tls: 'empty',
+    fs: 'empty',
+  },
 };
 
 module.exports = nextConfig;

@@ -21,11 +21,18 @@ import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 
+
 import AuthService from '../services/authService';
 
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Import storageUtil conditionally
+let uploadImage;
+if (typeof window === 'undefined') {
+  const storageUtil = require('../utils/storageUtil');
+  uploadImage = storageUtil.uploadImage;
+}
 
 export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
@@ -107,7 +114,10 @@ export default function Home(theUserData) {
 
 
     // Function to clear the mask
-    const clearMaskImage = () => {
+    const clearMaskImage = async () => {
+   
+      await canvasRef.current.setCombinedMask(null);
+
       setMaskImage(null); // or setMaskImage('');
       setClearMask(true); // Set clearMask to true when clearing the mask
     };
@@ -464,142 +474,140 @@ export default function Home(theUserData) {
         }
     };
 
-
-const handleSubmit = async (e) => {
-  setIsLoading(true);
-  e.preventDefault();
-
-  const combinedMask = await canvasRef.current.getCombinedMask();
-  const currentPrediction = predictions[index];
-  const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
-  const { width, height } = getResolution(currentAspectRatioName); // Use the getResolution function with the current aspect ratio
- 
-  let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-  let ipUser = false;
-
-  console.log("Here we are about to check theUserData: ", theUserData);
-
-  if (!theUserData.userData)
-  {
-    console.log("User is not logged in, so we are using the local user ip as their id");
-    theLocalUserId = localUserIp;
-    ipUser = true;
-  } else {
-    ipUser = false;
-    console.log("User is logged in, so we are using their user id of ", theUserData.userData.user_id);
-    theLocalUserId = theUserData.userData.user_id;
-  }
-
-  const body = {
-    prompt: e.target.prompt.value,
-    image: combinedMask ? currentPredictionOutput : null,
-    mask: combinedMask,
-    width,  // Include width
-    height, // Include height
-    aspectRatioName: currentAspectRatioName,
-    userId: theLocalUserId,
-    ipUser: ipUser,
-  };
-
-  setCurrentPredictionStatus("Server warming up...");
-  const response = await fetch("/api/predictions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  const prediction = await response.json();
-  prediction.fsamGenerationCounter = 0;
-  if (response.status !== 201) {
-    console.log("status is: ", response.status, " and the code is: ", prediction.thecode);
-    if (prediction.thecode === 5001) {
-      
-      // The user doesn't exist, so we need to do our image count processing
-      if (response.status === 404) {
-        console.log("User doesn't exist!!!");
-        return;
-      } 
-      // User exists but not enough credits
-      else if (response.status === 403) {
-        console.log("User exists but not enough credits");
-        setError({ message: "You have run out of credits, please subscribe or buy more credits" });
-        setIsLoading(false);
-        router.push('/Subscribe');
-        return;
-      }
-      else if (response.status === 402) {
-        console.log("Free user does not enough credits");
-        setError({ message: "You have run out of credits, please login to continue" });
-        setIsLoading(false);
-        router.push('/LoginForm');
-        return;
-      }
-
-    }      
-  }
-
-  setPredictions(predictions.concat([prediction]));
-  dispatch(setIndex(predictions.length));
-
-  while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-    await sleep(1000);
-    const response = await fetch(`/api/predictions/${prediction.id}`);
-    const updatedPrediction = await response.json();
-
-    if (response.status !== 200) {
-      setError({ message: updatedPrediction.detail });
-      setIsLoading(false);
-      console.log("Prediction error detail is: ", updatedPrediction.detail);
-      return;
-    }
-
-    const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
-    setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
-
     
-    if (updatedPrediction.status === "succeeded") {
-      setPredictions(currentPredictions => {
-        const updatedPredictions = [...currentPredictions];
-        const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-        if (indexToUpdate !== -1) {
-          updatedPredictions[indexToUpdate] = {
-            ...updatedPrediction,
-            aspectRatioName: currentAspectRatioName,
-          };
-        }
-        return updatedPredictions;
-      });
 
-
-      dispatch(setIndex(predictions.length+1)); // we add one to the index because we are adding a new prediction,
-                                                // but dispatch isn't yet aware of the new prediction, so it's 
-                                                // length is one less than the actual length
-      setIsLoading(false);
-
-
-      // Call a function to handle the successful prediction
-      settheUpdatedPrediction(updatedPrediction);
-
-      // If the user isn't logged in(we are using their ip address to keep track of them)
-      if (ipUser === true) {
-        const userCredits = await AuthService.getFreeUserCredits(theLocalUserId); // directly use data.ip here
-        console.log("User credits are: ", userCredits);
-        setLocalUserCredits(userCredits);
+    const handleSubmit = async (e) => {
+      setIsLoading(true);
+      e.preventDefault();
+  
+      const combinedMask = await canvasRef.current.getCombinedMask();
+      const currentPrediction = predictions[index];
+      const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
+      const { width, height } = getResolution(currentAspectRatioName);
+     
+      let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      let ipUser = false;
+  
+      if (!theUserData.userData) {
+        theLocalUserId = localUserIp;
+        ipUser = true;
+      } else {
+        ipUser = false;
+        theLocalUserId = theUserData.userData.user_id;
       }
-
-      // clear the mask
-      clearMaskImage();
-      setGenerateClicked(true); 
-
-      break;
-    } else if (updatedPrediction.status === "failed") {
-      setError({message:"The Prediction failed"});
-      setIsLoading(false);  
-      break;
-    }
-  }
-};
-
+  
+      const body = {
+        prompt: e.target.prompt.value,
+        image: combinedMask ? currentPredictionOutput : null,
+        mask: combinedMask,
+        width,
+        height,
+        aspectRatioName: currentAspectRatioName,
+        userId: theLocalUserId,
+        ipUser: ipUser,
+      };
+  
+      setCurrentPredictionStatus("Server warming up...");
+      const response = await fetch("/api/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+  
+      const prediction = await response.json();
+      prediction.fsamGenerationCounter = 0;
+      if (response.status !== 201) {
+        if (prediction.thecode === 5001) {
+          if (response.status === 404) {
+            return;
+          } else if (response.status === 403) {
+            setError({ message: "You have run out of credits, please subscribe or buy more credits" });
+            setIsLoading(false);
+            router.push('/Subscribe');
+            return;
+          } else if (response.status === 402) {
+            setError({ message: "You have run out of credits, please login to continue" });
+            setIsLoading(false);
+            router.push('/LoginForm');
+            return;
+          }
+        }
+      }
+  
+      setPredictions(predictions.concat([prediction]));
+      dispatch(setIndex(predictions.length));
+  
+      while (prediction.status !== "succeeded" && prediction.status !== "failed") {
+        await sleep(1000);
+        const response = await fetch(`/api/predictions/${prediction.id}`);
+        const updatedPrediction = await response.json();
+  
+        if (response.status !== 200) {
+          setError({ message: updatedPrediction.detail });
+          setIsLoading(false);
+          return;
+        }
+  
+        const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
+        setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
+  
+        if (updatedPrediction.status === "succeeded") {
+          setPredictions(currentPredictions => {
+            const updatedPredictions = [...currentPredictions];
+            const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+            if (indexToUpdate !== -1) {
+              updatedPredictions[indexToUpdate] = {
+                ...updatedPrediction,
+                aspectRatioName: currentAspectRatioName,
+              };
+  
+              // Upload the generated image to Google Cloud Storage on the server side
+              fetch('/api/uploadImage', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  bucketName: 'fjusers',
+                  fileName: `${updatedPrediction.id}.jpg`,
+                  fileContent: updatedPrediction.output[0]
+                })
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log(data.message);
+              })
+              .catch(error => {
+                console.error('Error uploading image:', error);
+                setError({ message: 'Failed to upload the generated image. Please try again.' });
+              });
+  
+            }
+            return updatedPredictions;
+          });
+  
+          dispatch(setIndex(predictions.length + 1));
+          setIsLoading(false);
+  
+          settheUpdatedPrediction(updatedPrediction);
+  
+          if (ipUser === true) {
+            const userCredits = await AuthService.getFreeUserCredits(theLocalUserId);
+            setLocalUserCredits(userCredits);
+          }
+  
+          clearMaskImage();
+          setGenerateClicked(true);
+  
+          break;
+        } else if (updatedPrediction.status === "failed") {
+          setError({ message: "The Prediction failed" });
+          setIsLoading(false);
+          break;
+        }
+      }
+    };
+    
 
     const startOver = () => {
 
