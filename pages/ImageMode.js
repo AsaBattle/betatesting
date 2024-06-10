@@ -25,6 +25,7 @@ import AuthService from '../services/authService';
 
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const storage = new Storage();
 
 
 export default function Home(theUserData) { 
@@ -107,7 +108,10 @@ export default function Home(theUserData) {
 
 
     // Function to clear the mask
-    const clearMaskImage = () => {
+    const clearMaskImage = async () => {
+   
+      await canvasRef.current.setCombinedMask(null);
+
       setMaskImage(null); // or setMaskImage('');
       setClearMask(true); // Set clearMask to true when clearing the mask
     };
@@ -464,6 +468,7 @@ export default function Home(theUserData) {
         }
     };
 
+    
 
 const handleSubmit = async (e) => {
   setIsLoading(true);
@@ -501,6 +506,8 @@ const handleSubmit = async (e) => {
     ipUser: ipUser,
   };
 
+  console.log("The combined mask is: ", combinedMask);
+
   setCurrentPredictionStatus("Server warming up...");
   const response = await fetch("/api/predictions", {
     method: "POST",
@@ -519,6 +526,7 @@ const handleSubmit = async (e) => {
         console.log("User doesn't exist!!!");
         return;
       } 
+
       // User exists but not enough credits
       else if (response.status === 403) {
         console.log("User exists but not enough credits");
@@ -566,6 +574,16 @@ const handleSubmit = async (e) => {
             ...updatedPrediction,
             aspectRatioName: currentAspectRatioName,
           };
+
+          // Upload the generated image to our Google Cloud Storage bucket for this user
+          const bucketName = 'fjusers';
+          const fileName = `${updatedPrediction.id}.jpg`;
+          const file = storage.bucket(bucketName).file(fileName);
+          file.save(updatedPrediction.output[0], {
+            metadata: {
+              contentType: 'image/jpeg',
+            },
+          });
         }
         return updatedPredictions;
       });

@@ -102,9 +102,11 @@ const Canvas = forwardRef((props, ref) => {
   }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
 
+
   useEffect(() => {
     console.log("Version 1.0.1");
   }, []);
+
 
 
   useEffect(() => {
@@ -130,8 +132,9 @@ const Canvas = forwardRef((props, ref) => {
     canvasContainer.style.cursor = currentTool.cursor;
   }, [currentToolName]);
 
+  
+  
   useEffect(() => {
-
     // We don't want to set drawing enabled if the toolbar is visible or if the current tool is NoTool
     if (currentToolName === 'NoTool') 
       return;
@@ -269,6 +272,10 @@ useImperativeHandle(ref, () => ({
     }
 
     return combinedImage;
+  },
+
+  setCombinedMask: (img) => {
+    setCombinedImg(img);
   },
 
   ClearMagicWandResult: () => {
