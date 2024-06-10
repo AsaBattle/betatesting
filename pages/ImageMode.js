@@ -20,14 +20,17 @@ import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
-import { Storage } from '@google-cloud/storage';
+
 
 import AuthService from '../services/authService';
 
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const storage = new Storage();
-
+let storage;
+if (typeof window === 'undefined') {
+  const { Storage } = require('@google-cloud/storage');
+  storage = new Storage();
+}
 
 export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
@@ -576,23 +579,23 @@ const handleSubmit = async (e) => {
             aspectRatioName: currentAspectRatioName,
           };
 
-          // Upload the generated image to our Google Cloud Storage bucket for this user
-          const bucketName = 'fjusers';
-          const fileName = `${updatedPrediction.id}.jpg`;
-          const file = storage.bucket(bucketName).file(fileName);
-          file.save(updatedPrediction.output[0], {
-            metadata: {
-              contentType: 'image/jpeg',
-            },
-          })
-            .then(() => {
-              console.log(`Image ${fileName} uploaded successfully to bucket ${bucketName}.`);
+          if (typeof window === 'undefined' && storage) {
+            const bucketName = 'fjusers';
+            const fileName = `${updatedPrediction.id}.jpg`;
+            const file = storage.bucket(bucketName).file(fileName);
+            file.save(updatedPrediction.output[0], {
+              metadata: {
+                contentType: 'image/jpeg',
+              },
             })
-            .catch((error) => {
-              console.error(`Error uploading image ${fileName} to bucket ${bucketName}:`, error);
-              // Handle the error appropriately, such as displaying an error message to the user
-              setError({ message: 'Failed to upload the generated image. Please try again.' });
-            });
+              .then(() => {
+                console.log(`Image ${fileName} uploaded successfully to bucket ${bucketName}.`);
+              })
+              .catch((error) => {
+                console.error(`Error uploading image ${fileName} to bucket ${bucketName}:`, error);
+                setError({ message: 'Failed to upload the generated image. Please try again.' });
+              });
+          }
         }
         return updatedPredictions;
       });
