@@ -595,6 +595,8 @@ const handleSubmit = async (e) => {
                 console.error(`Error uploading image ${fileName} to bucket ${bucketName}:`, error);
                 setError({ message: 'Failed to upload the generated image. Please try again.' });
               });
+          } else {
+            console.log("Not in the browser, so not uploading the image to the bucket.");
           }
         }
         return updatedPredictions;
