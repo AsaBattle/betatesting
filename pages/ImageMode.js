@@ -583,7 +583,15 @@ const handleSubmit = async (e) => {
             metadata: {
               contentType: 'image/jpeg',
             },
-          });
+          })
+            .then(() => {
+              console.log(`Image ${fileName} uploaded successfully to bucket ${bucketName}.`);
+            })
+            .catch((error) => {
+              console.error(`Error uploading image ${fileName} to bucket ${bucketName}:`, error);
+              // Handle the error appropriately, such as displaying an error message to the user
+              setError({ message: 'Failed to upload the generated image. Please try again.' });
+            });
         }
         return updatedPredictions;
       });
