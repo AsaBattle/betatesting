@@ -579,7 +579,9 @@ const handleSubmit = async (e) => {
             aspectRatioName: currentAspectRatioName,
           };
 
+          console.log("about to store image to bucket: ", updatedPrediction.id," ...");
           if (typeof window === 'undefined' && storage) {
+            console.log("In the browser, so uploading the image to the bucket.");
             const bucketName = 'fjusers';
             const fileName = `${updatedPrediction.id}.jpg`;
             const file = storage.bucket(bucketName).file(fileName);
