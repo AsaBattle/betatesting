@@ -162,6 +162,7 @@ const LoginForm = () => {
                     }, { withCredentials: true });
     
                     console.log("Response from API:", response.data);
+                    alert("Response from API:", response.data);
                     if (response.data.success) {
                         // Additional logic if needed based on successful authentication
                         window.location.href = '/ImageMode';  // Redirect or handle the response
