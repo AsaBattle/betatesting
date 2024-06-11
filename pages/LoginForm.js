@@ -162,7 +162,7 @@ const LoginForm = () => {
                     }, { withCredentials: true });
     
                     console.log("Response from API:", response.data);
-                    alert("Response from API:", response.data);
+                    alert("Response from API:", response);
                     if (response.data.success) {
                         // Additional logic if needed based on successful authentication
                         window.location.href = '/ImageMode';  // Redirect or handle the response
@@ -263,7 +263,7 @@ const LoginForm = () => {
                                 checked={isChecked}
                                 onChange={handleRememberMe}
                             />
-                            Remember Me
+                            Remember Mea
                         </label>
                         <Link href="/ForgotPassword">Forgot Password?</Link>
                     </div>
