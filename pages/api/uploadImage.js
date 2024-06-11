@@ -1,6 +1,15 @@
 import { Storage } from '@google-cloud/storage';
 
 
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '30mb',
+      },
+    },
+  }
+
+
 
 let storage;
 
