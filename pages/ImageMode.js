@@ -479,15 +479,15 @@ export default function Home(theUserData) {
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
-  
+    
       const combinedMask = await canvasRef.current.getCombinedMask();
       const currentPrediction = predictions[index];
       const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
       const { width, height } = getResolution(currentAspectRatioName);
-     
+    
       let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       let ipUser = false;
-  
+    
       if (!theUserData.userData) {
         theLocalUserId = localUserIp;
         ipUser = true;
@@ -495,7 +495,7 @@ export default function Home(theUserData) {
         ipUser = false;
         theLocalUserId = theUserData.userData.user_id;
       }
-  
+    
       const body = {
         prompt: e.target.prompt.value,
         image: combinedMask ? currentPredictionOutput : null,
@@ -506,14 +506,14 @@ export default function Home(theUserData) {
         userId: theLocalUserId,
         ipUser: ipUser,
       };
-  
+    
       setCurrentPredictionStatus("Server warming up...");
       const response = await fetch("/api/predictions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-  
+    
       const prediction = await response.json();
       prediction.fsamGenerationCounter = 0;
       if (response.status !== 201) {
@@ -533,24 +533,24 @@ export default function Home(theUserData) {
           }
         }
       }
-  
+    
       setPredictions(predictions.concat([prediction]));
       dispatch(setIndex(predictions.length));
-  
+    
       while (prediction.status !== "succeeded" && prediction.status !== "failed") {
         await sleep(1000);
         const response = await fetch(`/api/predictions/${prediction.id}`);
         const updatedPrediction = await response.json();
-  
+    
         if (response.status !== 200) {
           setError({ message: updatedPrediction.detail });
           setIsLoading(false);
           return;
         }
-  
+    
         const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
         setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
-  
+    
         if (updatedPrediction.status === "succeeded") {
           setPredictions(currentPredictions => {
             const updatedPredictions = [...currentPredictions];
@@ -560,45 +560,61 @@ export default function Home(theUserData) {
                 ...updatedPrediction,
                 aspectRatioName: currentAspectRatioName,
               };
-  
-              // Upload the generated image to Google Cloud Storage on the server side
-              fetch('/api/uploadImage', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  bucketName: 'fjusers',
-                  fileName: `${updatedPrediction.id}.jpg`,
-                  fileContent: updatedPrediction.output[0]
-                })
-              })
-              .then(response => response.json())
-              .then(data => {
-                console.log(data.message);
-              })
-              .catch(error => {
-                console.error('Error uploading image:', error);
-                setError({ message: 'Failed to upload the generated image. Please try again.' });
-              });
-  
+    
+              // Fetch image as a Blob and convert it to base64
+              fetch(updatedPrediction.output[0])
+                .then(response => response.blob())
+                .then(blob => {
+                  const reader = new FileReader();
+                  reader.readAsDataURL(blob);
+                  reader.onloadend = () => {
+                    const base64data = reader.result.split(',')[1];
+    
+                    // Create a file path including the user ID and a subfolder
+                    const userId = ipUser ? 'anonymous' : theLocalUserId;
+                    const folderPath = `${userId}/generatedImages`;  // You can change this subfolder name as needed
+                    const fileName = `${folderPath}/${updatedPrediction.id}.jpg`;
+    
+                    // Upload the generated image to Google Cloud Storage on the server side
+                    fetch('/api/uploadImage', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        bucketName: 'fjusers',
+                        fileName: fileName,
+                        fileContent: base64data
+                      })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                      console.log(data.message);
+                    })
+                    .catch(error => {
+                      console.error('Error uploading image:', error);
+                      setError({ message: 'Failed to upload the generated image. Please try again.' });
+                    });
+                  };
+                });
+    
             }
             return updatedPredictions;
           });
-  
+    
           dispatch(setIndex(predictions.length + 1));
           setIsLoading(false);
-  
+    
           settheUpdatedPrediction(updatedPrediction);
-  
+    
           if (ipUser === true) {
             const userCredits = await AuthService.getFreeUserCredits(theLocalUserId);
             setLocalUserCredits(userCredits);
           }
-  
+    
           clearMaskImage();
           setGenerateClicked(true);
-  
+    
           break;
         } else if (updatedPrediction.status === "failed") {
           setError({ message: "The Prediction failed" });
@@ -608,6 +624,10 @@ export default function Home(theUserData) {
       }
     };
     
+    
+    
+    
+
 
     const startOver = () => {
 
