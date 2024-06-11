@@ -14,7 +14,7 @@ import ErrorModal from '../components/errorModal';
 import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount } from '../redux/slices/toolSlice';
+import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount, setImageSavePath } from '../redux/slices/toolSlice';
 import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
@@ -53,7 +53,7 @@ export default function Home(theUserData) {
     const [currentPredictionStatus, setCurrentPredictionStatus] = useState('idle');
     const [theupdatedPrediction, settheUpdatedPrediction] = useState(null);
     const canDrawToCanvas = useSelector((state) => state.toolbar.canvasDrawingEnabled);
-
+    const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
 
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
@@ -103,7 +103,26 @@ export default function Home(theUserData) {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
       console.log("allowing use rto draw to canvas is: ", canDrawToCanvas);
       checkUserLoginAndCreditsForChange();
+      
+      // This is where we will make a call to our express api to get the user's default gcs bucket path(the save path for their images)
+      // and set it in the redux store
+      // But for now, we just set it to a default value
+      let theLocalUserId;
+      let ipUser = false;
+    
+      if (!theUserData.userData) {
+        theLocalUserId = localUserIp;
+        ipUser = true;
+      } else {
+        ipUser = false;
+        theLocalUserId = theUserData.userData.user_id;
+      }
 
+      const userId = ipUser ? 'anonymous' : theLocalUserId;
+      const folderPath = `${userId}/generatedImages/`;  // You can change this subfolder name as needed
+    
+      dispatch(setImageSavePath(folderPath));
+      
     }, [theUserData, localUserCredits]);
 
 
@@ -561,43 +580,54 @@ export default function Home(theUserData) {
                 aspectRatioName: currentAspectRatioName,
               };
     
-              // Fetch image as a Blob and convert it to base64
-              fetch(updatedPrediction.output[0])
-                .then(response => response.blob())
-                .then(blob => {
-                  const reader = new FileReader();
-                  reader.readAsDataURL(blob);
-                  reader.onloadend = () => {
-                    const base64data = reader.result.split(',')[1];
-    
-                    // Create a file path including the user ID and a subfolder
-                    const userId = ipUser ? 'anonymous' : theLocalUserId;
-                    const folderPath = `${userId}/generatedImages`;  // You can change this subfolder name as needed
-                    const fileName = `${folderPath}/${updatedPrediction.id}.jpg`;
-    
-                    // Upload the generated image to Google Cloud Storage on the server side
-                    fetch('/api/uploadImage', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({
-                        bucketName: 'fjusers',
-                        fileName: fileName,
-                        fileContent: base64data
+              // Don't save the image if the user is not logged in
+              if (ipUser === false) 
+                alert("User not logged in, so not saving image!");
+              else
+                {
+                // Fetch image as a Blob and convert it to base64
+                fetch(updatedPrediction.output[0])
+                  .then(response => response.blob())
+                  .then(blob => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                      const base64data = reader.result.split(',')[1];
+      
+                      /*
+                      const userId = ipUser ? 'anonymous' : theLocalUserId;
+                      const folderPath = `${userId}/generatedImages`;  // You can change this subfolder name as needed
+                      const fileName = `${folderPath}/${updatedPrediction.id}.jpg`;                
+                      */
+
+                      // concat this: ${updatedPrediction.id}.jpg to the end of the image path into the variable called fileName
+                      const fileName = `${imageSavePath}${updatedPrediction.id}.jpg`;
+                      alert("Saving to: " + fileName);
+
+
+                      // Upload the generated image to Google Cloud Storage on the server side
+                      fetch('/api/uploadImage', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          bucketName: 'fjusers',
+                          fileName: fileName,
+                          fileContent: base64data
+                        })
                       })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                      console.log(data.message);
-                    })
-                    .catch(error => {
-                      console.error('Error uploading image:', error);
-                      setError({ message: 'Failed to upload the generated image. Please try again.' });
-                    });
-                  };
-                });
-    
+                      .then(response => response.json())
+                      .then(data => {
+                        console.log(data.message);
+                      })
+                      .catch(error => {
+                        console.error('Error uploading image:', error);
+                        setError({ message: 'Failed to upload the generated image. Please try again.' });
+                      });
+                    };
+                  });
+              }
             }
             return updatedPredictions;
           });

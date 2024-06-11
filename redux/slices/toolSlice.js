@@ -17,8 +17,12 @@ export const toolbarSlice = createSlice({
     predictionModelName:  'DreamShaper',  // The name of the prediction model used wthen the user hits the generate button
     userIsLoggedInWithAccount:  false,    // Whether the user is logged in with an account(So if false, the user has no membership or account of any kind)
     canvasDrawingEnabled: false,           // Whether the user can draw on the canvas
+    imageSavePath: '',                    
   },
   reducers: {
+    setImageSavePath: (state, action) => {
+      state.imageSavePath = action.payload;
+    },
     setCanvasDrawingEnabled: (state, action) => {
       console.log("setCanvasDrawingEnabled() called. Settting to: ", action.payload);
       state.canvasDrawingEnabled = action.payload;
@@ -74,5 +78,6 @@ export const toolbarSlice = createSlice({
 export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth, 
                 alterZoomWidth, setHamburgerVisible, setCursor, setTolerance,
                 setWandSelector, setTheViewMaskActive, setPredictionModelName,
-                setToolbarVisibility, setUserIsLoggedInWithAccount, setCanvasDrawingEnabled } = toolbarSlice.actions;
+                setToolbarVisibility, setUserIsLoggedInWithAccount, setCanvasDrawingEnabled,
+                setImageSavePath } = toolbarSlice.actions;
 export default toolbarSlice.reducer;
