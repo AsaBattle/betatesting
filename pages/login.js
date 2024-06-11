@@ -80,7 +80,7 @@ const Login = () => {
                         token: session.accessToken  // Assuming your session object includes the accessToken
                     }, { withCredentials: true });
     
-                    console.log("Response from API:", response.data);
+                    console.log("Response from API:", response);
                     if (response.data.success) {
                         // Additional logic if needed based on successful authentication
                         window.location.href = '/ImageMode';  // Redirect or handle the response

@@ -749,7 +749,10 @@ export default function Home(theUserData) {
           <strong>FullJourney.AI 0.1 Betaking Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
+        <div className="flex flex-col items-center">
+          {LogINOUTButton()}
           {userLoginNameAndCredits}
+        </div>
         </p>
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
@@ -795,9 +798,6 @@ export default function Home(theUserData) {
             </div>
           </div>
         </main>
-        <footer className="text-center my-4">
-          {LogINOUTButton()}
-        </footer>
         {error && (
             <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
