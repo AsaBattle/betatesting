@@ -28,6 +28,7 @@ import AuthService from '../services/authService';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
+
 export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
     const [error, setError] = useState(null);
@@ -78,14 +79,6 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-
-    useEffect(() => {
-      let uploadImage;
-      if (typeof window !== 'undefined') {
-        const storageUtil = require('../utils/storageUtil');
-        uploadImage = storageUtil.uploadImage;
-      }
-    }, []);
 
 
     function checkUserLoginAndCreditsForChange() {
