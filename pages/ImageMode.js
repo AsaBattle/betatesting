@@ -746,7 +746,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 B Studio</strong>
+          <strong>FullJourney.AI 0.1 Be Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
         <div className="flex flex-col items-center">
