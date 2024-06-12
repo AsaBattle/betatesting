@@ -18,7 +18,7 @@
   }
   
   .fileTile img {
-    width: 100%;
+    width: 10%;
     height: auto;
     object-fit: cover;
     border-radius: 4px;
