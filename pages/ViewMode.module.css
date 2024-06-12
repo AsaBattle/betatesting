@@ -1,0 +1,26 @@
+.viewMode {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .fileGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-gap: 20px;
+  }
+  
+  .fileTile {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .fileTile img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
