@@ -27,12 +27,6 @@ import AuthService from '../services/authService';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// Import storageUtil conditionally
-let uploadImage;
-if (typeof window === 'undefined') {
-  const storageUtil = require('../utils/storageUtil');
-  uploadImage = storageUtil.uploadImage;
-}
 
 export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
@@ -84,6 +78,14 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
+
+    useEffect(() => {
+      let uploadImage;
+      if (typeof window !== 'undefined') {
+        const storageUtil = require('../utils/storageUtil');
+        uploadImage = storageUtil.uploadImage;
+      }
+    }, []);
 
 
     function checkUserLoginAndCreditsForChange() {
@@ -746,7 +748,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 Be Studio</strong>
+          <strong>FullJourney.AI 0.1 Bea Studio</strong>
         </p>
         <p className="text-white text-center font-helvetica">
         <div className="flex flex-col items-center">
