@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
 
 export default function ViewMode( theUserData ) {
@@ -22,7 +23,7 @@ export default function ViewMode( theUserData ) {
 
   return (
     <div className={styles.viewMode}>
-      <h2>Your Generated Files</h2>
+      <h2>Yours Generated Files</h2>
       <div className={styles.fileGrid}>
         {files.map((file) => (
           <div key={file.name} className={styles.fileTile}>
