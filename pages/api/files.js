@@ -34,7 +34,6 @@ export default async function handler(req, res) {
         files.map(async (file) => {
           const [url] = await file.getSignedUrl({
             action: 'read',
-            //expires: Infinity, //Date.now() + 15 * 60 * 1000, // URL expires in 15 minutes
           });
 
           return {
