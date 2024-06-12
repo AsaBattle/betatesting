@@ -8,8 +8,9 @@ export default async function handler(req, res) {
 
     try {
       const bucket = storage.bucket('fjusers');
-      const [files] = await bucket.getFiles({ prefix: `${userId}/` });
-
+      //const [files] = await bucket.getFiles({ prefix: `${userId}/` });
+      const [files] = await bucket.getFiles({ prefix: `anon/` });
+      
       const fileDetails = await Promise.all(
         files.map(async (file) => {
           const [url] = await file.getSignedUrl({
