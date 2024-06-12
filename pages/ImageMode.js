@@ -744,8 +744,11 @@ export default function Home(theUserData) {
           <strong>FullJourney.AI 0.1 Bea Studio</strong>
         </p>
         <div className="flex flex-col items-center">
+        <p className="text-white text-center font-helvetica">
+
           {LogINOUTButton()}
           {userLoginNameAndCredits}
+        </p>
         </div>
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
