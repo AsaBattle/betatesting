@@ -576,7 +576,7 @@ export default function Home(theUserData) {
               };
     
               // Don't save the image if the user is not logged in
-              if (ipUser === false) 
+              if (ipUser === true) 
                 alert("User not logged in, so not saving image!");
               else
                 {
@@ -743,12 +743,13 @@ export default function Home(theUserData) {
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>FullJourney.AI 0.1 Bea Studio</strong>
         </p>
-        <p className="text-white text-center font-helvetica">
         <div className="flex flex-col items-center">
+        <p className="text-white text-center font-helvetica">
+
           {LogINOUTButton()}
           {userLoginNameAndCredits}
-        </div>
         </p>
+        </div>
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
             <ToolbarOptions predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
