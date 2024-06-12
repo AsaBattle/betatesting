@@ -23,7 +23,7 @@ export default function ViewMode( theUserData ) {
 
   return (
     <div className={styles.viewMode}>
-      <h2>Yoursses Generated Files</h2>
+      <h2>Your Generated Files</h2>
       <div className={styles.fileGrid}>
         {files.map((file) => (
           <div key={file.name} className={styles.fileTile}>
