@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         files.map(async (file) => {
           const [url] = await file.getSignedUrl({
             action: 'read',
-            expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1000, // URL expires in 100 years
+            expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1, // URL expires in 1 years
           });
 
           return {
