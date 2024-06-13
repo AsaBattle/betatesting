@@ -28,7 +28,6 @@ export default function ViewMode( theUserData ) {
         {files.map((file) => (
           <div key={file.name} className={styles.fileTile}>
             <img src={file.url} alt={file.name} />
-            <p>{file.name}</p>
           </div>
         ))}
       </div>
