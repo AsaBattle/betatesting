@@ -23,6 +23,7 @@ import { fauth } from "../utils/firebase";
 
 
 import AuthService from '../services/authService';
+import { DialerSip } from "@mui/icons-material";
 
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -49,6 +50,7 @@ export default function Home(theUserData) {
     const [theupdatedPrediction, settheUpdatedPrediction] = useState(null);
     const canDrawToCanvas = useSelector((state) => state.toolbar.canvasDrawingEnabled);
     const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
+    const [IPUser, setIPUser] = useState(false);
 
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
@@ -107,13 +109,13 @@ export default function Home(theUserData) {
     
       if (!theUserData.userData) {
         theLocalUserId = localUserIp;
-        ipUser = true;
+        setIPUser(true);
       } else {
-        ipUser = false;
+        setIPUser(false);
         theLocalUserId = theUserData.userData.user_id;
       }
 
-      const userId = ipUser ? 'anonymous' : theLocalUserId;
+      const userId = IPUser ? 'anonymous' : theLocalUserId;
       const folderPath = `${userId}/generatedImages/`;  // You can change this subfolder name as needed
     
       dispatch(setImageSavePath(folderPath));
@@ -316,6 +318,11 @@ export default function Home(theUserData) {
           break;
         }
       }
+    };
+
+
+    const handleViewModePush = () => {
+      router.push('/ViewMode');
     };
 
     const handleLogin = async () => {
@@ -706,6 +713,22 @@ export default function Home(theUserData) {
   }, [generateClicked]);
 
 
+
+
+
+  const ModeButton = () => {
+    if (!IPUser) {
+      return (
+        <button onClick={handleViewModePush} 
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            View My Images
+            </button>
+            );
+    } else {
+      return (<div>hi</div>)
+    }
+  }
+
    
   const LogINOUTButton = () => {
 
@@ -713,8 +736,7 @@ export default function Home(theUserData) {
       return (
         <button
           onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-        >
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
           Logout
         </button>
       );
@@ -747,7 +769,7 @@ export default function Home(theUserData) {
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
-
+          {ModeButton()}          
           {LogINOUTButton()}
           {userLoginNameAndCredits}
         </p>
