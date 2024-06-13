@@ -13,17 +13,14 @@ const AuthService = {
     let userData = null;
     let serializedUserCookie = null;
 
-    // *** DISCORD LOGIN check ***
-    // Check if the user is logged in using FullJourney's(Discord) authentication
     const cookies = req.headers.cookie || '';
     try {
       const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
         headers: { Cookie: cookies },
         withCredentials: true,
+        timeout: 5000, // Timeout set to 5000 milliseconds (5 seconds)
       });
 
-      // If authentication was successful(meaning the user had already logged into their discord acocount via fj's login process), 
-      // Then we serialize the user data and create a cookie with it
      userData = response.data;
      serializedUserCookie = serialize('user', JSON.stringify(userData), {
         httpOnly: true,
@@ -37,24 +34,14 @@ const AuthService = {
       console.error('*** User IS logged in!!! with Discord cookie***');
       return userData;
     } catch (error) {
-      console.error('User was not logged in', error);
+      if (error.code === 'ECONNABORTED') {
+        console.error('Request timed out', error);
+      } else {
+        console.error('User was not logged in', error);
+      }
       // If the user isn't already logged in via their discord proceed to check for a NextAuth session
     }
 
-    /*
-    // *** NEXTAUTH LOGIN check ***
-    // Check if the user is logged through a NextAuth's session
-    // This could have been any of the providers we offer on our login screen(Right now it's just Google)
-    const session = await getSession({ req });
-    if (session) {
-      // The user is logged in with NextAuth, we can return the session data
-      // The session object contains a user object with the name, email, and image
-      console.error('*** User IS logged in!!! With nextauthsession ***');
-      console.log('Session:', session);
-      return session;
-    }*/
-    
-    // If no authentication method succeeded, return null
     console.error('*** User is not logged in ***');
     return null;
   },
