@@ -1,10 +1,13 @@
+// ViewMode.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
+import { useRouter } from 'next/router';
 
-export default function ViewMode( theUserData ) {
+export default function ViewMode({ theUserData }) {
   const [files, setFiles] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     console.log("theUserData.userData.user_id is: ", theUserData);
@@ -21,12 +24,19 @@ export default function ViewMode( theUserData ) {
     fetchFiles();
   }, [theUserData.user_id]);
 
+  const handleImageClick = (file) => {
+    router.push({
+      pathname: '/ImageMode',
+      query: { imageUrl: file.url, aspectRatio: 'default' },
+    });
+  };
+
   return (
     <div className={styles.viewMode}>
       <h2 className={styles.heading}>Your Generated Files</h2>
       <div className={styles.fileGrid}>
         {files.map((file) => (
-          <div key={file.name} className={styles.fileTile}>
+          <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
             <img src={file.url} alt={file.name} className={styles.fileImage} />
             <p className={styles.fileName}>{file.name}</p>
           </div>
