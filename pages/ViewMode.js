@@ -23,11 +23,12 @@ export default function ViewMode( theUserData ) {
 
   return (
     <div className={styles.viewMode}>
-      <h2>Your Generated Files</h2>
+      <h2 className={styles.heading}>Your Generated Files</h2>
       <div className={styles.fileGrid}>
         {files.map((file) => (
           <div key={file.name} className={styles.fileTile}>
-            <img src={file.url} alt={file.name} />
+            <img src={file.url} alt={file.name} className={styles.fileImage} />
+            <p className={styles.fileName}>{file.name}</p>
           </div>
         ))}
       </div>
@@ -35,27 +36,26 @@ export default function ViewMode( theUserData ) {
   );
 }
 
-
 export async function getServerSideProps(context) {
-    const { req, res } = context;
-  
-    // If we are working locally, we don't need to check for authentication
-    if (process.env.NEXT_PUBLIC_WORKING_LOCALLY == 'true')
-      return { props: {} };
-    else {
-    try {
-        const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
-  
-        if (userData) {
-          console.log("UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
-          // The user is authenticated, pass the user data as props
-          return { props: { userData } };
-        }
-        // If userData is null, the user is not authenticated
-      } catch (error) {
-        console.error('Error during authentication:', error);
-      }
-    }
-    // Return empty props if not authenticated
+  const { req, res } = context;
+
+  // If we are working locally, we don't need to check for authentication
+  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY == 'true')
     return { props: {} };
+  else {
+    try {
+      const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
+
+      if (userData) {
+        console.log("UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
+        // The user is authenticated, pass the user data as props
+        return { props: { userData } };
+      }
+      // If userData is null, the user is not authenticated
+    } catch (error) {
+      console.error('Error during authentication:', error);
+    }
   }
+  // Return empty props if not authenticated
+  return { props: {} };
+}
