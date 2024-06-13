@@ -25,6 +25,8 @@ export default function ViewMode({ theUserData }) {
   }, [theUserData.user_id]);
 
   const handleImageClick = (file) => {
+    console.log('Image clicked:', file);
+
     router.push({
       pathname: '/ImageMode',
       query: { imageUrl: file.url, aspectRatio: 'default' },
