@@ -576,10 +576,12 @@ export default function Home(theUserData) {
               };
     
               // Don't save the image if the user is not logged in
-              if (ipUser === true) 
-                alert("User not logged in, so not saving image!");
+              if (ipUser === true) {
+                console("User not logged in, so not saving image!");
+              }
               else
                 {
+                  console.log("User is logged in, so saving image to: ", imageSavePath);
                 // Fetch image as a Blob and convert it to base64
                 fetch(updatedPrediction.output[0])
                   .then(response => response.blob())
@@ -597,7 +599,7 @@ export default function Home(theUserData) {
 
                       // concat this: ${updatedPrediction.id}.jpg to the end of the image path into the variable called fileName
                       const fileName = `${imageSavePath}${updatedPrediction.id}.jpg`;
-                      alert("Saving to: " + fileName);
+                      //alert("Saving to: " + fileName);
 
 
                       // Upload the generated image to Google Cloud Storage on the server side
@@ -741,7 +743,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 Beader Studio</strong>
+          <strong>FullJourney.AI 0.1 Beadering Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
