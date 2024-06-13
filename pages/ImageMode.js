@@ -81,14 +81,14 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-
+/*
     useEffect(() => {
       const { imageUrl, aspectRatio } = router.query;
       if (imageUrl && aspectRatio) {
         handleImageAsFirstPrediction(imageUrl, aspectRatio);
       }
     }, [router.query]);
-
+*/
 
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
