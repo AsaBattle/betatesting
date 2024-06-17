@@ -7,10 +7,10 @@ export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    console.log("theUserData is: ", theUserData);
+    //console.log("theUserData is: ", theUserData);
     console.log("theUserData.user_id is: ", theUserData.userData)
 
-    /*const fetchFiles = async () => {
+  const fetchFiles = async () => {
       try {
         const response = await axios.get(`/api/files?userId=${theUserData.userData.user_id}`);
         setFiles(response.data.files);
@@ -19,7 +19,7 @@ export default function ViewMode( theUserData ) {
       }
     };
 
-    fetchFiles();*/
+    fetchFiles();
   }, [theUserData]);
 
   return (
