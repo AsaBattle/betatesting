@@ -1,10 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AuthService from '../services/authService';
+import { useRouter } from 'next/router';
+
 import styles from './ViewMode.module.css';
+
+
+const calculateAspectRatio = (width, height) => {
+  // Define your aspect ratios and names here
+  const aspectRatios = {
+    '1:1': 1,
+    '16:9': 16 / 9,
+    '9:16': 9 / 16,
+    '43': 4 / 3,
+    '34': 3 / 4,
+  };
+
+  let closestAspectRatioName = '1:1';
+  let smallestDifference = Infinity;
+  const imageAspectRatio = width / height;
+
+  Object.entries(aspectRatios).forEach(([name, ratio]) => {
+    const difference = Math.abs(ratio - imageAspectRatio);
+    if (difference < smallestDifference) {
+      smallestDifference = difference;
+      closestAspectRatioName = name;
+    }
+  });
+
+  return closestAspectRatioName;
+};
 
 export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     //console.log("theUserData is: ", theUserData);
@@ -22,12 +51,19 @@ export default function ViewMode( theUserData ) {
     fetchFiles();
   }, [theUserData]);
 
+  const handleImageClick = (file) => {
+    router.push({
+      pathname: '/ImageMode',
+      query: { imageUrl: file.url, aspectRatio:  '1:1' },
+    });
+  };
+
   return (
     <div className={styles.viewMode}>
       <h2 className={styles.heading}>Your Generated Files</h2>
       <div className={styles.fileGrid}>
         {files.map((file) => (
-          <div key={file.name} className={styles.fileTile}>
+          <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
             <img src={file.url} alt={file.name} className={styles.fileImage} />
             <p className={styles.fileName}>{file.name}</p>
           </div>
