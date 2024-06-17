@@ -1,18 +1,15 @@
-// ViewMode.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
-import { useRouter } from 'next/router';
 
-export default function ViewMode({ theUserData }) {
+export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
-  const router = useRouter();
 
   useEffect(() => {
     console.log("theUserData.userData.user_id is: ", theUserData);
 
-    const fetchFiles = async () => {
+    /*const fetchFiles = async () => {
       try {
         const response = await axios.get(`/api/files?userId=${theUserData.userData.user_id}`);
         setFiles(response.data.files);
@@ -21,24 +18,15 @@ export default function ViewMode({ theUserData }) {
       }
     };
 
-    fetchFiles();
+    fetchFiles();*/
   }, [theUserData.user_id]);
-
-  const handleImageClick = (file) => {
-    console.log('Image clicked:', file);
-
-    router.push({
-      pathname: '/ImageMode',
-      query: { imageUrl: file.url, aspectRatio: 'default' },
-    });
-  };
 
   return (
     <div className={styles.viewMode}>
       <h2 className={styles.heading}>Your Generated Files</h2>
       <div className={styles.fileGrid}>
         {files.map((file) => (
-          <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
+          <div key={file.name} className={styles.fileTile}>
             <img src={file.url} alt={file.name} className={styles.fileImage} />
             <p className={styles.fileName}>{file.name}</p>
           </div>
@@ -56,10 +44,11 @@ export async function getServerSideProps(context) {
     return { props: {} };
   else {
     try {
+      console.log("Checking if user is already logged in...")
       const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
 
       if (userData) {
-        console.log("UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
+        console.log("Yes, logged in - UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
         // The user is authenticated, pass the user data as props
         return { props: { userData } };
       }
