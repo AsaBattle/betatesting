@@ -8,7 +8,7 @@ export default function ViewMode( theUserData ) {
 
   useEffect(() => {
     console.log("theUserData is: ", theUserData);
-    console.log("theUserData.user_id is: ", theUserData.user_id)
+    console.log("theUserData.user_id is: ", theUserData.userData)
 
     /*const fetchFiles = async () => {
       try {
@@ -20,7 +20,7 @@ export default function ViewMode( theUserData ) {
     };
 
     fetchFiles();*/
-  }, [theUserData.user_id]);
+  }, [theUserData]);
 
   return (
     <div className={styles.viewMode}>
