@@ -22,7 +22,7 @@ export default function ViewMode({ theUserData }) {
     };
 
     fetchFiles();
-  }, [theUserData.user_id]);
+  }, [theUserData]);
 
   const handleImageClick = async (file) => {
     try {
