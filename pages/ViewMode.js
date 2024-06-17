@@ -9,10 +9,12 @@ export default function ViewMode({ theUserData }) {
   const [files, setFiles] = useState([]);
   const router = useRouter();
 
-  useEffect(() => {
-    console.log("theUserData.userData.user_id is: ", theUserData);
 
-    const fetchFiles = async () => {
+  useEffect(() => {
+    //console.log("theUserData is: ", theUserData);
+    console.log("theUserData.user_id is: ", theUserData.userData)
+
+  const fetchFiles = async () => {
       try {
         const response = await axios.get(`/api/files?userId=${theUserData.userData.user_id}`);
         setFiles(response.data.files);
@@ -23,6 +25,7 @@ export default function ViewMode({ theUserData }) {
 
     fetchFiles();
   }, [theUserData]);
+  
 
   const handleImageClick = async (file) => {
     try {
