@@ -1,14 +1,39 @@
-// ViewMode.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AuthService from '../services/authService';
-import styles from './ViewMode.module.css';
 import { useRouter } from 'next/router';
 
-export default function ViewMode({ theUserData }) {
+import styles from './ViewMode.module.css';
+
+
+const calculateAspectRatio = (width, height) => {
+  // Define your aspect ratios and names here
+  const aspectRatios = {
+    '1:1': 1,
+    '16:9': 16 / 9,
+    '9:16': 9 / 16,
+    '43': 4 / 3,
+    '34': 3 / 4,
+  };
+
+  let closestAspectRatioName = '1:1';
+  let smallestDifference = Infinity;
+  const imageAspectRatio = width / height;
+
+  Object.entries(aspectRatios).forEach(([name, ratio]) => {
+    const difference = Math.abs(ratio - imageAspectRatio);
+    if (difference < smallestDifference) {
+      smallestDifference = difference;
+      closestAspectRatioName = name;
+    }
+  });
+
+  return closestAspectRatioName;
+};
+
+export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
   const router = useRouter();
-
 
   useEffect(() => {
     //console.log("theUserData is: ", theUserData);
@@ -25,55 +50,12 @@ export default function ViewMode({ theUserData }) {
 
     fetchFiles();
   }, [theUserData]);
-  
 
-  const handleImageClick = async (file) => {
-    try {
-      const response = await fetch(file.url);
-      const blob = await response.blob();
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result;
-        const img = new Image();
-        img.onload = () => {
-          const aspectRatioName = calculateAspectRatio(img.width, img.height);
-          router.push({
-            pathname: '/ImageMode',
-            query: { dataUrl, aspectRatioName },
-          });
-        };
-        img.src = dataUrl;
-      };
-      reader.readAsDataURL(blob);
-    } catch (error) {
-      console.error('Error handling image click:', error);
-    }
-  };
-
-  const calculateAspectRatio = (width, height) => {
-    // Define your aspect ratios and names here
-    const aspectRatios = {
-      '1:1': 1,
-      '16:9': 16 / 9,
-      '9:16': 9 / 16,
-      '43': 4 / 3,
-      '34': 3 / 4,
-    };
-
-    let closestAspectRatioName = '1:1';
-    let smallestDifference = Infinity;
-    const imageAspectRatio = width / height;
-
-    Object.entries(aspectRatios).forEach(([name, ratio]) => {
-      const difference = Math.abs(ratio - imageAspectRatio);
-      if (difference < smallestDifference) {
-        smallestDifference = difference;
-        closestAspectRatioName = name;
-      }
+  const handleImageClick = (file) => {
+    router.push({
+      pathname: '/ImageMode',
+      query: { imageUrl: file.url, aspectRatio:  '1:1' },
     });
-
-    return closestAspectRatioName;
   };
 
   return (
@@ -90,7 +72,6 @@ export default function ViewMode({ theUserData }) {
     </div>
   );
 }
-
 
 export async function getServerSideProps(context) {
   const { req, res } = context;
