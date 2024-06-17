@@ -19,7 +19,7 @@ export default function ViewMode( theUserData ) {
     };
 
     fetchFiles();*/
-  }, [theUserData.user_id]);
+  }, [theUserData]);
 
   return (
     <div className={styles.viewMode}>
