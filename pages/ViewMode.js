@@ -1,13 +1,12 @@
 
 // ViewMode.js
-// This one crashs
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
 import { useRouter } from 'next/router';
 
-export default function ViewMode({ theUserData }) {
+export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
   const router = useRouter();
 
