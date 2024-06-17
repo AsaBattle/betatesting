@@ -9,7 +9,7 @@ export default function ViewMode( theUserData ) {
   useEffect(() => {
     console.log("theUserData.userData.user_id is: ", theUserData);
 
-    const fetchFiles = async () => {
+    /*const fetchFiles = async () => {
       try {
         const response = await axios.get(`/api/files?userId=${theUserData.userData.user_id}`);
         setFiles(response.data.files);
@@ -18,7 +18,7 @@ export default function ViewMode( theUserData ) {
       }
     };
 
-    fetchFiles();
+    fetchFiles();*/
   }, [theUserData.user_id]);
 
   return (
@@ -44,10 +44,11 @@ export async function getServerSideProps(context) {
     return { props: {} };
   else {
     try {
+      console.log("Checking if user is already logged in...")
       const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
 
       if (userData) {
-        console.log("UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
+        console.log("Yes, logged in - UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
         // The user is authenticated, pass the user data as props
         return { props: { userData } };
       }
