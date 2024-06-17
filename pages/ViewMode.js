@@ -7,7 +7,8 @@ export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    console.log("theUserData.userData.user_id is: ", theUserData);
+    console.log("theUserData is: ", theUserData);
+    console.log("theUserData.user_id is: ", theUserData.user_id)
 
     /*const fetchFiles = async () => {
       try {
