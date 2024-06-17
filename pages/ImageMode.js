@@ -81,14 +81,12 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-/*
     useEffect(() => {
       const { imageUrl, aspectRatio } = router.query;
       if (imageUrl && aspectRatio) {
         handleImageAsFirstPrediction(imageUrl, aspectRatio);
       }
     }, [router.query]);
-*/
 
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
@@ -189,7 +187,7 @@ export default function Home(theUserData) {
     // we store this in its localUserCredits var
     useEffect(() => {
       const getIP = async () => {
-        console.log("asa t getIP is Getting IP address...");
+        console.log("getIP is Getting IP address...");
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
         //console.log("Response from ipify.org is: ", data);
@@ -437,6 +435,7 @@ export default function Home(theUserData) {
     // When the user uploads an image, Dropzone will call this function with
     //  the image data URL and aspect ratio name(see toolSlice) calculated from the image's dimensions
     const handleImageAsFirstPrediction = (imageDataUrl, aspectRatio) => {
+      console.log("handleImageAsFirstPrediction called with image data URL: ", imageDataUrl, " and aspect ratio: ", aspectRatio);
       const newPrediction = {
         // Structure this object to match the prediction objects you receive from your API
         id: 'local-image', // or generate a unique ID as needed
@@ -770,7 +769,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 EE Studio</strong>
+          <strong>FullJourney.AI 0.1 FF Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
