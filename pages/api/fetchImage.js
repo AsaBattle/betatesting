@@ -29,13 +29,17 @@ export const config = {
       const url = new URL(imagePath);
       const filePath = url.pathname.slice(1); // Remove the leading '/'
   
-      const file = storage.bucket('fjusers').file(filePath);
-      const [metadata] = await file.getMetadata();
-      const [contents] = await file.download();
+      console.log('filePath:', filePath);
+
+      // The following lines are commented out as per the instructions
+      // const file = storage.bucket('fjusers').file(filePath);
+      // const [metadata] = await file.getMetadata();
+      // const [contents] = await file.download();
   
-      res.setHeader('Content-Type', metadata.contentType);
-      res.send(contents);
+      // res.setHeader('Content-Type', metadata.contentType);
+      // res.send(contents);
       console.log('I got the image!');
+      res.json({ message: 'I got the image!' });
     } catch (error) {
       console.error('Error fetching image from GCS:', error);
       res.status(500).json({ message: 'Failed to fetch image from GCS' });
