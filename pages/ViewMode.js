@@ -28,11 +28,24 @@ export default function ViewMode( theUserData ) {
   }, [theUserData]);
   
 
+
+  
   const handleImageClick = async (file) => {
     try {
-      const response = await fetch(file.url);
+      console.log('Fetching file:', file.url);
+      const response = await fetch(file.url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
       const blob = await response.blob();
-
+  
       const reader = new FileReader();
       reader.onloadend = () => {
         const dataUrl = reader.result;
@@ -51,6 +64,8 @@ export default function ViewMode( theUserData ) {
       console.error('Error handling image click:', error);
     }
   };
+
+
 
   const calculateAspectRatio = (width, height) => {
     // Define your aspect ratios and names here
