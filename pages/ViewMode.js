@@ -28,7 +28,19 @@ export default function ViewMode( theUserData ) {
   }, [theUserData]);
   
 
-
+  const handleImageClick = async (file) => {
+    try {
+      const imageUrl = file.url;
+      const aspectRatioName = calculateAspectRatio(file.width, file.height);
+      router.push({
+        pathname: '/ImageMode',
+        query: { imageUrl, aspectRatioName },
+      });
+    } catch (error) {
+      console.error('Error handling image click:', error);
+    }
+  };
+  /*
   const handleImageClick = async (file) => {
     try {
       console.log('Fetching file:', file.url);
@@ -60,7 +72,7 @@ export default function ViewMode( theUserData ) {
     } catch (error) {
       console.error('Error handling image click:', error);
     }
-  };
+  };*/
 
 
 
