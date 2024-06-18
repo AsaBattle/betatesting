@@ -86,6 +86,8 @@ export default function Home(theUserData) {
     useEffect(() => {
       const { imageUrl, aspectRatio } = router.query;
       if (imageUrl && aspectRatio) {
+        
+
         handleImageAsFirstPrediction(imageUrl, aspectRatio);
       }
     }, [router.query]);
@@ -762,7 +764,7 @@ export default function Home(theUserData) {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>FullJourney.AI Studio Beta 1.35</title>
+          <title>FullJourney.AI Studio Beta 1.36</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
