@@ -81,12 +81,16 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
+
+
     useEffect(() => {
       const { imageUrl, aspectRatio } = router.query;
       if (imageUrl && aspectRatio) {
         handleImageAsFirstPrediction(imageUrl, aspectRatio);
       }
     }, [router.query]);
+
+
 
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
@@ -762,7 +766,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 MM Studio</strong>
+          <strong>FullJourney.AI 0.1 NN Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
