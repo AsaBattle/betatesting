@@ -29,15 +29,11 @@ export default function ViewMode( theUserData ) {
   
 
 
-  
   const handleImageClick = async (file) => {
     try {
       console.log('Fetching file:', file.url);
-      const response = await fetch(file.url, {
+      const response = await fetch(`/api/fetchImage?imagePath=${encodeURIComponent(file.url)}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
   
       if (!response.ok) {
