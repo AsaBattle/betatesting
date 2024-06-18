@@ -25,7 +25,7 @@ export const config = {
     
     // Extract the file path from the imagePath URL
     const url = new URL(imagePath);
-    const filePath = url.pathname.slice(1); // Remove the leading '/'
+    const filePath = url.pathname.slice(1).split('/').slice(1).join('/'); // Remove the leading '/' and 'fjusers/'
 
     console.log('Inside fetchImage---- imagePath:', imagePath);
     console.log('Inside fetchImage---- filePath:', filePath)
