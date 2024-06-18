@@ -85,6 +85,7 @@ export default function Home(theUserData) {
 
     useEffect(() => {
       const { imageUrl, aspectRatio } = router.query;
+      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatio)
       if (imageUrl && aspectRatio) {
 
         console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatio)
