@@ -42,6 +42,7 @@ export default function ViewMode( theUserData ) {
   
       const blob = await response.blob();
   
+      console.log('I got the file!');
       const reader = new FileReader();
       reader.onloadend = () => {
         const dataUrl = reader.result;
