@@ -17,7 +17,7 @@ export default function ViewMode( theUserData ) {
 
   const fetchFiles = async () => {
       try {
-        const response = await axios.get(`/api/files?userId=${theUserData.userData.user_id}`);
+        const response = await axios.get(`/api/files?userId=${theUserData.userData.email}`);
         setFiles(response.data.files);
       } catch (error) {
         console.error('Error fetching files:', error);
@@ -40,41 +40,7 @@ export default function ViewMode( theUserData ) {
       console.error('Error handling image click:', error);
     }
   };
-  /*
-  const handleImageClick = async (file) => {
-    try {
-      console.log('Fetching file:', file.url);
-      const response = await fetch(`/api/fetchImage?imagePath=${encodeURIComponent(file.url)}`, {
-        method: 'GET',
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      const blob = await response.blob();
-  
-      console.log('I got the file!');
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const dataUrl = reader.result;
-        const img = new Image();
-        img.onload = () => {
-          const aspectRatioName = calculateAspectRatio(img.width, img.height);
-          router.push({
-            pathname: '/ImageMode',
-            query: { dataUrl, aspectRatioName },
-          });
-        };
-        img.src = dataUrl;
-      };
-      reader.readAsDataURL(blob);
-    } catch (error) {
-      console.error('Error handling image click:', error);
-    }
-  };*/
-
-
+ 
 
   const calculateAspectRatio = (width, height) => {
     // Define your aspect ratios and names here

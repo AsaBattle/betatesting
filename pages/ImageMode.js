@@ -128,6 +128,7 @@ export default function Home(theUserData) {
       }
     }
     
+
     useEffect(() => {
       console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
       console.log("allowing use rto draw to canvas is: ", canDrawToCanvas);
@@ -144,7 +145,8 @@ export default function Home(theUserData) {
         setIPUser(true);
       } else {
         setIPUser(false);
-        theLocalUserId = theUserData.userData.user_id;
+        //theLocalUserId = theUserData.userData.user_id;
+        theLocalUserId = theUserData.userData.email;
       }
 
       const userId = IPUser ? 'anonymous' : theLocalUserId;
@@ -153,6 +155,7 @@ export default function Home(theUserData) {
       dispatch(setImageSavePath(folderPath));
       
     }, [theUserData, localUserCredits]);
+
 
 
     useEffect(() => {      
@@ -631,16 +634,7 @@ export default function Home(theUserData) {
                     reader.onloadend = () => {
                       const base64data = reader.result.split(',')[1];
       
-                      /*
-                      const userId = ipUser ? 'anonymous' : theLocalUserId;
-                      const folderPath = `${userId}/generatedImages`;  // You can change this subfolder name as needed
-                      const fileName = `${folderPath}/${updatedPrediction.id}.jpg`;                
-                      */
-
-                      // concat this: ${updatedPrediction.id}.jpg to the end of the image path into the variable called fileName
                       const fileName = `${imageSavePath}${updatedPrediction.id}.jpg`;
-                      //alert("Saving to: " + fileName);
-
 
                       // Upload the generated image to Google Cloud Storage on the server side
                       fetch('/api/uploadImage', {
