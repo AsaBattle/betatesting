@@ -89,7 +89,7 @@ export default function Home(theUserData) {
       if (imageUrl && aspectRatioName) {
 
         console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName)
-       // handleImageAsFirstPrediction(imageUrl, aspectRatio);
+        handleImageAsFirstPrediction(imageUrl, aspectRatioName);
       }
     }, [router.query]);
 
@@ -765,11 +765,11 @@ export default function Home(theUserData) {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>FullJourney.AI Studio Beta 1.37</title>
+          <title>FullJourney.AI Studio Beta 1.38</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 TT Studio</strong>
+          <strong>FullJourney.AI 0.1 UU Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
