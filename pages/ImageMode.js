@@ -82,14 +82,34 @@ export default function Home(theUserData) {
     const [localUserIp, setLocalUserIp] = useState('');
 
 
-
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
-      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName)
+      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+    
+      const convertImageUrlToDataUrl = async (imageUrl) => {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.error("Error converting image URL to data URL: ", error);
+          return null;
+        }
+      };
+    
       if (imageUrl && aspectRatioName) {
-
-        console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName)
-        handleImageAsFirstPrediction(imageUrl, aspectRatioName);
+        console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+        convertImageUrlToDataUrl(imageUrl)
+          .then((dataUrl) => {
+            if (dataUrl) {
+              handleImageAsFirstPrediction(dataUrl, aspectRatioName);
+            }
+          });
       }
     }, [router.query]);
 
