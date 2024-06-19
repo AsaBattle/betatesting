@@ -84,11 +84,11 @@ export default function Home(theUserData) {
 
 
     useEffect(() => {
-      const { imageUrl, aspectRatio } = router.query;
-      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatio)
-      if (imageUrl && aspectRatio) {
+      const { imageUrl, aspectRatioName } = router.query;
+      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName)
+      if (imageUrl && aspectRatioName) {
 
-        console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatio)
+        console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName)
        // handleImageAsFirstPrediction(imageUrl, aspectRatio);
       }
     }, [router.query]);
@@ -765,11 +765,11 @@ export default function Home(theUserData) {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>FullJourney.AI Studio Beta 1.36</title>
+          <title>FullJourney.AI Studio Beta 1.37</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 SS Studio</strong>
+          <strong>FullJourney.AI 0.1 TT Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
