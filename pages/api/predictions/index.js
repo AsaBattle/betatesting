@@ -660,7 +660,7 @@ export default async function handler(req, res) {
   // ************************************************************************
   // REPLICATE
   // ************************************************************************
-  if (provider === 'replicate') {
+  if (provider === 'Replicate') {
     const body = JSON.stringify({
       version: model_name,
       input: {
@@ -697,7 +697,7 @@ export default async function handler(req, res) {
   // ************************************************************************
   // FAL
   // ************************************************************************
-  else if (provider === 'fal') {
+  else if (provider === 'Fal') {
       response = await fal.subscribe(model_name, {
         model_name: "Lykon/dreamshaper-xl-lightning",
         input: inputData,

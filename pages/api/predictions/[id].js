@@ -194,7 +194,7 @@ export default async function handler(req, res) {
 
   let response;
 
-  if (provider === 'replicate') {
+  if (provider === 'Replicate') {
     response = await fetch(`${REPLICATE_API_HOST}/v1/predictions/${req.query.id}`, {
       headers: {
         Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
@@ -213,7 +213,7 @@ export default async function handler(req, res) {
     prediction.theuser = userData;
     res.end(JSON.stringify(prediction));
   } 
-  else if (provider === 'fal') {
+  else if (provider === 'Fal') {
     try {
       const predictionId = req.query.id;
       response = await fal.status(predictionId);

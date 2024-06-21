@@ -701,7 +701,7 @@ export default function Home(theUserData) {
       }
         
       const provider = imageProvider; 
-      const modelName = (imageProvider === 'replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
+      const modelName = (imageProvider === 'Replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
       //const provider = 'replicate'; 
       ///const modelName = '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96';
         
@@ -1000,7 +1000,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 UU Studio</strong>
+          <strong>FullJourney.AI 0.1 RepOrFal Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
