@@ -27,7 +27,7 @@ export default function PromptForm(props) {
       : null
     : null;
 
-  // Calculate aspect ratio from the current prediction if available
+  // Set the initial prompt based on the current image's prompt
   const currentImagePrompt = props.predictions && props.predictions.length > index &&
                              props.predictions[index] && props.predictions[index].input
     ? props.predictions[index].input.prompt
@@ -39,12 +39,15 @@ export default function PromptForm(props) {
 
   // Set an initial random prompt when the component mounts
   useEffect(() => {
+    console.log('currentImagePrompt:', currentImagePrompt);
+
     if (currentImagePrompt && currentImagePrompt !== "default") {
       setPrompt(currentImagePrompt);
     } else {
       setRandomPrompt();
     }
-  }, [index]);
+  }, [index, currentImagePrompt]);
+
 
   return (
     <form
