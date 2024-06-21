@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive } from '../../redux/slices/toolSlice';
+import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive, setProvider } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo, Eraser, Ban } from 'lucide-react';
+import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo, Eraser, Ban, Component } from 'lucide-react';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import { tools } from '../tools/Tools';
@@ -133,6 +133,10 @@ useEffect(() => {
   const handleAspectRatioClick = (aspectRatio) => {
     setSelectedAspectRatio(aspectRatio);
       dispatch(setAspectRatio(aspectRatio)); 
+  };
+
+  const handleProviderClick = (provider) => {
+    setProvider(provider);
   };
 
   useEffect(() => {
@@ -411,6 +415,7 @@ useEffect(() => {
           <div className={styles.aspectRatioContainer + ' text-white flex flex-wrap justify-center mx-auto'}
             style={{ width: '100%', padding: '0 20px' }}
           >
+            
             <div className="flex flex-col items-center">
               <Button
                 style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
@@ -424,6 +429,7 @@ useEffect(() => {
               </Button>
               <Typography className="text-center mt-2">Current Image: {currentImageAspectRatio}</Typography>
             </div>
+
             <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
               <Button
                 style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
@@ -477,6 +483,36 @@ useEffect(() => {
               No Tool Selected
               </Typography>
         </div>
+      )}
+       {currentTool?.name === 'ModelSelector' && (
+       <div className={styles.toolbarContainer}>
+        <div className={styles.aspectRatioContainer + ' text-white flex flex-wrap justify-center mx-auto'}
+          style={{ width: '100%', padding: '0 20px' }}
+        >
+          <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
+            <Button
+              style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
+              variant="contained"
+              onClick={() => handleProviderClick('Replicate')}
+              startIcon={<RectangleHorizontal style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
+              size="large"
+              className={`${styles.button} ${selectedAspectRatio === '16:9' ? styles.selectedButton : ''}`}
+            >
+              <Typography style={{ fontSize: '16px' }}>Replicate</Typography>
+            </Button>
+            <Button
+              style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
+              variant="contained"
+              onClick={() => handleProviderClick('Fal')}
+              startIcon={<RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
+              size="large"
+              className={`${styles.button} ${selectedAspectRatio === '9:16' ? styles.selectedButton : ''}`}
+            >
+              <Typography style={{ fontSize: '16px' }}>FAL</Typography>
+            </Button>
+          </div>
+        </div>
+      </div>
       )}
     </div>
   );
