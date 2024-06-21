@@ -701,7 +701,7 @@ export default function Home(theUserData) {
       }
         
       const provider = imageProvider; 
-      const modelName = (imageProvider === 'replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
+      const modelName = (imageProvider === 'Replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
       //const provider = 'replicate'; 
       ///const modelName = '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96';
         
