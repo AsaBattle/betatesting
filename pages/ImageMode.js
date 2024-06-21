@@ -680,6 +680,12 @@ export default function Home(theUserData) {
       }
     };
     */
+
+    useEffect(() => {
+      console.log("Provider changed to: ", imageProvider);
+    }, [imageProvider]);
+
+
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
@@ -738,10 +744,10 @@ export default function Home(theUserData) {
       });
         
       const prediction = await response.json();
-      if (provider === 'fal') {
+      if (provider === 'Fal') {
         console.log("Prediction response from FAL:", prediction);
-    
-        // Format Fal prediction to match Replicate structure
+        
+
         const formattedPrediction = {
           id: prediction.seed.toString(),
           status: "succeeded",
@@ -749,9 +755,12 @@ export default function Home(theUserData) {
           created_at: new Date().toISOString(),
           fsamGenerationCounter: 0,
           aspectRatioName: currentAspectRatioName,
-          type: 1 // 1 for FAL, 0 for Replicate
+          type: 1, // 1 for FAL, 0 for Replicate
+          input: {
+            prompt:  prediction.prompt,
+          },
         };
-    
+          
         // Add the formatted prediction to the predictions array
         setPredictions(predictions.concat([formattedPrediction]));
         dispatch(setIndex(predictions.length));
@@ -802,118 +811,121 @@ export default function Home(theUserData) {
         return;
       } 
       
-      
-      prediction.fsamGenerationCounter = 0;
-      if (response.status !== 201) {
-        if (prediction.thecode === 5001) {
-          if (response.status === 404) {
-            return;
-          } else if (response.status === 403) {
-            setError({ message: "You have run out of credits, please subscribe or buy more credits" });
-            setIsLoading(false);
-            router.push('/Subscribe');
-            return;
-          } else if (response.status === 402) {
-            setError({ message: "You have run out of credits, please login to continue" });
-            setIsLoading(false);
-            router.push('/LoginForm');
-            return;
-          }
-        }
-      }
+      if (provider === 'Replicate'){
+        console.log("Provider is Replicate so Prediction response from Replicate:", prediction);
         
-      setPredictions(predictions.concat([prediction]));
-      dispatch(setIndex(predictions.length));
-        
-      while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-          await sleep(1000);
-        
-
-        const response = await fetch(`/api/predictions/${prediction.id}?provider=${provider}`);
-        const updatedPrediction = await response.json();
-        
-        if (response.status !== 200) {
-          setError({ message: updatedPrediction.detail });
-          setIsLoading(false);
-          return;
-        }
-        
-        const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
-        setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
-        
-        if (updatedPrediction.status === "succeeded") {
-          setPredictions(currentPredictions => {
-            const updatedPredictions = [...currentPredictions];
-            const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-            if (indexToUpdate !== -1) {
-              updatedPredictions[indexToUpdate] = {
-                ...updatedPrediction,
-                aspectRatioName: currentAspectRatioName,
-              };
-        
-              // Don't save the image if the user is not logged in
-              if (ipUser === true) {
-                console.log("User not logged in, so not saving image!");
-              } else {
-                console.log("User is logged in, so saving image to: ", imageSavePath);
-                // Fetch image as a Blob and convert it to base64
-                fetch(updatedPrediction.output[0])
-                  .then(response => response.blob())
-                  .then(blob => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = () => {
-                      const base64data = reader.result.split(',')[1];
-          
-                      const fileName = `${imageSavePath}${updatedPrediction.id}.jpg`;
-          
-                      // Upload the generated image to Google Cloud Storage on the server side
-                      fetch('/api/uploadImage', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                          bucketName: 'fjusers',
-                          fileName: fileName,
-                          fileContent: base64data
-                        })
-                      })
-                      .then(response => response.json())
-                      .then(data => {
-                        console.log(data.message);
-                      })
-                      .catch(error => {
-                        console.error('Error uploading image:', error);
-                        setError({ message: 'Failed to upload the generated image. Please try again.' });
-                      });
-                    };
-                  });
-              }
+        prediction.fsamGenerationCounter = 0;
+        if (response.status !== 201) {
+          if (prediction.thecode === 5001) {
+            if (response.status === 404) {
+              return;
+            } else if (response.status === 403) {
+              setError({ message: "You have run out of credits, please subscribe or buy more credits" });
+              setIsLoading(false);
+              router.push('/Subscribe');
+              return;
+            } else if (response.status === 402) {
+              setError({ message: "You have run out of credits, please login to continue" });
+              setIsLoading(false);
+              router.push('/LoginForm');
+              return;
             }
-            return updatedPredictions;
-          });
-        
-          dispatch(setIndex(predictions.length + 1));
-          setIsLoading(false);
-        
-          settheUpdatedPrediction(updatedPrediction);
-        
-          if (ipUser === true) {
-            const userCredits = await AuthService.getFreeUserCredits(theLocalUserId);
-            setLocalUserCredits(userCredits);
           }
-        
-          clearMaskImage();
-          setGenerateClicked(true);
-        
-          break;
-        } else if (updatedPrediction.status === "failed") {
-          setError({ message: "The Prediction failed" });
-          setIsLoading(false);
-          break;
         }
-      }
+          
+        setPredictions(predictions.concat([prediction]));
+        dispatch(setIndex(predictions.length));
+          
+        while (prediction.status !== "succeeded" && prediction.status !== "failed") {
+            await sleep(1000);
+            
+
+            const response = await fetch(`/api/predictions/${prediction.id}?provider=${provider}`);
+            const updatedPrediction = await response.json();
+            
+            if (response.status !== 200) {
+              setError({ message: updatedPrediction.detail });
+              setIsLoading(false);
+              return;
+            }
+            
+            const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
+            setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
+            
+            if (updatedPrediction.status === "succeeded") {
+              setPredictions(currentPredictions => {
+                const updatedPredictions = [...currentPredictions];
+                const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+                if (indexToUpdate !== -1) {
+                  updatedPredictions[indexToUpdate] = {
+                    ...updatedPrediction,
+                    aspectRatioName: currentAspectRatioName,
+                  };
+            
+                  // Don't save the image if the user is not logged in
+                  if (ipUser === true) {
+                    console.log("User not logged in, so not saving image!");
+                  } else {
+                    console.log("User is logged in, so saving image to: ", imageSavePath);
+                    // Fetch image as a Blob and convert it to base64
+                    fetch(updatedPrediction.output[0])
+                      .then(response => response.blob())
+                      .then(blob => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = () => {
+                          const base64data = reader.result.split(',')[1];
+              
+                          const fileName = `${imageSavePath}${updatedPrediction.id}.jpg`;
+              
+                          // Upload the generated image to Google Cloud Storage on the server side
+                          fetch('/api/uploadImage', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                              bucketName: 'fjusers',
+                              fileName: fileName,
+                              fileContent: base64data
+                            })
+                          })
+                          .then(response => response.json())
+                          .then(data => {
+                            console.log(data.message);
+                          })
+                          .catch(error => {
+                            console.error('Error uploading image:', error);
+                            setError({ message: 'Failed to upload the generated image. Please try again.' });
+                          });
+                        };
+                      });
+                  }
+                }
+                return updatedPredictions;
+              });
+            
+              dispatch(setIndex(predictions.length + 1));
+              setIsLoading(false);
+            
+              settheUpdatedPrediction(updatedPrediction);
+            
+              if (ipUser === true) {
+                const userCredits = await AuthService.getFreeUserCredits(theLocalUserId);
+                setLocalUserCredits(userCredits);
+              }
+            
+              clearMaskImage();
+              setGenerateClicked(true);
+            
+              break;
+            } else if (updatedPrediction.status === "failed") {
+              setError({ message: "The Prediction failed" });
+              setIsLoading(false);
+              break;
+            }
+          }
+        }
     };
     
 
@@ -1000,7 +1012,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 RepOrFal Studio</strong>
+          <strong>FullJourney.AI 0.1 RepOrFal2 Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">

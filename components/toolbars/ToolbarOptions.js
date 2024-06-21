@@ -136,7 +136,7 @@ useEffect(() => {
   };
 
   const handleProviderClick = (provider) => {
-    setProvider(provider);
+    dispatch(setProvider(provider));
   };
 
   useEffect(() => {
