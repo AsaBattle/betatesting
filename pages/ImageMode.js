@@ -51,6 +51,7 @@ export default function Home(theUserData) {
     const canDrawToCanvas = useSelector((state) => state.toolbar.canvasDrawingEnabled);
     const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
     const [IPUser, setIPUser] = useState(false);
+    const imageProvider = useSelector((state) => state.toolbar.provider);
 
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
@@ -699,8 +700,8 @@ export default function Home(theUserData) {
         theLocalUserId = theUserData.userData.user_id;
       }
         
-      const provider = 'fal'; 
-      const modelName = 'fal-ai/lightning-models'; 
+      const provider = imageProvider; 
+      const modelName = (imageProvider === 'replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
       //const provider = 'replicate'; 
       ///const modelName = '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96';
         

@@ -1,5 +1,5 @@
 import { set } from 'lodash';
-import { Wand2, Brush, ZoomIn, Divide, X } from 'lucide-react';
+import { Wand2, Brush, ZoomIn, Divide, X, Component } from 'lucide-react';
 import { setCanvasDrawingEnabled } from '../../redux/slices/toolSlice';
 
 
@@ -440,6 +440,21 @@ export const tools = [
 
     processTool: (dispatch,event) => {
       console.log('Processing No Tool selected tool');
+    }
+  },
+  {
+    name: 'ModelSelector',
+    label: 'Model Selector',
+    icon: <Component />,
+    renderInToolbar: true,
+    cursor: 'zoom-in',
+    setup: function (dispatch) {
+      dispatch(setCanvasDrawingEnabled(false));
+      console.log('Setting up ModelSelector');
+    },
+    processTool: function (dispatch, event) {
+
+      console.log('Processing  Model Selector');
     }
   },
    /*{ 
