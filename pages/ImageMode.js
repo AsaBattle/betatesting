@@ -211,25 +211,6 @@ export default function Home(theUserData) {
     };
 
 
-    // Get ip address
-    // use ip to log into express api's freeuser route
-    // this returns their credits based on ip address
-    // we store this in its localUserCredits var
-    useEffect(() => {
-      const getIP = async () => {
-        console.log("getIP is Getting IP address...");
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        //console.log("Response from ipify.org is: ", data);
-        setLocalUserIp(data.ip);
-        //console.log("Yours IP address is: ", data.ip);
-        const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
-        //console.log("User credits are: ", userCredits);
-        setLocalUserCredits(userCredits);
-      }
-      getIP();
-    }, []);
-
     
     useEffect(() => {
         const handleScroll = () => {
@@ -246,14 +227,6 @@ export default function Home(theUserData) {
         };
     }, [hamburgerVisible]);
 
-
-    useEffect(() => {
-      const storedUsername = localStorage.getItem('FullJourneyUserName');
-      const storedPassword = localStorage.getItem('FullJourneyPassword');
-      
-      //console.log("Stored Username: ", storedUsername);
-      //console.log("Stored Password: ", storedPassword);
-    }, []);
 
 
     const FSAMTest = async () => {
@@ -399,26 +372,46 @@ export default function Home(theUserData) {
           console.log("Error during sign out process:", error);
       }
   };
-  
-    // See if the user is logged in 
-    useEffect(() => {
-        checkUserLogin();
-    }, []);
 
-
-    // When the current tool changes, set it up properly
     useEffect(() => {
-      // Call the setup of the current tool
+      // Check if the user is logged in
+      checkUserLogin();
+
+      // Setup the current tool
       const currentTool = tools.find(tool => tool.name === currentToolName);
       if (currentTool) {
-        console.log("ImageMode.js: Setting up the current tool: ", currentToolName);
-        currentTool.setup(dispatch);
+          console.log("ImageMode.js: Setting up the current tool: ", currentToolName);
+          currentTool.setup(dispatch);
+      } else {
+          console.log("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
       }
-      else {
-        console.log("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
-      }
-    }, []);
 
+      // Get ip address
+      // use ip to log into express api's freeuser route
+      // this returns their credits based on ip address
+      // we store this in its localUserCredits var
+      const getIP = async () => {
+          console.log("getIP is Getting IP address...");
+          const response = await fetch('https://api.ipify.org?format=json');
+          const data = await response.json();
+          //console.log("Response from ipify.org is: ", data);
+          setLocalUserIp(data.ip);
+          //console.log("Yours IP address is: ", data.ip);
+          const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
+          //console.log("User credits are: ", userCredits);
+          setLocalUserCredits(userCredits);
+      }
+      getIP();
+
+      /*if (canvasRef.current) {
+          const imageElement = canvasRef.current.firstChild;
+          if (imageElement) {
+              const rect = imageElement.getBoundingClientRect();
+              console.log('THE----- Display width:', rect.width);
+              console.log('THE----- Display height:', rect.height);
+          }
+      }*/
+  }, []);
 
      //Just got "oging check requted in setUserIsLoggedInWithAccount to false!!" message an all working-
      //now we gotta track the number of images produced
@@ -462,17 +455,18 @@ export default function Home(theUserData) {
     }, [zoomWidth, hamburgerVisible]);
 
 
-    // When the user uploads an image, Dropzone will call this function with
+    // This function puts the image with given aspectRatio into end of the predictions array
+    //
+    // Dropzone calls this function When the user uploads an image
+    // ViewMode calls this function when the user clicks on an image in their bucket that they want to edit/play with
     //  the image data URL and aspect ratio name(see toolSlice) calculated from the image's dimensions
     const handleImageAsFirstPrediction = (imageDataUrl, aspectRatio) => {
       console.log("handleImageAsFirstPrediction called with image data URL: ", imageDataUrl, " and aspect ratio: ", aspectRatio);
       const newPrediction = {
-        // Structure this object to match the prediction objects you receive from your API
         id: 'local-image', // or generate a unique ID as needed
         output: [imageDataUrl],
         status: 'succeeded', // or the appropriate status
         aspectRatioName: aspectRatio,
-        // ... any other necessary properties
       };
 
       setPredictions([newPrediction, ...predictions]);
@@ -532,7 +526,7 @@ export default function Home(theUserData) {
     };
 
     
-
+/* old code before fal
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
@@ -684,9 +678,242 @@ export default function Home(theUserData) {
         }
       }
     };
+    */
+    const handleSubmit = async (e) => {
+      setIsLoading(true);
+      e.preventDefault();
+        
+      const combinedMask = await canvasRef.current.getCombinedMask();
+      const currentPrediction = predictions[index];
+      const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
+      const { width, height } = getResolution(currentAspectRatioName);
+        
+      let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      let ipUser = false;
+        
+      if (!theUserData.userData) {
+        theLocalUserId = localUserIp;
+        ipUser = true;
+      } else {
+        ipUser = false;
+        theLocalUserId = theUserData.userData.user_id;
+      }
+        
+      const provider = 'fal'; 
+      const modelName = 'fal-ai/lightning-models'; 
+      //const provider = 'replicate'; 
+      ///const modelName = '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96';
+        
+      const body = {
+        provider,
+        model_name: modelName,
+        prompt: e.target.prompt.value,
+        negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
+        image: combinedMask ? currentPredictionOutput : null,
+        mask: combinedMask,
+        image_size: {
+          height,
+          width,
+        },
+        num_inference_steps: 5,
+        guidance_scale: 2,
+        loras: [],
+        embeddings: [],
+        num_images: 1,
+        enable_safety_checker: true,
+        format: 'jpeg',
+        safety_checker_version: 'v1',
+        aspectRatioName: currentAspectRatioName,
+        userId: theLocalUserId,
+        ipUser: ipUser,
+      };
+      
+        
+      setCurrentPredictionStatus("Server warming up...");
+      const response = await fetch("/api/predictions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+        
+      const prediction = await response.json();
+      if (provider === 'fal') {
+        console.log("Prediction response from FAL:", prediction);
     
+        // Format Fal prediction to match Replicate structure
+        const formattedPrediction = {
+          id: prediction.seed.toString(),
+          status: "succeeded",
+          output: [prediction.images[0].url],
+          created_at: new Date().toISOString(),
+          fsamGenerationCounter: 0,
+          aspectRatioName: currentAspectRatioName,
+          type: 1 // 1 for FAL, 0 for Replicate
+        };
     
+        // Add the formatted prediction to the predictions array
+        setPredictions(predictions.concat([formattedPrediction]));
+        dispatch(setIndex(predictions.length));
     
+        // Save the image to the user's bucket if the user is logged in
+        if (!ipUser) {
+          console.log("User is logged in, so saving image to: ", imageSavePath);
+          const imageUrl = formattedPrediction.output[0];
+          
+          try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = async () => {
+              const base64data = reader.result.split(',')[1];
+              const fileName = `${imageSavePath}${formattedPrediction.id}.jpg`;
+    
+              // Upload the generated image to Google Cloud Storage on the server side
+              const uploadResponse = await fetch('/api/uploadImage', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  bucketName: 'fjusers',
+                  fileName: fileName,
+                  fileContent: base64data
+                })
+              });
+    
+              const data = await uploadResponse.json();
+              console.log(data.message);
+            };
+          } catch (error) {
+            console.error('Error uploading image:', error);
+            setError({ message: 'Failed to upload the generated image. Please try again.' });
+          }
+        } else {
+          console.log("User not logged in, so not saving image!");
+        }
+    
+        dispatch(setIndex(predictions.length + 1));
+    
+        setIsLoading(false);
+        clearMaskImage();
+        setGenerateClicked(true);
+        return;
+      } 
+      
+      
+      prediction.fsamGenerationCounter = 0;
+      if (response.status !== 201) {
+        if (prediction.thecode === 5001) {
+          if (response.status === 404) {
+            return;
+          } else if (response.status === 403) {
+            setError({ message: "You have run out of credits, please subscribe or buy more credits" });
+            setIsLoading(false);
+            router.push('/Subscribe');
+            return;
+          } else if (response.status === 402) {
+            setError({ message: "You have run out of credits, please login to continue" });
+            setIsLoading(false);
+            router.push('/LoginForm');
+            return;
+          }
+        }
+      }
+        
+      setPredictions(predictions.concat([prediction]));
+      dispatch(setIndex(predictions.length));
+        
+      while (prediction.status !== "succeeded" && prediction.status !== "failed") {
+          await sleep(1000);
+        
+
+        const response = await fetch(`/api/predictions/${prediction.id}?provider=${provider}`);
+        const updatedPrediction = await response.json();
+        
+        if (response.status !== 200) {
+          setError({ message: updatedPrediction.detail });
+          setIsLoading(false);
+          return;
+        }
+        
+        const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
+        setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
+        
+        if (updatedPrediction.status === "succeeded") {
+          setPredictions(currentPredictions => {
+            const updatedPredictions = [...currentPredictions];
+            const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
+            if (indexToUpdate !== -1) {
+              updatedPredictions[indexToUpdate] = {
+                ...updatedPrediction,
+                aspectRatioName: currentAspectRatioName,
+              };
+        
+              // Don't save the image if the user is not logged in
+              if (ipUser === true) {
+                console.log("User not logged in, so not saving image!");
+              } else {
+                console.log("User is logged in, so saving image to: ", imageSavePath);
+                // Fetch image as a Blob and convert it to base64
+                fetch(updatedPrediction.output[0])
+                  .then(response => response.blob())
+                  .then(blob => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                      const base64data = reader.result.split(',')[1];
+          
+                      const fileName = `${imageSavePath}${updatedPrediction.id}.jpg`;
+          
+                      // Upload the generated image to Google Cloud Storage on the server side
+                      fetch('/api/uploadImage', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          bucketName: 'fjusers',
+                          fileName: fileName,
+                          fileContent: base64data
+                        })
+                      })
+                      .then(response => response.json())
+                      .then(data => {
+                        console.log(data.message);
+                      })
+                      .catch(error => {
+                        console.error('Error uploading image:', error);
+                        setError({ message: 'Failed to upload the generated image. Please try again.' });
+                      });
+                    };
+                  });
+              }
+            }
+            return updatedPredictions;
+          });
+        
+          dispatch(setIndex(predictions.length + 1));
+          setIsLoading(false);
+        
+          settheUpdatedPrediction(updatedPrediction);
+        
+          if (ipUser === true) {
+            const userCredits = await AuthService.getFreeUserCredits(theLocalUserId);
+            setLocalUserCredits(userCredits);
+          }
+        
+          clearMaskImage();
+          setGenerateClicked(true);
+        
+          break;
+        } else if (updatedPrediction.status === "failed") {
+          setError({ message: "The Prediction failed" });
+          setIsLoading(false);
+          break;
+        }
+      }
+    };
     
 
 
@@ -716,17 +943,6 @@ export default function Home(theUserData) {
     // Apply the image from the redo stack to the canvas
     // Similar to undo, but using the next image
   };
-
-  useEffect(() => {
-    if (canvasRef.current) {
-      const imageElement = canvasRef.current.firstChild;
-      if (imageElement) {
-        const rect = imageElement.getBoundingClientRect();
-        console.log('THE----- Display width:', rect.width);
-        console.log('THE----- Display height:', rect.height);
-      }
-    }
-  }, []);
 
 
   useEffect(() => {
