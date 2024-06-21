@@ -9,6 +9,7 @@ export default function PromptForm(props) {
   const [prompt, setPrompt] = useState("");
   const dispatch = useDispatch();
   const aspectRatioName = useSelector((state) => state.toolbar.aspectRatioName);
+  const currentImageProvider = useSelector((state) => state.toolbar.provider);
 
   const handleClear = () => setPrompt("");
   const handleInputChange = (e) => setPrompt(e.target.value);
@@ -76,7 +77,7 @@ export default function PromptForm(props) {
 
         {/* Generate button */}
         <button type="submit" className={`bg-black text-white border border-gray-400 rounded-md px-10 py-5 flex-grow text-xl`} style={{boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.8)'}}>
-          Generate
+          Generate with {currentImageProvider}
         </button>
 
         {/* Aspect Ratio button

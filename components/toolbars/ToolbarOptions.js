@@ -39,6 +39,8 @@ function ToolbarOptions (props)  {
   const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
   const magicWandTolerance = useSelector((state) => state.toolbar.tolerance);
   const magicWandSelector = useSelector((state) => state.toolbar.wandSelector);
+  const currentImageProvider = useSelector((state) => state.toolbar.provider);
+
   const canvasRef = props.canvasRef;
 
   const currentTool = tools.find(tool => tool.name === currentToolName);
@@ -490,6 +492,8 @@ useEffect(() => {
           style={{ width: '100%', padding: '0 20px' }}
         >
           <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
+          <Typography className="text-center mt-2">Current Provider: {currentImageProvider}</Typography>
+
             <Button
               style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
               variant="contained"
