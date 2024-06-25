@@ -4,4 +4,9 @@ The user's workspace is saved in the GCS bucket with the user's email as their f
 The workspace is saved as a JSON object containing the following fields:
 - Current image save path
 - List of gcs bucket files currently being worked on
+
+This component will support the followind functionality:
+- Save workspace
+- Load workspace
 */
+
