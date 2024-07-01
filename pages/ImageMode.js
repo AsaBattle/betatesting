@@ -849,8 +849,8 @@ export default function Home(theUserData) {
       }
         
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser);
-      
-
+      console.log("Generation request Body is: ", body);  
+    
       setCurrentPredictionStatus("Server warming up...");
 
       let response = null;
