@@ -624,8 +624,10 @@ export default function Home(theUserData) {
         ipUser = true;
       } else {
         ipUser = false;
-        theLocalUserId = theUserData.userData.user_id;
+        theLocalUserId = theUserData.userData.email;
       }
+
+      
         
       const provider = imageProvider; 
       const modelName = (imageProvider === 'Replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
