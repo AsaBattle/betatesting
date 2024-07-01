@@ -1198,11 +1198,11 @@ export default function Home(theUserData) {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>craftful.AI Studio Beta 1.38</title>
+          <title>CraftFul.ai Studio V1.0</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>craftful.AI 0.1 RepOrFal Studio</strong>
+          <strong>CraftFul.AI 1.0 Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
