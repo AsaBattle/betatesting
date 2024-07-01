@@ -48,8 +48,16 @@ export default async function handler(req, res) {
         requestBody.image = fileContents.toString('base64');
       }
 
+
+
       // copy email to userid, so that the post image generation request saves the image in the correct user folder
-      requestBody.userid = requestBody.userEmail;
+      if (requestBody.userEmail)
+        requestBody.userid = requestBody.userEmail;
+      else
+        {
+          console.log("No userEmail, so using the userid as the email");
+        }
+      console.log("Request body:", JSON.stringify(requestBody, null, 2));
 
       // Make the API request
       const apiUrl = requestBody.image && requestBody.mask 

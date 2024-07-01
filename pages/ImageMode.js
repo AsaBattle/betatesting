@@ -51,7 +51,7 @@ export default function Home(theUserData) {
     const canDrawToCanvas = useSelector((state) => state.toolbar.canvasDrawingEnabled);
     const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
     const [IPUser, setIPUser] = useState(false);
-    const imageProvider = useSelector((state) => state.toolbar.provider);
+    const imageModel = useSelector((state) => state.toolbar.model);
 
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
@@ -547,13 +547,12 @@ export default function Home(theUserData) {
       return body;
     };
 
-
-    const GetRequestBodyOld = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, provider, modelName) => {  
+/*
+    const GetRequestBodyOld = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, modelName) => {  
       let body = null;
 
-      if (provider === 'Replicate') {
+      if (model === 'Replicate') {
         body = {
-          provider,
           model_name: modelName,
           prompt: e.target.prompt.value,
           negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
@@ -577,9 +576,8 @@ export default function Home(theUserData) {
           ipUser: ipUser,
         };
       }
-      else if (provider === 'Fal') {
+      else if (model === 'Fal') {
         body = {
-          provider,
           model_name: modelName,
           prompt: e.target.prompt.value,
           negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
@@ -606,8 +604,9 @@ export default function Home(theUserData) {
 
         return body;
     };
+*/
 
-
+/*
     const handleSubmitOld = async (e) => {
       setIsLoading(true); 
       e.preventDefault();
@@ -630,12 +629,12 @@ export default function Home(theUserData) {
 
       
         
-      const provider = imageProvider; 
-      const modelName = (imageProvider === 'Replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
+      const model = imageModel; 
+      const modelName = (imageModel === 'Replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
       //const provider = 'replicate'; 
       ///const modelName = '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96';
         
-      const body = GetRequestBodyOld(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, provider, modelName);
+      const body = GetRequestBodyOld(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, modelName);
       
         
       setCurrentPredictionStatus("Server warming up...");
@@ -829,7 +828,7 @@ export default function Home(theUserData) {
           }
         }
     };
-    
+    */
 
     const handleSubmit = async (e) => {
       setIsLoading(true);
@@ -842,6 +841,7 @@ export default function Home(theUserData) {
         
       let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       let ipUser = false;
+      let userEmail = '';
         
       if (!theUserData.userData) {
         theLocalUserId = localUserIp;
@@ -849,9 +849,10 @@ export default function Home(theUserData) {
       } else {
         ipUser = false;
         theLocalUserId = theUserData.userData.user_id;
+        userEmail = theUserData.userData.email;
       }
         
-      const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,theUserData.userData.email);
+      const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
       console.log("Generation request Body is: ", body);  
     
       setCurrentPredictionStatus("Server warming up...");
