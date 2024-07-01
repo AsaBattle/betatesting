@@ -59,8 +59,7 @@ export default async function handler(req, res) {
           // Add any necessary authentication headers here
         },
       });
-
-      console.log("Successful API response:", response.data);
+console.log(`[${new Date().toISOString()}] Successful API response:`, response.data);
       res.status(200).json(response.data);
     } catch (error) {
       console.error("Error in /api/generateImage:", error);
