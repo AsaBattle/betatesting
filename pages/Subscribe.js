@@ -3,17 +3,17 @@ import styles from './Subscribe.module.css';
 
 const Subscribe = () => {
     const handleSubscribeClick = () => {
-        window.location.href = 'https://www.fulljourney.ai/subscription?v123459i';
+        window.location.href = 'https://www.craftful.ai/subscription?v123459i';
     };
 
     const handleCreditsClick = () => {
-        window.location.href = 'https://www.fulljourney.ai/credits?v123459i';
+        window.location.href = 'https://www.craftful.ai/credits?v123459i';
     };
     
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h3>FullJourney Studio</h3>
+                <h3>craftful Studio</h3>
             </div>
             <div className={styles.text}>
                 <p>Oops, You are out of credits!</p>

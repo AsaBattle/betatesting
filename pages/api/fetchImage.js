@@ -1,44 +1,49 @@
 import { Storage } from '@google-cloud/storage';
 
-
 export const config = {
-    api: {
-      bodyParser: {
-        sizeLimit: '30mb',
-      },
-    },
-  }
+  api: {
+    responseLimit: false,
+  },
+};
 
-  let storage;
+let storage;
 
-  if (process.env.VERCEL) {
-    // Running on Vercel
-    const serviceAccountKey = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-    storage = new Storage({ credentials: serviceAccountKey });
-  } else {
-    // Running locally
-    storage = new Storage();
-  }
+if (process.env.VERCEL) {
+  const serviceAccountKey = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+  storage = new Storage({ credentials: serviceAccountKey });
+} else {
+  storage = new Storage();
+}
+
+export default async function handler(req, res) {
+  const { imagePath } = req.query;
   
-  export default async function handler(req, res) {
-    const { imagePath } = req.query;
+  const url = new URL(imagePath);
+  const filePath = url.pathname.split('/').slice(2).join('/');
+
+  console.log('Inside fetchImage---- imagePath:', imagePath);
+  console.log('Inside fetchImage---- filePath:', filePath);
+
+  try {
+    const bucket = storage.bucket('fjusers');
+    const file = bucket.file(filePath);
     
-    // Extract the file path from the imagePath URL
-    const url = new URL(imagePath);
-    const filePath = url.pathname.slice(1).split('/').slice(1).join('/'); // Remove the leading '/' and 'fjusers/'
-
-    console.log('Inside fetchImage---- imagePath:', imagePath);
-    console.log('Inside fetchImage---- filePath:', filePath)
-    try {
-      const file = storage.bucket('fjusers').file(filePath);
-      const [metadata] = await file.getMetadata();
-      const [contents] = await file.download();
-  
-      res.setHeader('Content-Type', metadata.contentType);
-      res.send(contents);
-      console.log('I got the image!');
-    } catch (error) {
-      console.error('Error fetching image from GCS:', error);
-      res.status(500).json({ message: 'Failed to fetch image from GCS' });
+    const [exists] = await file.exists();
+    
+    if (!exists) {
+      console.error(`File does not exist: ${filePath}`);
+      return res.status(404).json({ message: 'Image not found' });
     }
+
+    const [fileContents] = await file.download();
+    const [metadata] = await file.getMetadata();
+
+    res.setHeader('Content-Type', metadata.contentType);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.write(fileContents);
+    res.end(); // Explicitly end the response
+  } catch (error) {
+    console.error('Error fetching image from GCS:', error);
+    res.status(500).json({ message: 'Failed to fetch image from GCS' });
   }
+}

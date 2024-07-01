@@ -13,7 +13,7 @@ export default function About() {
   return (
     <div className={styles.container}>
         <div className={styles.header}>
-            <h1>Welcome to FullJourney Studio</h1>
+            <h1>Welcome to CraftFul Studio</h1>
         </div>
     </div>
 );

@@ -134,7 +134,7 @@ const SignUpForm = () => {
             if (session) {
                 // Now make the API call to your Express server
                 try {
-                    const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
+                    const response = await axios.post("https://www.craftful.ai/api/auth/nextauth", {
                         user: {
                             user_id: session.user.id,
                             email: session.user.email,

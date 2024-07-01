@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['fal.media'],
+    domains: ['fal.media', 'storage.cloud.google.com','storage.googleapis.com'],
     remotePatterns: [
       {
         protocol: "https",

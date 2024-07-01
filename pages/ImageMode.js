@@ -150,9 +150,8 @@ export default function Home(theUserData) {
         theLocalUserId = theUserData.userData.email;
       }
 
-      const userId = IPUser ? 'anonymous' : theLocalUserId;
-      const folderPath = `${userId}/generatedImages/`;  // You can change this subfolder name as needed
-    
+      const userId = theLocalUserId; //IPUser ? 'anonymous' : theLocalUserId;
+      const folderPath = `BaseFolder`;
       dispatch(setImageSavePath(folderPath));
       
     }, [theUserData, localUserCredits]);
@@ -368,7 +367,7 @@ export default function Home(theUserData) {
   
           // Finally, redirect the user
           if (redirect)
-            window.location.href = 'https://www.fulljourney.ai/api/auth/logoutnextjs';
+            window.location.href = 'https://www.craftful.ai/api/auth/logoutnextjs';
       } catch (error) {
           console.log("Error during sign out process:", error);
       }
@@ -526,26 +525,18 @@ export default function Home(theUserData) {
         }
     };
 
-    const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, provider, modelName) => {  
+
+    const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser) => {  
       let body = null;
-
-
-      // POST
-      //www.fulljourney.ai/genimage/
-      // prompt, negative_prompt, modelid=0, seed(optional), userid, width, height
-      
-      // geninpaint
-      // also send mask, image
-      // filename in return 
-
-
       const randomSeed = Math.floor(Math.random() * 1000000);
       body = {
         prompt: e.target.prompt.value,
+        foldername: imageSavePath,
         negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
         modelid: 0,
         seed: randomSeed,
         userid: theLocalUserId,
+        ipUser: ipUser,
         width,
         height,
         image: combinedMask ? currentPredictionOutput : null,
@@ -617,7 +608,7 @@ export default function Home(theUserData) {
 
 
     const handleSubmitOld = async (e) => {
-      setIsLoading(true);
+      setIsLoading(true); 
       e.preventDefault();
         
       const combinedMask = await canvasRef.current.getCombinedMask();
@@ -840,7 +831,7 @@ export default function Home(theUserData) {
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
-        
+
       const combinedMask = await canvasRef.current.getCombinedMask();
       const currentPrediction = predictions[index];
       const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
@@ -857,27 +848,90 @@ export default function Home(theUserData) {
         theLocalUserId = theUserData.userData.user_id;
       }
         
-      const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId);
+      const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser);
       
-        
+
       setCurrentPredictionStatus("Server warming up...");
 
-     let response = null;
-     try {
-        response = await axios.post("/api/generateImage", body);
-      } catch (error) {
-        console.error("Error in handleSubmit:", error);
+      let response = null;
+      let attempts = 0;
+      let fileName = null;
+      let prediction = null;
+
+      // we will try to generate the image 3 times before giving up
+      while (attempts < 3) {
+        try {
+          response = await axios.post("/api/generateImage", body);
+          prediction = response.data;
+
+          if (prediction.error) {
+            console.error("Error in /api/generateImage:", prediction.error, " - Retrying...");
+            fileName = null;
+          } else {
+            fileName = prediction.output; // Just use the filename directly
+            break;
+          }
+        } catch (error) {
+          console.error("Error in handleSubmit:", error);
+          setError({ message: "Failed to generate the image. Please try again." });
+          setIsLoading(false);
+          return;
+        }
+        attempts++;
+      }
+      if (fileName === null) {
         setError({ message: "Failed to generate the image. Please try again." });
+        alert("Failed to generate the image. Please try again.");
         setIsLoading(false);
         return;
       }
 
-      const prediction = await response.json();
+      console.log("Response from /api/generateImage:", response.data);
 
-      alert("Prediction response from genimage:", prediction);
-      console.log("Prediction response from genimage:", prediction);
+        /* Need to add the following somewhere
+        if (response.status !== 201) {
+          if (prediction.thecode === 5001) {
+            if (response.status === 404) {
+              return;
+            } else if (response.status === 403) {
+              setError({ message: "You have run out of credits, please subscribe or buy more credits" });
+              setIsLoading(false);
+              router.push('/Subscribe');
+              return;
+            } else if (response.status === 402) {
+              setError({ message: "You have run out of credits, please login to continue" });
+              setIsLoading(false);
+              router.push('/LoginForm');
+              return;
+            }
+          }
+        }
+          */
+      
+    
+      console.log("Filename from genimage:", fileName);
+    
+      const path = `https://storage.googleapis.com/fjusers/${theLocalUserId}/BaseFolder/generatedImages/${fileName}`;
+      const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
+    
+      const formattedPrediction = {
+        id: body.seed.toString(),
+        status: "succeeded",
+        output: [fetchImageUrl],  // Use the fetchImage API route URL
+        created_at: new Date().toISOString(),
+        fsamGenerationCounter: 0,
+        aspectRatioName: currentAspectRatioName,
+        type: 1,
+        input: {
+          prompt: body.prompt,
+        },
+      };
+    
+      setPredictions(predictions.concat([formattedPrediction]));
+      dispatch(setIndex(predictions.length+1));
+    
       setIsLoading(false);
-      return;
+        return;
 
       if (provider === 'Fal') {
         console.log("Prediction response from FAL:", prediction);
@@ -1144,11 +1198,11 @@ export default function Home(theUserData) {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>FullJourney.AI Studio Beta 1.38</title>
+          <title>craftful.AI Studio Beta 1.38</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>FullJourney.AI 0.1 RepOrFal Studio</strong>
+          <strong>craftful.AI 0.1 RepOrFal Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
