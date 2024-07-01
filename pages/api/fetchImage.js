@@ -2,9 +2,11 @@ import { Storage } from '@google-cloud/storage';
 
 export const config = {
   api: {
-    responseLimit: false,
+    //responseLimit: false,
+    sizeLimit: '30mb',  //
   },
 };
+
 
 let storage;
 
