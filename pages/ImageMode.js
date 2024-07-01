@@ -842,14 +842,17 @@ export default function Home(theUserData) {
       let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       let ipUser = false;
       let userEmail = '';
-        
+      let idToUse = theLocalUserId;
+
       if (!theUserData.userData) {
         theLocalUserId = localUserIp;
+        idToUse = localUserIp;  
         ipUser = true;
       } else {
         ipUser = false;
         theLocalUserId = theUserData.userData.user_id;
         userEmail = theUserData.userData.email;
+        idToUse = theUserData.userData.email;
       }
         
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
@@ -914,8 +917,8 @@ export default function Home(theUserData) {
       
     
       console.log("Filename from genimage:", fileName);
-    
-      const path = `https://storage.googleapis.com/fjusers/${theLocalUserId}/BaseFolder/generatedImages/${fileName}`;
+      
+      const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
     
       const formattedPrediction = {
