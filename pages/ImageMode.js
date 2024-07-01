@@ -526,7 +526,7 @@ export default function Home(theUserData) {
     };
 
 
-    const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser) => {  
+    const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, userEmail) => {  
       let body = null;
       const randomSeed = Math.floor(Math.random() * 1000000);
       body = {
@@ -536,6 +536,7 @@ export default function Home(theUserData) {
         modelid: 0,
         seed: randomSeed,
         userid: theLocalUserId,
+        userEmail: userEmail,
         ipUser: ipUser,
         width,
         height,
@@ -847,10 +848,10 @@ export default function Home(theUserData) {
         ipUser = true;
       } else {
         ipUser = false;
-        theLocalUserId = theUserData.userData.email;
+        theLocalUserId = theUserData.userData.user_id;
       }
         
-      const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser);
+      const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,theUserData.userData.email);
       console.log("Generation request Body is: ", body);  
     
       setCurrentPredictionStatus("Server warming up...");
@@ -1204,7 +1205,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>CraftFul.AI 1.0a Studio</strong>
+          <strong>CraftFul.AI 1.0 Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">

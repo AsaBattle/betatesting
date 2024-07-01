@@ -48,6 +48,9 @@ export default async function handler(req, res) {
         requestBody.image = fileContents.toString('base64');
       }
 
+      // copy email to userid, so that the post image generation request saves the image in the correct user folder
+      requestBody.userid = requestBody.userEmail;
+
       // Make the API request
       const apiUrl = requestBody.image && requestBody.mask 
         ? "https://api.craftful.ai/geninpaint" 
