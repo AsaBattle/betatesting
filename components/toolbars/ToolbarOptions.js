@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive, setProvider } from '../../redux/slices/toolSlice';
+import { setBrushSize, setAspectRatio, setZoomWidth, alterZoomWidth, setTolerance, setWandSelector, setTheViewMaskActive, setModel } from '../../redux/slices/toolSlice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { Wand2, Plus, Minus, Square, RectangleHorizontal, RectangleVertical, Undo, Redo, Eraser, Ban, Component } from 'lucide-react';
@@ -39,7 +39,7 @@ function ToolbarOptions (props)  {
   const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
   const magicWandTolerance = useSelector((state) => state.toolbar.tolerance);
   const magicWandSelector = useSelector((state) => state.toolbar.wandSelector);
-  const currentImageProvider = useSelector((state) => state.toolbar.provider);
+  const currentImageModel = useSelector((state) => state.toolbar.model);
 
   const canvasRef = props.canvasRef;
 
@@ -137,8 +137,8 @@ useEffect(() => {
       dispatch(setAspectRatio(aspectRatio)); 
   };
 
-  const handleProviderClick = (provider) => {
-    dispatch(setProvider(provider));
+  const handleModelClick = (model) => {
+    dispatch(setModel(model));
   };
 
   useEffect(() => {
@@ -492,12 +492,12 @@ useEffect(() => {
           style={{ width: '100%', padding: '0 20px' }}
         >
           <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
-          <Typography className="text-center mt-2">Current Provider: {currentImageProvider}</Typography>
+          <Typography className="text-center mt-2">Current Model: {currentImageModel}</Typography>
 
             <Button
               style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
               variant="contained"
-              onClick={() => handleProviderClick('Replicate')}
+              onClick={() => handleModelClick('Replicate')}
               startIcon={<RectangleHorizontal style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
               size="large"
               className={`${styles.button} ${selectedAspectRatio === '16:9' ? styles.selectedButton : ''}`}
@@ -507,7 +507,7 @@ useEffect(() => {
             <Button
               style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
               variant="contained"
-              onClick={() => handleProviderClick('Fal')}
+              onClick={() => handleModelClick('Fal')}
               startIcon={<RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
               size="large"
               className={`${styles.button} ${selectedAspectRatio === '9:16' ? styles.selectedButton : ''}`}

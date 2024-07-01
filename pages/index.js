@@ -7,7 +7,7 @@ export default function About() {
 
   useEffect(() => {
     console.log("Pushing to image mode");
-    console.log('Current Build Commit SHA:', process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA);
+    console.log('The Current Build Commit SHA:', process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA);
     router.push('/ImageMode');
   }, []);
 

@@ -18,11 +18,11 @@ export const toolbarSlice = createSlice({
     userIsLoggedInWithAccount:  false,    // Whether the user is logged in with an account(So if false, the user has no membership or account of any kind)
     canvasDrawingEnabled: false,           // Whether the user can draw on the canvas
     imageSavePath: '',
-    provider: 'Replicate',               // The provider of the prediction model                    
+    model: 'Replicate',               // The Model to use for the prediction                    
   },
   reducers: {
-    setProvider: (state, action) => {
-      state.provider = action.payload;
+    setModel: (state, action) => {
+      state.model = action.payload;
     },
     setImageSavePath: (state, action) => {
       state.imageSavePath = action.payload;
@@ -83,5 +83,5 @@ export const { setCurrentTool, setBrushSize, setAspectRatio, setZoomWidth,
                 alterZoomWidth, setHamburgerVisible, setCursor, setTolerance,
                 setWandSelector, setTheViewMaskActive, setPredictionModelName,
                 setToolbarVisibility, setUserIsLoggedInWithAccount, setCanvasDrawingEnabled,
-                setImageSavePath, setProvider } = toolbarSlice.actions;
+                setImageSavePath, setModel } = toolbarSlice.actions;
 export default toolbarSlice.reducer;
