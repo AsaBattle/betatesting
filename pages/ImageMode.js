@@ -847,7 +847,7 @@ export default function Home(theUserData) {
         ipUser = true;
       } else {
         ipUser = false;
-        theLocalUserId = theUserData.userData.user_id;
+        theLocalUserId = theUserData.userData.email;
       }
         
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser);
