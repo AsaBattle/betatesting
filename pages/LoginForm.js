@@ -65,13 +65,13 @@ const LoginForm = () => {
         console.log("Status: ", status);     
     }, [username, password, status, session]);
 
-    const handleFullJourneyClick = () => {
-        window.location.href = 'https://www.fulljourney.ai/login';
+    const handlecraftfulClick = () => {
+        window.location.href = 'https://www.craftful.ai/login';
     };
 
     const handleDiscordClick = () => {
         console.log("Discord Sign In Clicked");
-        window.location.href = 'https://www.fulljourney.ai/api/auth/nextjsbeta';
+        window.location.href = 'https://www.craftful.ai/api/auth/nextjsbeta';
     };
 
   const handleGoogleSignIn = async () => {
@@ -93,8 +93,8 @@ const LoginForm = () => {
     };
 
     useEffect(() => {
-        const storedUsername = localStorage.getItem('FullJourneyUserName');
-        const storedPassword = localStorage.getItem('FullJourneyPassword');
+        const storedUsername = localStorage.getItem('craftfulUserName');
+        const storedPassword = localStorage.getItem('craftfulPassword');
         
         console.log("Stored Username: ", storedUsername);
         console.log("Stored Password: ", storedPassword);
@@ -152,7 +152,7 @@ const LoginForm = () => {
             if (session) {
                 // Now make the API call to your Express server
                 try {
-                    const response = await axios.post("https://www.fulljourney.ai/api/auth/nextauth", {
+                    const response = await axios.post("https://www.craftful.ai/api/auth/nextauth", {
                         user: {
                             user_id: session.user.id,
                             email: session.user.email,
@@ -187,11 +187,11 @@ const LoginForm = () => {
         setIsChecked(isChecked);
       
         if (isChecked) {
-          localStorage.setItem('FullJourneyUserName', username);
-          localStorage.setItem('FullJourneyPassword', password);
+          localStorage.setItem('craftfulUserName', username);
+          localStorage.setItem('craftfulPassword', password);
         } else {
-          localStorage.removeItem('FullJourneyUserName');
-          localStorage.removeItem('FullJourneyPassword');
+          localStorage.removeItem('craftfulUserName');
+          localStorage.removeItem('craftfulPassword');
         }
       };
 
@@ -214,7 +214,7 @@ const LoginForm = () => {
     return (
         <div className={styles.body}>
             <Head>
-                <title>FullJourney.AI Studio Beta Login</title>
+                <title>craftful.AI Studio Beta Login</title>
                 <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
             </Head>
             <div className={styles.wrapper}>

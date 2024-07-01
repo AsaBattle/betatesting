@@ -126,7 +126,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     // grab the user's current credits
     console.log("CheckAndSubtractCredits --- Ip address User id:", userID);
     try {
-        response = await axios.post('https://www.fulljourney.ai/api/auth/getFreeUserCredits', {
+        response = await axios.post('https://www.craftful.ai/api/auth/getFreeUserCredits', {
         ipAddress: userID, 
       });
 
@@ -140,7 +140,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
       return {worked: false, reasonCode: 7, reason: "IPUser - Not enough credits for image."};
 
     try {
-      response = await axios.post(`https://www.fulljourney.ai/api/auth/modifyfreeusercredits`, {
+      response = await axios.post(`https://www.craftful.ai/api/auth/modifyfreeusercredits`, {
         ipAddress: userID,
         modifyCreditsBy: -creditsToSubtract,
       });
@@ -327,7 +327,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     // grab the user's current credits
     console.log("CheckAndSubtractCredits --- Ip address User id:", userID);
     try {
-      response = await axios.post('https://www.fulljourney.ai/api/auth/getFreeUserCredits', {
+      response = await axios.post('https://www.craftful.ai/api/auth/getFreeUserCredits', {
         ipAddress: userID,
       });
 
@@ -341,7 +341,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
       return { worked: false, reasonCode: 7, reason: "IPUser - Not enough credits for image." };
 
     try {
-      response = await axios.post(`https://www.fulljourney.ai/api/auth/modifyfreeusercredits`, {
+      response = await axios.post(`https://www.craftful.ai/api/auth/modifyfreeusercredits`, {
         ipAddress: userID,
         modifyCreditsBy: -creditsToSubtract,
       });
@@ -524,7 +524,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     // grab the user's current credits
     console.log("CheckAndSubtractCredits --- Ip address User id:", userID);
     try {
-      response = await axios.post('https://www.fulljourney.ai/api/auth/getFreeUserCredits', {
+      response = await axios.post('https://www.craftful.ai/api/auth/getFreeUserCredits', {
         ipAddress: userID,
       });
 
@@ -538,7 +538,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
       return { worked: false, reasonCode: 7, reason: "IPUser - Not enough credits for image." };
 
     try {
-      response = await axios.post(`https://www.fulljourney.ai/api/auth/modifyfreeusercredits`, {
+      response = await axios.post(`https://www.craftful.ai/api/auth/modifyfreeusercredits`, {
         ipAddress: userID,
         modifyCreditsBy: -creditsToSubtract,
       });
@@ -736,7 +736,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     // grab the user's current credits
     console.log("CheckAndSubtractCredits --- Ip address User id:", userID);
     try {
-      response = await axios.post('https://www.fulljourney.ai/api/auth/getFreeUserCredits', {
+      response = await axios.post('https://www.craftful.ai/api/auth/getFreeUserCredits', {
         ipAddress: userID,
       });
 
@@ -750,7 +750,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
       return { worked: false, reasonCode: 7, reason: "IPUser - Not enough credits for image." };
 
     try {
-      response = await axios.post(`https://www.fulljourney.ai/api/auth/modifyfreeusercredits`, {
+      response = await axios.post(`https://www.craftful.ai/api/auth/modifyfreeusercredits`, {
         ipAddress: userID,
         modifyCreditsBy: -creditsToSubtract,
       });

@@ -30,6 +30,8 @@ export default async function handler(req, res) {
       const [files] = await bucket.getFiles({ prefix: `${userId}/` });
       //const [files] = await bucket.getFiles({ prefix: `anon/` });
       
+      console.log('Files:', files);
+
       const fileDetails = await Promise.all(
         files.map(async (file) => {
           const [url] = await file.getSignedUrl({

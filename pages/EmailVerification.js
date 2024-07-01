@@ -30,10 +30,10 @@ const EmailVerification = () => {
         <div className={styles.body}>
             <div className={styles.wrapper}>
                 <div className={styles.logo}>
-                    <img src="/favicon.png" alt="FullJourney.ai Logo" />
+                    <img src="/favicon.png" alt="craftful.ai Logo" />
                 </div>
                 <h1 className={styles['poppins-bold']}>Verify your email address</h1>
-                <p className={styles['poppins-regular']}>In order to start using your FullJourney.ai account, you need to confirm your email address.</p>
+                <p className={styles['poppins-regular']}>In order to start using your craftful.ai account, you need to confirm your email address.</p>
                 <button className={styles.verifyButton} onClick={SendVerificationEmail}>
                    Send Email Verification
                 </button>
