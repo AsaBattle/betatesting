@@ -958,22 +958,21 @@ export default function Home(theUserData) {
   }
 
 
-      // Just tried the handleimage... but not sure if its working or not(wouldn't load in time before jj)
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
-      let updatedImageUrl = null;
-      convertImageUrlToDataUrl(fetchImageUrl).then((dataUrl) => {
-        handleImageAsFirstPrediction(dataUrl, currentAspectRatioName);
-        setIsLoading(false);
-        return;
-      });
+     // let updatedImageUrl = null;
+     // convertImageUrlToDataUrl(fetchImageUrl).then((dataUrl) => {
+     //   handleImageAsFirstPrediction(dataUrl, currentAspectRatioName);
+     //   setIsLoading(false);
+     //   return;
+     // });
 
      
     
       const formattedPrediction = {
         id: body.seed.toString(),
         status: "succeeded",
-        output: [updatedImageUrl],  // Use the fetchImage API route URL
+        output: [fetchImageUrl],  // Use the fetchImage API route URL
         created_at: new Date().toISOString(),
         fsamGenerationCounter: 0,
         aspectRatioName: currentAspectRatioName,
