@@ -85,7 +85,7 @@ export default function Home(theUserData) {
 
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
-      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+      console.log("I received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
   
       const convertImageUrlToDataUrl = async (imageUrl) => {
         try {
@@ -1228,11 +1228,11 @@ export default function Home(theUserData) {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>CraftFul.ai Studio V1.0</title>
+          <title>CraftFul.ai Studio V1.0a</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>CraftFul.AI 1.0 Studio</strong>
+          <strong>CraftFul.AI 1.0a Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
