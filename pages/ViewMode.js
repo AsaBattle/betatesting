@@ -1,3 +1,4 @@
+
 // ViewMode.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -9,11 +10,12 @@ export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
   const router = useRouter();
 
+
   useEffect(() => {
     //console.log("theUserData is: ", theUserData);
     console.log("theUserData.user_id is: ", theUserData.userData)
 
-    const fetchFiles = async () => {
+  const fetchFiles = async () => {
       try {
         const response = await axios.get(`/api/files?userId=${theUserData.userData.email}`);
         setFiles(response.data.files);
@@ -24,6 +26,7 @@ export default function ViewMode( theUserData ) {
 
     fetchFiles();
   }, [theUserData]);
+  
 
   const handleImageClick = async (file) => {
     try {
@@ -37,6 +40,7 @@ export default function ViewMode( theUserData ) {
       console.error('Error handling image click:', error);
     }
   };
+ 
 
   const calculateAspectRatio = (width, height) => {
     // Define your aspect ratios and names here
@@ -44,8 +48,8 @@ export default function ViewMode( theUserData ) {
       '1:1': 1,
       '16:9': 16 / 9,
       '9:16': 9 / 16,
-      '4:3': 4 / 3,
-      '3:4': 3 / 4,
+      '43': 4 / 3,
+      '34': 3 / 4,
     };
 
     let closestAspectRatioName = '1:1';
@@ -77,6 +81,7 @@ export default function ViewMode( theUserData ) {
     </div>
   );
 }
+
 
 export async function getServerSideProps(context) {
   const { req, res } = context;
