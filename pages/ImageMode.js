@@ -958,12 +958,14 @@ export default function Home(theUserData) {
   }
 
 
+      // Just tried the handleimage... but not sure if its working or not(wouldn't load in time before jj)
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
       let updatedImageUrl = null;
       convertImageUrlToDataUrl(fetchImageUrl).then((dataUrl) => {
-        console.log("Data URL is: ", dataUrl);
-        updatedImageUrl = dataUrl;
+        handleImageAsFirstPrediction(dataUrl, currentAspectRatioName);
+        setIsLoading(false);
+        return;
       });
 
      
