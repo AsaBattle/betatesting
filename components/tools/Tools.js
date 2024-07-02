@@ -341,9 +341,9 @@ export function getResolution(aspectRatioName) {
     case '1:1':
       return { width: 1024, height: 1024, displayWidth: 512 };
     case '16:9':
-      return { width: 1024, height: 576, displayWidth: 512 };
+      return { width: 1024, height: 512, displayWidth: 512 };
     case '9:16':
-      return { width: 576, height: 1024, displayWidth: 348 };
+      return { width: 512, height: 1024, displayWidth: 348 };
     case '4:3':
       return { width: 1024, height: 768, displayWidth: 512 };
     case '3:4':
