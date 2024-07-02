@@ -830,6 +830,23 @@ export default function Home(theUserData) {
     };
     */
 
+
+    const convertImageUrlToDataUrl = async (imageUrl) => {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } catch (error) {
+        console.error("Error converting image URL to data URL: ", error);
+        return null;
+      }
+    };
+
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
@@ -943,11 +960,18 @@ export default function Home(theUserData) {
 
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
+      let updatedImageUrl = null;
+      convertImageUrlToDataUrl(fetchImageUrl).then((dataUrl) => {
+        console.log("Data URL is: ", dataUrl);
+        updatedImageUrl = dataUrl;
+      });
+
+     
     
       const formattedPrediction = {
         id: body.seed.toString(),
         status: "succeeded",
-        output: [fetchImageUrl],  // Use the fetchImage API route URL
+        output: [updatedImageUrl],  // Use the fetchImage API route URL
         created_at: new Date().toISOString(),
         fsamGenerationCounter: 0,
         aspectRatioName: currentAspectRatioName,
