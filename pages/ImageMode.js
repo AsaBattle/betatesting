@@ -1257,7 +1257,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>CraftFul.AI 1.0 Studio</strong>
+          <strong>CraftFul.AI Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
