@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
+    unoptimized: true,
     domains: ['fal.media', 'storage.cloud.google.com', 'storage.googleapis.com'],
     remotePatterns: [
       {
