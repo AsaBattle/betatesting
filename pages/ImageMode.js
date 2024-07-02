@@ -962,8 +962,9 @@ export default function Home(theUserData) {
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
       let updatedImageUrl = null;
       convertImageUrlToDataUrl(fetchImageUrl).then((dataUrl) => {
-        console.log("Data URL is: ", dataUrl);
-        updatedImageUrl = dataUrl;
+        handleImageAsFirstPrediction(dataUrl, currentAspectRatioName);
+        setIsLoading(false);
+        return;
       });
 
      

@@ -15,7 +15,7 @@ const AuthService = {
 
     const cookies = req.headers.cookie || '';
     try {
-      const response = await axios.get('https://www.fulljourney.ai/api/auth/', {
+      const response = await axios.get('https://www.craftful.ai/api/auth/', {
         headers: { Cookie: cookies },
         withCredentials: true,
         timeout: 5000, // Timeout set to 5000 milliseconds (5 seconds)
@@ -53,7 +53,7 @@ const AuthService = {
   getFreeUserCredits: async ( ipAddress ) => {
     console.log('Getting user credits for ip address:', ipAddress);
     try {
-      const response = await axios.post('https://www.fulljourney.ai/api/auth/getFreeUserCredits', {
+      const response = await axios.post('https://www.craftful.ai/api/auth/getFreeUserCredits', {
         ipAddress: ipAddress, 
       });
 
