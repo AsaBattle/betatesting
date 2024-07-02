@@ -85,8 +85,8 @@ export default function Home(theUserData) {
 
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
-      console.log("I received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
-  
+      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+    
       const convertImageUrlToDataUrl = async (imageUrl) => {
         try {
           const response = await fetch(imageUrl);
@@ -102,7 +102,7 @@ export default function Home(theUserData) {
           return null;
         }
       };
-  
+    
       if (imageUrl && aspectRatioName) {
         console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
         convertImageUrlToDataUrl(imageUrl)
@@ -830,6 +830,23 @@ export default function Home(theUserData) {
     };
     */
 
+
+    const convertImageUrlToDataUrl = async (imageUrl) => {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } catch (error) {
+        console.error("Error converting image URL to data URL: ", error);
+        return null;
+      }
+    };
+
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
@@ -943,11 +960,18 @@ export default function Home(theUserData) {
 
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
+      let updatedImageUrl = null;
+      convertImageUrlToDataUrl(fetchImageUrl).then((dataUrl) => {
+        console.log("Data URL is: ", dataUrl);
+        updatedImageUrl = dataUrl;
+      });
+
+     
     
       const formattedPrediction = {
         id: body.seed.toString(),
         status: "succeeded",
-        output: [fetchImageUrl],  // Use the fetchImage API route URL
+        output: [updatedImageUrl],  // Use the fetchImage API route URL
         created_at: new Date().toISOString(),
         fsamGenerationCounter: 0,
         aspectRatioName: currentAspectRatioName,
@@ -1228,11 +1252,11 @@ export default function Home(theUserData) {
       </div>
       <div className={styles.content}>
         <Head>
-          <title>CraftFul.ai Studio V1.0a</title>
+          <title>CraftFul.ai Studio V1.0</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>CraftFul.AI 1.0a Studio</strong>
+          <strong>CraftFul.AI 1.0 Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
