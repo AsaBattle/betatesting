@@ -86,7 +86,7 @@ export default function Home(theUserData) {
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
       console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
-    
+  
       const convertImageUrlToDataUrl = async (imageUrl) => {
         try {
           const response = await fetch(imageUrl);
@@ -102,7 +102,7 @@ export default function Home(theUserData) {
           return null;
         }
       };
-    
+  
       if (imageUrl && aspectRatioName) {
         console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
         convertImageUrlToDataUrl(imageUrl)
