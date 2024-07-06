@@ -34,11 +34,10 @@ export default async function handler(req, res) {
       // Check credits
       const details = await CheckAndSubtractCredits(requestBody.userid, requestBody.ipUser, 1);
       if (details.worked === false) {
-        // Handle credit check failure
-        return res.status(details.reasonCode === 7 ? 402 : details.reasonCode === 6 ? 403 : 404)
-          .json({ detail: details.reason, thecode: 5001 });
+        console.log("Credit check failed:", details);
+        const status = details.reasonCode === 7 ? 402 : details.reasonCode === 6 ? 403 : 404;
+        return res.status(200).json({ status: status, detail: details.reason, thecode: 5001 });
       }
-
       console.log("Made it past the credit check.");
 
       // Fetch the image data if it's a URL to our fetchImage route
@@ -121,8 +120,9 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
         console.error('CheckAndSubtractCredits --- Error getting user credits:', error);
         return { worked: false, reasonCode: 4, reason: "error retrieving ipuser credits" };
       }
-     // if (currentCredits <= 0)
-      //  return { worked: false, reasonCode: 7, reason: "IPUser - Not enough credits for image." };
+   
+       if (currentCredits <= 0)
+        return { worked: false, reasonCode: 7, reason: "IPUser - Not enough credits for image." };
   
       try {
         response = await axios.post(`https://www.craftful.ai/api/auth/modifyfreeusercredits`, {
