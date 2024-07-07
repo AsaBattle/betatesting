@@ -330,7 +330,6 @@ export default function Home(theUserData) {
 
     // updates localUserCredits to the current number of credits of the user
     const updateLocalUserCredits = async () => {
-      console.log("Updating local user credits...");
       let theLocalUserId;
 
       if (!theUserData.userData) {
@@ -338,6 +337,9 @@ export default function Home(theUserData) {
       } else {
         theLocalUserId = theUserData.userData.user_id;
       }
+
+      console.log("Updating local user credits for user: ", theLocalUserId, "...");
+
 
       try {
         const userCredits = await axios.get("/api/user/getCredits", {
@@ -526,7 +528,11 @@ export default function Home(theUserData) {
         }
     };
 
-
+/*
+    0 - Dreamshaper
+    1 - RealVis xl 4.0
+    
+*/
     const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, userEmail) => {  
       let body = null;
       const randomSeed = Math.floor(Math.random() * 1000000);
@@ -543,6 +549,7 @@ export default function Home(theUserData) {
         height,
         image: combinedMask ? currentPredictionOutput : null,
         mask: combinedMask,
+        noCheck: true,
       };
 
       return body;
@@ -651,12 +658,6 @@ export default function Home(theUserData) {
       }
 
       console.log("Response from /api/generateImage:", response.data);
-` `
-          console.log("Response is: ", response);
-          setIsLoading(false);
-          return;
-     
-    
       console.log("Filename from genimage:", fileName);
       const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
 
@@ -671,6 +672,7 @@ export default function Home(theUserData) {
       setIsLoading(false);
       return;
     }
+
     console.log('Image exists in the bucket:', data.message);
   } catch (error) {
     console.error('Error checking if image exists in the bucket:', error);
@@ -705,10 +707,10 @@ export default function Home(theUserData) {
     
       setPredictions(predictions.concat([formattedPrediction]));
       dispatch(setIndex(predictions.length+1));
+      setIsLoading(false);
 
       await updateLocalUserCredits();
     
-      setIsLoading(false);
         return;
 
       if (provider === 'Fal') {
