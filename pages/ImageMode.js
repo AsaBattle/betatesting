@@ -723,7 +723,7 @@ export default function Home(theUserData) {
       dispatch(setIndex(predictions.length+1));
       setIsLoading(false);
 
-      await updateLocalUserCredits();
+      //await updateLocalUserCredits();
     
         return;
 
