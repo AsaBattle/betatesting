@@ -43,7 +43,7 @@ export default function Home(theUserData) {
     const currentImage = useSelector((state) => state.history.currentImage);
     const [userData, setUserData] = useState(null);
     const router = useRouter();
-    const placeholderHandler = () => console.log('Handler not implemented yet.');
+    const placeholderHandler = () => alogger('Handler not implemented yet.');
     const undoStack = useSelector((state) => state.history.undoStack);
     const [isLoading, setIsLoading] = useState(false);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
@@ -87,7 +87,7 @@ export default function Home(theUserData) {
 
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
-      console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+      alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
     
       const convertImageUrlToDataUrl = async (imageUrl) => {
         try {
@@ -106,7 +106,7 @@ export default function Home(theUserData) {
       };
     
       if (imageUrl && aspectRatioName) {
-        console.log("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+        alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
         convertImageUrlToDataUrl(imageUrl)
           .then((dataUrl) => {
             if (dataUrl) {
@@ -126,15 +126,15 @@ export default function Home(theUserData) {
          setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname} Credits: ${theUserData.userData.credits}`);
         
       } else {
-        console.log("theUserData is not available, so using ip address to get credits: ", localUserCredits);
+        alogger("theUserData is not available, so using ip address to get credits: ", localUserCredits);
         setUserLoginNameAndCredits(`FREE Credits Remaining: ${localUserCredits}`);
       }
     }
     
 
     useEffect(() => {
-      console.log("theUserData changed or component just mounted - theUserData is: ", theUserData);
-      console.log("allowing use rto draw to canvas is: ", canDrawToCanvas);
+      alogger("theUserData changed or component just mounted - theUserData is: ", theUserData);
+      alogger("allowing use rto draw to canvas is: ", canDrawToCanvas);
       checkUserLoginAndCreditsForChange();
       
       // This is where we will make a call to our express api to get the user's default gcs bucket path(the save path for their images)
@@ -160,7 +160,7 @@ export default function Home(theUserData) {
 
 
     useEffect(() => {      
-    console.log("Can draw to canvas is: ", canDrawToCanvas);
+    alogger("Can draw to canvas is: ", canDrawToCanvas);
     }, [canDrawToCanvas]);
     
 
@@ -192,14 +192,14 @@ export default function Home(theUserData) {
     };
 
     const handleCanvasSizeChange = (size) => {
-      console.log('Received Canvas Size:', size); // Log the size received from Canvas
+      alogger('Received Canvas Size:', size); // Log the size received from Canvas
       setCanvasSize(size); // Callback to receive canvas size
     };      
 
     const updateCanvasPosition = () => {
         // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
 
-         //console.log("1hamburgerVisible is: " + hamburgerVisible);
+         //alogger("1hamburgerVisible is: " + hamburgerVisible);
        
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
@@ -231,13 +231,13 @@ export default function Home(theUserData) {
 
 
     const FSAMTest = async () => {
-      console.log("FSAMTest is being called");
+      alogger("FSAMTest is being called");
       setCurrentPredictionStatus( "Server warming up...");
 
       // The following code makes a call to our fsam api at /api/fsam
       if (theupdatedPrediction === null)
         {
-          console.log("updatedPrediction is null");
+          alogger("updatedPrediction is null");
           return;
         }
 
@@ -246,7 +246,7 @@ export default function Home(theUserData) {
       const prediction = null;
       setIsLoading(true);
 
-      console.log("image_url is: ", image_url);
+      alogger("image_url is: ", image_url);
       try {
         const fsamRequestBody = {
           iou: 0.9,
@@ -275,7 +275,7 @@ export default function Home(theUserData) {
       } catch (error) {
         console.error('Error in handleSubmission:', error);
       }
-      console.log("Initial prediction returned is: ", prediction);
+      alogger("Initial prediction returned is: ", prediction);
 
 
       while (prediction.status !== "succeeded" && prediction.status !== "failed") {
@@ -286,7 +286,7 @@ export default function Home(theUserData) {
         if (response.status !== 200) {
           setErrorMessage( updatedPrediction.detail );
           setIsLoading(false);
-          console.log("Prediction error detail is: ", updatedPrediction.detail);
+          alogger("Prediction error detail is: ", updatedPrediction.detail);
           return;
         }
     
@@ -295,7 +295,7 @@ export default function Home(theUserData) {
     
       
         if (updatedPrediction.status === "succeeded") {
-          console.log("Success with mask image: ", updatedPrediction.output);
+          alogger("Success with mask image: ", updatedPrediction.output);
 
           let updatedPredictions;
           let indexToUpdate;
@@ -312,14 +312,14 @@ export default function Home(theUserData) {
           });
           setIsLoading(false); 
           
-          console.log("updatedPredictions: " + updatedPredictions);
-          console.log("updatedPrediction: " + updatedPrediction.id);
+          alogger("updatedPredictions: " + updatedPredictions);
+          alogger("updatedPrediction: " + updatedPrediction.id);
 
 
 
           // Call a function to handle the successful prediction
           //thettheUpdatedPrediction(updatedPrediction);
-          console.log("done with magic wand mask processing! index: ", indexToUpdate);
+          alogger("done with magic wand mask processing! index: ", indexToUpdate);
           break;
         } else if (updatedPrediction.status === "failed") {
           setErrorMessage("The Prediction failed");
@@ -339,14 +339,14 @@ export default function Home(theUserData) {
         theLocalUserId = theUserData.userData.user_id;
       }
 
-      console.log("Updating local user credits for user: ", theLocalUserId, "...");
+      alogger("Updating local user credits for user: ", theLocalUserId, "...");
 
 
       try {
         const userCredits = await axios.get("/api/user/getCredits", {
           userId: theLocalUserId,
         });
-        console.log("User credits are: ", userCredits);
+        alogger("User credits are: ", userCredits);
         setLocalUserCredits(userCredits);
       } catch (error) {
         console.error("Error updating local user credits:", error);
@@ -359,23 +359,23 @@ export default function Home(theUserData) {
     };
 
     const handleLogin = async () => {
-      console.log("Logging in the user...");
+      alogger("Logging in the user...");
 
       await handleLogout(false);
       router.push('/LoginForm');
     };
 
     const handleLogout = async (redirect = false) => {
-      console.log("Logging out the user...");
+      alogger("Logging out the user...");
   
       try {
           // Logout from NextAuth first
           await nextAuthSignOut({ redirect: false });
-          console.log("NextAuth sign-out successful.");
+          alogger("NextAuth sign-out successful.");
   
           // Then logout from Firebase
           await signOut(fauth);
-          console.log("Firebase Sign-out successful.");
+          alogger("Firebase Sign-out successful.");
   
           // Clear the user data cookie by setting an expired cookie
           const expiredUserDataCookie = serialize('user', '', {
@@ -388,13 +388,13 @@ export default function Home(theUserData) {
   
           // Set the expired cookie in the document
           document.cookie = expiredUserDataCookie;
-          console.log("User cookie cleared.");
+          alogger("User cookie cleared.");
   
           // Finally, redirect the user
           if (redirect)
             window.location.href = 'https://www.craftful.ai/api/auth/logoutnextjs';
       } catch (error) {
-          console.log("Error during sign out process:", error);
+          alogger("Error during sign out process:", error);
       }
   };
 
@@ -405,10 +405,10 @@ export default function Home(theUserData) {
       // Setup the current tool
       const currentTool = tools.find(tool => tool.name === currentToolName);
       if (currentTool) {
-          console.log("ImageMode.js: Setting up the current tool: ", currentToolName);
+          alogger("ImageMode.js: Setting up the current tool: ", currentToolName);
           currentTool.setup(dispatch);
       } else {
-          console.log("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
+          alogger("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
       }
 
       // Get ip address
@@ -416,14 +416,14 @@ export default function Home(theUserData) {
       // this returns their credits based on ip address
       // we store this in its localUserCredits var
       const getIP = async () => {
-          console.log("getIP is Getting IP address...");
+          alogger("getIP is Getting IP address...");
           const response = await fetch('https://api.ipify.org?format=json');
           const data = await response.json();
-          //console.log("Response from ipify.org is: ", data);
+          //alogger("Response from ipify.org is: ", data);
           setLocalUserIp(data.ip);
-          //console.log("Yours IP address is: ", data.ip);
+          //alogger("Yours IP address is: ", data.ip);
           const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
-          //console.log("User credits are: ", userCredits);
+          //alogger("User credits are: ", userCredits);
           setLocalUserCredits(userCredits);
       }
       getIP();
@@ -465,7 +465,7 @@ export default function Home(theUserData) {
     // ViewMode calls this function when the user clicks on an image in their bucket that they want to edit/play with
     //  the image data URL and aspect ratio name(see toolSlice) calculated from the image's dimensions
     const handleImageAsFirstPrediction = (imageDataUrl, aspectRatio) => {
-      console.log("handleImageAsFirstPrediction called with image data URL: ", imageDataUrl, " and aspect ratio: ", aspectRatio);
+      alogger("handleImageAsFirstPrediction called with image data URL: ", imageDataUrl, " and aspect ratio: ", aspectRatio);
       const newPrediction = {
         id: 'local-image', // or generate a unique ID as needed
         output: [imageDataUrl],
@@ -474,7 +474,7 @@ export default function Home(theUserData) {
       };
 
       setPredictions([newPrediction, ...predictions]);
-     // console.log("setting index to predictions.length: " + predictions.length);
+     // alogger("setting index to predictions.length: " + predictions.length);
       dispatch(setIndex(predictions.length+1));
 
       settheUpdatedPrediction(newPrediction);
@@ -517,14 +517,14 @@ export default function Home(theUserData) {
       // less than zero because we just got to 0 after subtracting, so we count 0 as an image
       if (newCredits < 0)
         {
-          console.log("(newCredits < 0");
+          alogger("(newCredits < 0");
           newCredits = 0;
           localStorage.setItem('imageTokens', newCredits);
           return false;
         }
       else
         {
-          console.log("(newCredits >= 0");
+          alogger("(newCredits >= 0");
           return true;
         }
     };
@@ -591,9 +591,9 @@ export default function Home(theUserData) {
         theLocalUserId = localUserIp;
         idToUse = localUserIp;  
         ipUser = true;
-        console.log("There was no USERDATA to load, so treating this call as a local user");
+        alogger("There was no USERDATA to load, so treating this call as a local user");
       } else {
-        console.log("There is USERDATA!!!, so using that and the userEmail");
+        alogger("There is USERDATA!!!, so using that and the userEmail");
        
         ipUser = false;
         theLocalUserId = theUserData.userData.user_id;
@@ -601,18 +601,16 @@ export default function Home(theUserData) {
         idToUse = theUserData.userData.email;
       }
 
-      alogger("Logger TEST LOGGER TEST");
-      alogger("Here it is again again!!!");
 
       if (theUserData.userData)
-        console.log(" theUserData.userData.user_id is: ", theUserData.userData.user_id);
+        alogger(" theUserData.userData.user_id is: ", theUserData.userData.user_id);
       else
        {
-        console.log("theUserData.userData is null, so using localUserIp: ", localUserIp);
-        console.log("theUserData.userData.email is: ", theUserData.userData.email);
+        alogger("theUserData.userData is null, so using localUserIp: ", localUserIp);
+        alogger("theUserData.userData.email is: ", theUserData.userData.email);
        }
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
-      //console.log("Generation request Body is: ", body);  
+      //alogger("Generation request Body is: ", body);  
     
       setCurrentPredictionStatus("Server warming up...");
 
@@ -671,8 +669,8 @@ export default function Home(theUserData) {
         return;
       }
 
-      console.log("Response from /api/generateImage:", response.data);
-      console.log("Filename from genimage:", fileName);
+      alogger("Response from /api/generateImage:", response.data);
+      alogger("Filename from genimage:", fileName);
       const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
 
      
@@ -687,7 +685,7 @@ export default function Home(theUserData) {
       return;
     }
 
-    console.log('Image exists in the bucket:', data.message);
+    alogger('Image exists in the bucket:', data.message);
   } catch (error) {
     console.error('Error checking if image exists in the bucket:', error);
     setError({ message: 'Failed to check if the image exists in the bucket. Please try again.' });
@@ -728,7 +726,7 @@ export default function Home(theUserData) {
         return;
 
       if (provider === 'Fal') {
-        console.log("Prediction response from FAL:", prediction);
+        alogger("Prediction response from FAL:", prediction);
         
 
         const formattedPrediction = {
@@ -750,7 +748,7 @@ export default function Home(theUserData) {
     
         // Save the image to the user's bucket if the user is logged in
         if (!ipUser) {
-          console.log("User is logged in, so saving image to: ", imageSavePath);
+          alogger("User is logged in, so saving image to: ", imageSavePath);
           const imageUrl = formattedPrediction.output[0];
           
           try {
@@ -776,14 +774,14 @@ export default function Home(theUserData) {
               });
     
               const data = await uploadResponse.json();
-              console.log(data.message);
+              alogger(data.message);
             };
           } catch (error) {
             console.error('Error uploading image:', error);
             setError({ message: 'Failed to upload the generated image. Please try again.' });
           }
         } else {
-          console.log("User not logged in, so not saving image!");
+          alogger("User not logged in, so not saving image!");
         }
     
         dispatch(setIndex(predictions.length + 1));
@@ -795,7 +793,7 @@ export default function Home(theUserData) {
       } 
       
       if (provider === 'Replicate'){
-        console.log("Provider is Replicate so Prediction response from Replicate:", prediction);
+        alogger("Provider is Replicate so Prediction response from Replicate:", prediction);
         
         prediction.fsamGenerationCounter = 0;
         if (response.status !== 201) {
@@ -847,9 +845,9 @@ export default function Home(theUserData) {
             
                   // Don't save the image if the user is not logged in
                   if (ipUser === true) {
-                    console.log("User not logged in, so not saving image!");
+                    alogger("User not logged in, so not saving image!");
                   } else {
-                    console.log("User is logged in, so saving image to: ", imageSavePath);
+                    alogger("User is logged in, so saving image to: ", imageSavePath);
                     // Fetch image as a Blob and convert it to base64
                     fetch(updatedPrediction.output[0])
                       .then(response => response.blob())
@@ -875,7 +873,7 @@ export default function Home(theUserData) {
                           })
                           .then(response => response.json())
                           .then(data => {
-                            console.log(data.message);
+                            alogger(data.message);
                           })
                           .catch(error => {
                             console.error('Error uploading image:', error);
@@ -1077,7 +1075,7 @@ export default function Home(theUserData) {
       const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
 
       if (userData) {
-        console.log("UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
+        alogger("UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
         // The user is authenticated, pass the user data as props
         return { props: { userData } };
       }
