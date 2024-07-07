@@ -10,6 +10,7 @@ import { tools } from '../tools/Tools';
 import { FSAMProcessor } from '../Util/Utilities';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
 import Tooltip from '../tooltip';
+const alogger = require('../../utils/alogger').default;
 
 
 // This function is a custom hook that returns the window width
@@ -133,6 +134,8 @@ useEffect(() => {
 
 
   const handleAspectRatioClick = (aspectRatio) => {
+
+    alogger("The predictions list is: ", props.predictions);
     setSelectedAspectRatio(aspectRatio);
       dispatch(setAspectRatio(aspectRatio)); 
   };
