@@ -602,6 +602,7 @@ export default function Home(theUserData) {
       }
 
       alogger("Logger TEST LOGGER TEST");
+      alogger("Here it is again again!!!");
 
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
       //console.log("Generation request Body is: ", body);  
