@@ -26,7 +26,15 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const requestBody = req.body;
-      console.log("Request body:", JSON.stringify(requestBody, null, 2));
+      // Create a shallow copy of requestBody
+      const sanitizedBody = { ...requestBody };
+      
+      // Delete the image and mask properties
+      delete sanitizedBody.image;
+      delete sanitizedBody.mask;
+      
+      // Log the sanitized requestBody
+      console.log("Request body without image or mask:", JSON.stringify(sanitizedBody, null, 2));
 
       if (requestBody.noCheck === false) {
         const details = await CheckAndSubtractCredits(requestBody.userid, requestBody.ipUser, 1);

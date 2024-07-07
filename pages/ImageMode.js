@@ -20,6 +20,7 @@ import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
+const alogger = require('../utils/alogger').default;
 
 
 import AuthService from '../services/authService';
@@ -531,7 +532,7 @@ export default function Home(theUserData) {
 /*
     0 - Dreamshaper
     1 - RealVis xl 4.0
-    
+
 */
     const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, userEmail) => {  
       let body = null;
@@ -590,15 +591,20 @@ export default function Home(theUserData) {
         theLocalUserId = localUserIp;
         idToUse = localUserIp;  
         ipUser = true;
+        console.log("There was no USERDATA to load, so treating this call as a local user");
       } else {
+        console.log("There is USERDATA!!!, so using that and the userEmail");
+       
         ipUser = false;
         theLocalUserId = theUserData.userData.user_id;
         userEmail = theUserData.userData.email;
         idToUse = theUserData.userData.email;
       }
 
+      alogger("Logger TEST LOGGER TEST");
+
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
-      console.log("Generation request Body is: ", body);  
+      //console.log("Generation request Body is: ", body);  
     
       setCurrentPredictionStatus("Server warming up...");
 
