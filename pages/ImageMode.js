@@ -20,6 +20,7 @@ import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
+const alogger = require('../utils/alogger').default;
 
 
 import AuthService from '../services/authService';
@@ -32,7 +33,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home(theUserData) { 
     const [predictions, setPredictions] = useState([]);
-    const [error, setError] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [errorRoute, setErrorRoute] = useState(null);
     const [maskImage, setMaskImage] = useState(null);
     const [userUploadedImage, setUserUploadedImage] = useState(null);
     const currentToolName = useSelector((state) => state.toolbar.currentToolName);
@@ -155,7 +157,6 @@ export default function Home(theUserData) {
       dispatch(setImageSavePath(folderPath));
       
     }, [theUserData, localUserCredits]);
-
 
 
     useEffect(() => {      
@@ -283,7 +284,7 @@ export default function Home(theUserData) {
         const updatedPrediction = await response.json();
     
         if (response.status !== 200) {
-          setError({ message: updatedPrediction.detail });
+          setErrorMessage( updatedPrediction.detail );
           setIsLoading(false);
           console.log("Prediction error detail is: ", updatedPrediction.detail);
           return;
@@ -321,13 +322,37 @@ export default function Home(theUserData) {
           console.log("done with magic wand mask processing! index: ", indexToUpdate);
           break;
         } else if (updatedPrediction.status === "failed") {
-          setError({ message: "The Prediction failed" });
+          setErrorMessage("The Prediction failed");
           setIsLoading(false);  
           break;
         }
       }
     };
 
+    // updates localUserCredits to the current number of credits of the user
+    const updateLocalUserCredits = async () => {
+      let theLocalUserId;
+
+      if (!theUserData.userData) {
+        theLocalUserId = localUserIp;
+      } else {
+        theLocalUserId = theUserData.userData.user_id;
+      }
+
+      console.log("Updating local user credits for user: ", theLocalUserId, "...");
+
+
+      try {
+        const userCredits = await axios.get("/api/user/getCredits", {
+          userId: theLocalUserId,
+        });
+        console.log("User credits are: ", userCredits);
+        setLocalUserCredits(userCredits);
+      } catch (error) {
+        console.error("Error updating local user credits:", error);
+        return;
+      }
+    };
 
     const handleViewModePush = () => {
       router.push('/ViewMode');
@@ -402,35 +427,16 @@ export default function Home(theUserData) {
           setLocalUserCredits(userCredits);
       }
       getIP();
-
-      /*if (canvasRef.current) {
-          const imageElement = canvasRef.current.firstChild;
-          if (imageElement) {
-              const rect = imageElement.getBoundingClientRect();
-              console.log('THE----- Display width:', rect.width);
-              console.log('THE----- Display height:', rect.height);
-          }
-      }*/
   }, []);
 
-     //Just got "oging check requted in setUserIsLoggedInWithAccount to false!!" message an all working-
-     //now we gotta track the number of images produced
      const checkUserLogin = async () => {
-
         if (!theUserData) {
-          //console.log("In checkUserLogin -  setUserIsLoggedInWithAccount to false!!!");
           dispatch(setUserIsLoggedInWithAccount(false));
         } else {
-
-         // console.log("checking login - theUserData is: ", theUserData);
             if (theUserData.userData) {
-                //console.log("In checkUserLogin - setUserIsLoggedInWithAccount to  true :)");
-                
                 dispatch(setUserIsLoggedInWithAccount(true));
                 setUserData(theUserData.userData);
             } else {
-             //console.log("In checkUserLogin - setUserIsLoggedInWithAccount to false!!!");
-
                 dispatch(setUserIsLoggedInWithAccount(false));
             }
         }
@@ -444,8 +450,6 @@ export default function Home(theUserData) {
 
     // Position the toolbar based on the viewport and canvas container
     useEffect(() => {
-     // console.log("2hamburgerVisible is: " + hamburgerVisible);
-      
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -525,7 +529,11 @@ export default function Home(theUserData) {
         }
     };
 
+/*
+    0 - Dreamshaper
+    1 - RealVis xl 4.0
 
+*/
     const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, userEmail) => {  
       let body = null;
       const randomSeed = Math.floor(Math.random() * 1000000);
@@ -542,293 +550,11 @@ export default function Home(theUserData) {
         height,
         image: combinedMask ? currentPredictionOutput : null,
         mask: combinedMask,
+        noCheck: true,
       };
 
       return body;
     };
-
-/*
-    const GetRequestBodyOld = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, modelName) => {  
-      let body = null;
-
-      if (model === 'Replicate') {
-        body = {
-          model_name: modelName,
-          prompt: e.target.prompt.value,
-          negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
-          image: combinedMask ? currentPredictionOutput : null,
-          mask: combinedMask,
-          image_size: {
-            height,
-            width,
-          },
-          content_type: "image/png",
-          num_inference_steps: 5,
-          guidance_scale: 2,
-          loras: [],
-          embeddings: [],
-          num_images: 1,
-          enable_safety_checker: true,
-          format: 'jpeg',
-          safety_checker_version: 'v1',
-          aspectRatioName: currentAspectRatioName,
-          userId: theLocalUserId,
-          ipUser: ipUser,
-        };
-      }
-      else if (model === 'Fal') {
-        body = {
-          model_name: modelName,
-          prompt: e.target.prompt.value,
-          negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
-          image: combinedMask ? currentPredictionOutput : null,
-          mask: combinedMask,
-          image_size: {
-            height,
-            width,
-          },
-          content_type: "image/png",
-          num_inference_steps: 5,
-          guidance_scale: 2,
-          loras: [],
-          embeddings: [],
-          num_images: 1,
-          enable_safety_checker: true,
-          format: 'jpeg',
-          safety_checker_version: 'v1',
-          aspectRatioName: currentAspectRatioName,
-          userId: theLocalUserId,
-          ipUser: ipUser,
-        };      
-      }
-
-        return body;
-    };
-*/
-
-/*
-    const handleSubmitOld = async (e) => {
-      setIsLoading(true); 
-      e.preventDefault();
-        
-      const combinedMask = await canvasRef.current.getCombinedMask();
-      const currentPrediction = predictions[index];
-      const currentPredictionOutput = currentPrediction?.output ? currentPrediction.output[currentPrediction.output.length - 1] : null;
-      const { width, height } = getResolution(currentAspectRatioName);
-        
-      let theLocalUserId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-      let ipUser = false;
-        
-      if (!theUserData.userData) {
-        theLocalUserId = localUserIp;
-        ipUser = true;
-      } else {
-        ipUser = false;
-        theLocalUserId = theUserData.userData.email;
-      }
-
-      
-        
-      const model = imageModel; 
-      const modelName = (imageModel === 'Replicate') ? '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96' : 'fal-ai/lightning-models'; 
-      //const provider = 'replicate'; 
-      ///const modelName = '9ebea41ac69a3256f71d8b4f80efe6f0dc719f8be70888d6b481e06258a2ee96';
-        
-      const body = GetRequestBodyOld(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, modelName);
-      
-        
-      setCurrentPredictionStatus("Server warming up...");
-      const response = await fetch("/api/predictions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-        
-      const prediction = await response.json();
-      if (provider === 'Fal') {
-        console.log("Prediction response from FAL:", prediction);
-        
-
-        const formattedPrediction = {
-          id: prediction.seed.toString(),
-          status: "succeeded",
-          output: [prediction.images[0].url],
-          created_at: new Date().toISOString(),
-          fsamGenerationCounter: 0,
-          aspectRatioName: currentAspectRatioName,
-          type: 1, // 1 for FAL, 0 for Replicate
-          input: {
-            prompt:  prediction.prompt,
-          },
-        };
-          
-        // Add the formatted prediction to the predictions array
-        setPredictions(predictions.concat([formattedPrediction]));
-        dispatch(setIndex(predictions.length));
-    
-        // Save the image to the user's bucket if the user is logged in
-        if (!ipUser) {
-          console.log("User is logged in, so saving image to: ", imageSavePath);
-          const imageUrl = formattedPrediction.output[0];
-          
-          try {
-            const response = await fetch(imageUrl);
-            const blob = await response.blob();
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = async () => {
-              const base64data = reader.result.split(',')[1];
-              const fileName = `${imageSavePath}${formattedPrediction.id}.jpg`;
-    
-              // Upload the generated image to Google Cloud Storage on the server side
-              const uploadResponse = await fetch('/api/uploadImage', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  bucketName: 'fjusers',
-                  fileName: fileName,
-                  fileContent: base64data
-                })
-              });
-    
-              const data = await uploadResponse.json();
-              console.log(data.message);
-            };
-          } catch (error) {
-            console.error('Error uploading image:', error);
-            setError({ message: 'Failed to upload the generated image. Please try again.' });
-          }
-        } else {
-          console.log("User not logged in, so not saving image!");
-        }
-    
-        dispatch(setIndex(predictions.length + 1));
-    
-        setIsLoading(false);
-        clearMaskImage();
-        setGenerateClicked(true);
-        return;
-      } 
-      
-      if (provider === 'Replicate'){
-        console.log("Provider is Replicate so Prediction response from Replicate:", prediction);
-        
-        prediction.fsamGenerationCounter = 0;
-        if (response.status !== 201) {
-          if (prediction.thecode === 5001) {
-            if (response.status === 404) {
-              return;
-            } else if (response.status === 403) {
-              setError({ message: "You have run out of credits, please subscribe or buy more credits" });
-              setIsLoading(false);
-              router.push('/Subscribe');
-              return;
-            } else if (response.status === 402) {
-              setError({ message: "You have run out of credits, please login to continue" });
-              setIsLoading(false);
-              router.push('/LoginForm');
-              return;
-            }
-          }
-        }
-          
-        setPredictions(predictions.concat([prediction]));
-        dispatch(setIndex(predictions.length));
-          
-        while (prediction.status !== "succeeded" && prediction.status !== "failed") {
-            await sleep(1000);
-            
-
-            const response = await fetch(`/api/predictions/${prediction.id}?provider=${provider}`);
-            const updatedPrediction = await response.json();
-            
-            if (response.status !== 200) {
-              setError({ message: updatedPrediction.detail });
-              setIsLoading(false);
-              return;
-            }
-            
-            const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
-            setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
-            
-            if (updatedPrediction.status === "succeeded") {
-              setPredictions(currentPredictions => {
-                const updatedPredictions = [...currentPredictions];
-                const indexToUpdate = updatedPredictions.findIndex(p => p.id === updatedPrediction.id);
-                if (indexToUpdate !== -1) {
-                  updatedPredictions[indexToUpdate] = {
-                    ...updatedPrediction,
-                    aspectRatioName: currentAspectRatioName,
-                  };
-            
-                  // Don't save the image if the user is not logged in
-                  if (ipUser === true) {
-                    console.log("User not logged in, so not saving image!");
-                  } else {
-                    console.log("User is logged in, so saving image to: ", imageSavePath);
-                    // Fetch image as a Blob and convert it to base64
-                    fetch(updatedPrediction.output[0])
-                      .then(response => response.blob())
-                      .then(blob => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(blob);
-                        reader.onloadend = () => {
-                          const base64data = reader.result.split(',')[1];
-              
-                          const fileName = `${imageSavePath}${updatedPrediction.id}.jpg`;
-              
-                          // Upload the generated image to Google Cloud Storage on the server side
-                          fetch('/api/uploadImage', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                              bucketName: 'fjusers',
-                              fileName: fileName,
-                              fileContent: base64data
-                            })
-                          })
-                          .then(response => response.json())
-                          .then(data => {
-                            console.log(data.message);
-                          })
-                          .catch(error => {
-                            console.error('Error uploading image:', error);
-                            setError({ message: 'Failed to upload the generated image. Please try again.' });
-                          });
-                        };
-                      });
-                  }
-                }
-                return updatedPredictions;
-              });
-            
-              dispatch(setIndex(predictions.length + 1));
-              setIsLoading(false);
-            
-              settheUpdatedPrediction(updatedPrediction);
-            
-              if (ipUser === true) {
-                const userCredits = await AuthService.getFreeUserCredits(theLocalUserId);
-                setLocalUserCredits(userCredits);
-              }
-            
-              clearMaskImage();
-              setGenerateClicked(true);
-            
-              break;
-            } else if (updatedPrediction.status === "failed") {
-              setError({ message: "The Prediction failed" });
-              setIsLoading(false);
-              break;
-            }
-          }
-        }
-    };
-    */
 
 
     const convertImageUrlToDataUrl = async (imageUrl) => {
@@ -865,15 +591,21 @@ export default function Home(theUserData) {
         theLocalUserId = localUserIp;
         idToUse = localUserIp;  
         ipUser = true;
+        console.log("There was no USERDATA to load, so treating this call as a local user");
       } else {
+        console.log("There is USERDATA!!!, so using that and the userEmail");
+       
         ipUser = false;
         theLocalUserId = theUserData.userData.user_id;
         userEmail = theUserData.userData.email;
         idToUse = theUserData.userData.email;
       }
-        
+
+      alogger("Logger TEST LOGGER TEST");
+      alogger("Here it is again again!!!");
+
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
-      console.log("Generation request Body is: ", body);  
+      //console.log("Generation request Body is: ", body);  
     
       setCurrentPredictionStatus("Server warming up...");
 
@@ -897,45 +629,43 @@ export default function Home(theUserData) {
           }
         } catch (error) {
           console.error("Error in handleSubmit:", error);
-          setError({ message: "Failed to generate the image. Please try again." });
-          setIsLoading(false);
+
           return;
         }
         attempts++;
       }
+
+      if (response.data.status !== 201) {
+        console.error("response.data.statuss is not 402 it is:", response.data.status);
+
+        if (prediction.thecode === 5001) {
+          if (response.data.status === 404) {
+            setErrorMessage("The Prediction failed");
+            setIsLoading(false);
+            return;
+          } else if (response.data.status === 403) {
+            setErrorMessage("You have run out of credits, please subscribe or buy more credits");
+            setErrorRoute('/Subscribe');
+            setIsLoading(false);
+            return;
+          } else if (response.data.status === 402) {
+            setErrorMessage("You have run out of credits, please login to continue");
+            setErrorRoute('/LoginForm');
+            setIsLoading(false);
+            return;
+          }
+        }
+      }
+
       if (fileName === null) {
-        setError({ message: "Failed to generate the image. Please try again." });
+        setErrorMessage("Failed to generate the image. Please try again.");
         alert("Failed to generate the image. Please try again.");
         setIsLoading(false);
         return;
       }
 
       console.log("Response from /api/generateImage:", response.data);
-
-        /* Need to add the following somewhere
-        if (response.status !== 201) {
-          if (prediction.thecode === 5001) {
-            if (response.status === 404) {
-              return;
-            } else if (response.status === 403) {
-              setError({ message: "You have run out of credits, please subscribe or buy more credits" });
-              setIsLoading(false);
-              router.push('/Subscribe');
-              return;
-            } else if (response.status === 402) {
-              setError({ message: "You have run out of credits, please login to continue" });
-              setIsLoading(false);
-              router.push('/LoginForm');
-              return;
-            }
-          }
-        }
-          */
-      
-    
       console.log("Filename from genimage:", fileName);
-      
-
       const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
 
      
@@ -949,6 +679,7 @@ export default function Home(theUserData) {
       setIsLoading(false);
       return;
     }
+
     console.log('Image exists in the bucket:', data.message);
   } catch (error) {
     console.error('Error checking if image exists in the bucket:', error);
@@ -966,7 +697,6 @@ export default function Home(theUserData) {
      //   setIsLoading(false);
      //   return;
      // });
-
      
     
       const formattedPrediction = {
@@ -984,8 +714,10 @@ export default function Home(theUserData) {
     
       setPredictions(predictions.concat([formattedPrediction]));
       dispatch(setIndex(predictions.length+1));
-    
       setIsLoading(false);
+
+      await updateLocalUserCredits();
+    
         return;
 
       if (provider === 'Fal') {
@@ -1180,7 +912,7 @@ export default function Home(theUserData) {
         canvasRef.current.ClearMaskLines();
         canvasRef.current.ClearMagicWandResult();
         setPredictions([]);
-        setError(null);
+        setErrorMessage(null);
         setMaskImage(null);
         setUserUploadedImage(null);
     };
@@ -1257,7 +989,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>CraftFul.AI 1.0 Studio</strong>
+          <strong>CraftFul.AI Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
@@ -1310,11 +1042,11 @@ export default function Home(theUserData) {
             </div>
           </div>
         </main>
-        {error && (
+        {errorMessage && (
             <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
                 <div className="relative bg-white p-8 rounded shadow">
-                    <ErrorModal error={error} onClose={() => setError(null)} />
+                    <ErrorModal error={{ message: errorMessage, route: errorRoute }} onClose={() => setErrorMessage(null)} />
                 </div>
             </div>
         )}

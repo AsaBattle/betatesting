@@ -776,7 +776,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
     }
   } catch (error) {
     // Until Lucky adds specific error messages we treat an error as meaning the user doesn't exist
-    console.error("Error retrieving user from database, so treating as if user does not exist" + error);
+    console.error("Error retrieving user " + userID + " from database, so treating as if user does not exist" + error);
     return { worked: false, reasonCode: 5, reason: "User doesn't exist." };
   }
 

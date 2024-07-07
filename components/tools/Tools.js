@@ -442,21 +442,7 @@ export const tools = [
       console.log('Processing No Tool selected tool');
     }
   },
-  {
-    name: 'ModelSelector',
-    label: 'Model Selector',
-    icon: <Component />,
-    renderInToolbar: true,
-    cursor: 'zoom-in',
-    setup: function (dispatch) {
-      dispatch(setCanvasDrawingEnabled(false));
-      console.log('Setting up ModelSelector');
-    },
-    processTool: function (dispatch, event) {
-
-      console.log('Processing  Model Selector');
-    }
-  },
+  
    /*{ 
     name: 'Zoom',
     label: 'Zoom In/Out',
@@ -479,3 +465,21 @@ export const tools = [
     }
   },*/ 
 ]; 
+
+/*
+{
+    name: 'ModelSelector',
+    label: 'Model Selector',
+    icon: <Component />,
+    renderInToolbar: true,
+    cursor: 'zoom-in',
+    setup: function (dispatch) {
+      dispatch(setCanvasDrawingEnabled(false));
+      console.log('Setting up ModelSelector');
+    },
+    processTool: function (dispatch, event) {
+
+      console.log('Processing  Model Selector');
+    }
+  },
+*/

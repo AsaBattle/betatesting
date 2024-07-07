@@ -63,7 +63,6 @@ const AuthService = {
       console.error('Error getting user credits:', error);
       return null;
     }
-
     return 5; // this is a placeholder for now
   }
 
