@@ -604,6 +604,13 @@ export default function Home(theUserData) {
       alogger("Logger TEST LOGGER TEST");
       alogger("Here it is again again!!!");
 
+      if (theUserData.userData)
+        console.log(" theUserData.userData.user_id is: ", theUserData.userData.user_id);
+      else
+       {
+        console.log("theUserData.userData is null, so using localUserIp: ", localUserIp);
+        console.log("theUserData.userData.email is: ", theUserData.userData.email);
+       }
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
       //console.log("Generation request Body is: ", body);  
     
