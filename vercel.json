@@ -1,6 +1,6 @@
 {
     "functions": {
-      "api/generateImage.js": {
+        "pages/api/generateImage.js": {
         "maxDuration": 300
       }
     }
