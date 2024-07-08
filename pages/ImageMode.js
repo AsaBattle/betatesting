@@ -84,6 +84,7 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
+
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
       alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
@@ -118,6 +119,43 @@ export default function Home(theUserData) {
         settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
+
+
+    // Old version of the incoming query handling code
+    /*
+    useEffect(() => {
+      const { imageUrl, aspectRatioName } = router.query;
+      alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+
+      const convertImageUrlToDataUrl = async (imageUrl) => {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.error("Error converting image URL to data URL: ", error);
+          return null;
+        }
+      };
+    
+      if (imageUrl && aspectRatioName) {
+        alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
+        
+        convertImageUrlToDataUrl(imageUrl)
+          .then((dataUrl) => {
+            if (dataUrl) {
+              handleImageAsFirstPrediction(dataUrl, aspectRatioName);
+            }
+          });
+      }
+    }, [router.query]);
+
+    */
 
 
 
@@ -610,7 +648,6 @@ export default function Home(theUserData) {
       else
        {
         alogger("theUserData.userData is null, so using localUserIp: ", localUserIp);
-        alogger("theUserData.userData.email is: ", theUserData.userData.email);
        }
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
       //alogger("Generation request Body is: ", body);  
