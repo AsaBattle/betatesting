@@ -84,58 +84,38 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
       alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
     
-
-
-/*
-      const convertImageUrlToDataUrl = async (imageUrl) => {
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } catch (error) {
-          console.error("Error converting image URL to data URL: ", error);
-          return null;
-        }
-      };*/
-    
       if (imageUrl && aspectRatioName) {
         alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
         
-      const randomSeed = Math.floor(Math.random() * 1000000);
-      const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(imageUrl)}`;
-      const formattedPrediction = {
-        id: randomSeed.toString(),
-        status: "succeeded",
-        output: [fetchImageUrl],  // Use the fetchImage API route URL
-        created_at: new Date().toISOString(),
-        fsamGenerationCounter: 0,
-        aspectRatioName: currentAspectRatioName,
-        type: 1,
-        input: {
-          prompt: "NOT YET AVAILABLE",
-        },
-      };
-    
-      setPredictions(predictions.concat([formattedPrediction]));
-      dispatch(setIndex(predictions.length+1));
-      settheUpdatedPrediction(formattedPrediction);
+        const randomSeed = Math.floor(Math.random() * 1000000);
         
-        /*convertImageUrlToDataUrl(imageUrl)
-          .then((dataUrl) => {
-            if (dataUrl) {
-              handleImageAsFirstPrediction(dataUrl, aspectRatioName);
-            }
-          });*/
+        // Parse the imageUrl to extract the file path
+        const parsedUrl = new URL(imageUrl);
+        const filePath = parsedUrl.pathname.split('/').slice(3).join('/');
+        
+        // Construct the fetchImageUrl with only the necessary part of the path
+        const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(filePath)}`;
+        
+        const formattedPrediction = {
+          id: randomSeed.toString(),
+          status: "succeeded",
+          output: [fetchImageUrl],  // Use the fetchImage API route URL
+          created_at: new Date().toISOString(),
+          fsamGenerationCounter: 0,
+          aspectRatioName: aspectRatioName, // Use the passed aspectRatioName
+          type: 1,
+          input: {
+            prompt: "NOT YET AVAILABLE",
+          },
+        };
+    
+        setPredictions(predictions => predictions.concat([formattedPrediction]));
+        dispatch(setIndex(prevIndex => prevIndex + 1));
+        settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
 
