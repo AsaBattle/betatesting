@@ -136,12 +136,9 @@ export default async function handler(req, res) {
           }
 
           try {
-            response = await axios.post(apiUrl, requestBody, {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              timeout: 30000 // 5 minutes
-            });
+            console.time('apiCall');
+            response = await axios.post(apiUrl, requestBody, { timeout: 290000 });
+            console.timeEnd('apiCall');
           } catch (error) {
             console.error("Error posting to the API:", error);
             return res.status(500).json({ error: "Failed to post to the API" });
