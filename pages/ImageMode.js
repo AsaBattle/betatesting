@@ -111,10 +111,10 @@ export default function Home(theUserData) {
       if (imageUrl && aspectRatioName) {
         alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
         
-        
+      const randomSeed = Math.floor(Math.random() * 1000000);
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(imageUrl)}`;
       const formattedPrediction = {
-        id: body.seed.toString(),
+        id: randomSeed.toString(),
         status: "succeeded",
         output: [fetchImageUrl],  // Use the fetchImage API route URL
         created_at: new Date().toISOString(),
@@ -122,7 +122,7 @@ export default function Home(theUserData) {
         aspectRatioName: currentAspectRatioName,
         type: 1,
         input: {
-          prompt: body.prompt,
+          prompt: "NOT YET AVAILABLE",
         },
       };
     
