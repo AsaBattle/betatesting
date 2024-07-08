@@ -135,12 +135,17 @@ export default async function handler(req, res) {
             console.log("No userEmail, so using the userid as the email");
           }
 
-          response = await axios.post(apiUrl, requestBody, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            timeout: 30000 // 5 minutes
-          });
+          try {
+            response = await axios.post(apiUrl, requestBody, {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              timeout: 30000 // 5 minutes
+            });
+          } catch (error) {
+            console.error("Error posting to the API:", error);
+            return res.status(500).json({ error: "Failed to post to the API" });
+          }
         }
 
         console.log(`[${new Date().toISOString()}] Successful API response:`, response.data);
