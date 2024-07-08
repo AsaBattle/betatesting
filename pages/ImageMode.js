@@ -89,6 +89,9 @@ export default function Home(theUserData) {
       const { imageUrl, aspectRatioName } = router.query;
       alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
     
+
+
+/*
       const convertImageUrlToDataUrl = async (imageUrl) => {
         try {
           const response = await fetch(imageUrl);
@@ -103,16 +106,36 @@ export default function Home(theUserData) {
           console.error("Error converting image URL to data URL: ", error);
           return null;
         }
-      };
+      };*/
     
       if (imageUrl && aspectRatioName) {
         alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
-        convertImageUrlToDataUrl(imageUrl)
+        
+        
+      const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(imageUrl)}`;
+      const formattedPrediction = {
+        id: body.seed.toString(),
+        status: "succeeded",
+        output: [fetchImageUrl],  // Use the fetchImage API route URL
+        created_at: new Date().toISOString(),
+        fsamGenerationCounter: 0,
+        aspectRatioName: currentAspectRatioName,
+        type: 1,
+        input: {
+          prompt: body.prompt,
+        },
+      };
+    
+      setPredictions(predictions.concat([formattedPrediction]));
+      dispatch(setIndex(predictions.length+1));
+      settheUpdatedPrediction(formattedPrediction);
+        
+        /*convertImageUrlToDataUrl(imageUrl)
           .then((dataUrl) => {
             if (dataUrl) {
               handleImageAsFirstPrediction(dataUrl, aspectRatioName);
             }
-          });
+          });*/
       }
     }, [router.query]);
 
@@ -232,7 +255,7 @@ export default function Home(theUserData) {
 
     const FSAMTest = async () => {
       alogger("FSAMTest is being called");
-      setCurrentPredictionStatus( "Server warming up...");
+      setCurrentPredictionStatus("Processing...");
 
       // The following code makes a call to our fsam api at /api/fsam
       if (theupdatedPrediction === null)
@@ -291,7 +314,7 @@ export default function Home(theUserData) {
         }
     
         const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
-        setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
+        setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Processing...");
     
       
         if (updatedPrediction.status === "succeeded") {
@@ -612,7 +635,7 @@ export default function Home(theUserData) {
       const body = GetRequestBody(e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId,ipUser,userEmail);
       //alogger("Generation request Body is: ", body);  
     
-      setCurrentPredictionStatus("Server warming up...");
+      setCurrentPredictionStatus("Processing...");
 
       let response = null;
       let attempts = 0;
@@ -831,7 +854,7 @@ export default function Home(theUserData) {
             }
             
             const lastPercentage = findLastPercentageWithAdjustedGraphic(updatedPrediction.logs);
-            setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Server warming up...");
+            setCurrentPredictionStatus(lastPercentage ? lastPercentage : "Processing...");
             
             if (updatedPrediction.status === "succeeded") {
               setPredictions(currentPredictions => {

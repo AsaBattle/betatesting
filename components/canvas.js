@@ -434,7 +434,7 @@ function SpinnerOverlay({ predStatus }) {
       {line}
       <br />
     </React.Fragment>
-  )) : 'Server warming up...';
+  )) : 'Processing...';
 
   return (
     <div
