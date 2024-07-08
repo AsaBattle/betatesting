@@ -1,0 +1,7 @@
+{
+    "functions": {
+      "api/generateImage.js": {
+        "maxDuration": 300
+      }
+    }
+  }
