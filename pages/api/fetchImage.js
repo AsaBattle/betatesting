@@ -24,14 +24,27 @@ export default async function handler(req, res) {
   console.log('Inside fetchImage---- imagePath:', imagePath);
   console.log('Inside fetchImage---- decodedPath:', decodedPath);
 
+  // Function to clean the path
+  const cleanPath = (path) => {
+    const parts = path.split('/');
+    const fjusersIndex = parts.findIndex(part => part === 'fjusers');
+    if (fjusersIndex !== -1) {
+      return parts.slice(fjusersIndex + 1).join('/');
+    }
+    return path;
+  };
+
+  const finalPath = cleanPath(decodedPath);
+  console.log('Inside fetchImage---- finalPath:', finalPath);
+
   try {
     const bucket = storage.bucket('fjusers');
-    const file = bucket.file(decodedPath);
+    const file = bucket.file(finalPath);
     
     const [exists] = await file.exists();
     
     if (!exists) {
-      console.error(`File does not exist: ${decodedPath}`);
+      console.error(`File does not exist: ${finalPath}`);
       return res.status(404).json({ message: 'Image not found' });
     }
 
