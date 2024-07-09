@@ -116,7 +116,7 @@ export default function Home(theUserData) {
         };
     
         setPredictions(predictions => predictions.concat([formattedPrediction]));
-        dispatch(setIndex(prevIndex => prevIndex + 1));
+        dispatch(setIndex(predictions.length+1));
         settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
