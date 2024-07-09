@@ -674,7 +674,7 @@ export default function Home(theUserData) {
           }
         } catch (error) {
           console.error("Error in handleSubmit:", error);
-
+          setIsLoading(false);
           return;
         }
         attempts++;
@@ -1034,7 +1034,7 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>CraftFul.ai Studio</strong>
+          <strong>CraftFul.a.i Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
