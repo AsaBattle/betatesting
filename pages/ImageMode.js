@@ -84,7 +84,6 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
       alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
@@ -92,16 +91,16 @@ export default function Home(theUserData) {
       if (imageUrl && aspectRatioName) {
         const randomSeed = Math.floor(Math.random() * 1000000);
         
-        // Parse the full URL
-        const parsedUrl = new URL(imageUrl);
-        
-        // Extract the path starting from 'fjusers'
-        const pathParts = parsedUrl.pathname.split('/');
+        // Extract the path without creating a URL object
+        const pathParts = decodeURIComponent(imageUrl).split('/');
         const fjusersIndex = pathParts.findIndex(part => part === 'fjusers');
         const relevantPath = pathParts.slice(fjusersIndex + 1).join('/');
         
+        // Remove any query parameters
+        const cleanPath = relevantPath.split('?')[0];
+        
         // Construct the fetchImageUrl with the relevant part of the path
-        const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(relevantPath)}`;
+        const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
         
         const formattedPrediction = {
           id: randomSeed.toString(),
@@ -121,7 +120,6 @@ export default function Home(theUserData) {
         settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
-
     // Old version of the incoming query handling code
     /*
     useEffect(() => {
