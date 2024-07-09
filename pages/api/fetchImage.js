@@ -34,6 +34,7 @@ export default async function handler(req, res) {
     return path;
   };
 
+  // SO just got the query loading to work from viewmode, but now inpainting needs to be worked on(it )
   const finalPath = cleanPath(decodedPath);
   console.log('Inside fetchImage---- finalPath:', finalPath);
 

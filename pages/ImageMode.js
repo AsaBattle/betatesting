@@ -708,40 +708,39 @@ export default function Home(theUserData) {
         setIsLoading(false);
         return;
       }
+      else {
+        alert("Your Image will be ready shortly...");
+      }
 
+      const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
       alogger("Response from /api/generateImage:", response.data);
       alogger("Filename from genimage:", fileName);
-      const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
 
-     
+
+  /* OLD CODE TO CHECK IF THE IMAGE IS THERE YET(AS WE USED TO TRY TO LOAD THE IMAGE IMMEDIATELY)
   // the following uses the above code to check if the image exists in the bucket using =${encodeURIComponent(path)}
   // if it does not exist, we return a 404 error
   try {
     const response = await fetch(`/api/bucketFileExists?imagePath=${encodeURIComponent(path)}`);
     const data = await response.json();
     if (response.status !== 200) {
-      setError({ message: data.message });
+      setErrorMessage({ message: data.message });
       setIsLoading(false);
       return;
     }
 
     alogger('Image exists in the bucket:', data.message);
+
   } catch (error) {
     console.error('Error checking if image exists in the bucket:', error);
     setError({ message: 'Failed to check if the image exists in the bucket. Please try again.' });
     setIsLoading(false);
     return;
-  }
+  }*/
 
 
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
-     // let updatedImageUrl = null;
-     // convertImageUrlToDataUrl(fetchImageUrl).then((dataUrl) => {
-     //   handleImageAsFirstPrediction(dataUrl, currentAspectRatioName);
-     //   setIsLoading(false);
-     //   return;
-     // });
      
     
       const formattedPrediction = {
