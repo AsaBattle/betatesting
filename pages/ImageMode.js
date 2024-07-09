@@ -90,24 +90,26 @@ export default function Home(theUserData) {
       alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
     
       if (imageUrl && aspectRatioName) {
-        alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
-        
         const randomSeed = Math.floor(Math.random() * 1000000);
         
-        // Parse the imageUrl to extract the file path
+        // Parse the full URL
         const parsedUrl = new URL(imageUrl);
-        const filePath = parsedUrl.pathname.split('/').slice(3).join('/');
         
-        // Construct the fetchImageUrl with only the necessary part of the path
-        const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(filePath)}`;
+        // Extract the path starting from 'fjusers'
+        const pathParts = parsedUrl.pathname.split('/');
+        const fjusersIndex = pathParts.findIndex(part => part === 'fjusers');
+        const relevantPath = pathParts.slice(fjusersIndex + 1).join('/');
+        
+        // Construct the fetchImageUrl with the relevant part of the path
+        const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(relevantPath)}`;
         
         const formattedPrediction = {
           id: randomSeed.toString(),
           status: "succeeded",
-          output: [fetchImageUrl],  // Use the fetchImage API route URL
+          output: [fetchImageUrl],
           created_at: new Date().toISOString(),
           fsamGenerationCounter: 0,
-          aspectRatioName: aspectRatioName, // Use the passed aspectRatioName
+          aspectRatioName: aspectRatioName,
           type: 1,
           input: {
             prompt: "NOT YET AVAILABLE",
@@ -119,7 +121,6 @@ export default function Home(theUserData) {
         settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
-
 
     // Old version of the incoming query handling code
     /*
@@ -440,7 +441,6 @@ export default function Home(theUserData) {
   };
 
     useEffect(() => {
-      console.log('The Current Build Commit SHA:', process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA);
       
       // Check if the user is logged in
       checkUserLogin();
