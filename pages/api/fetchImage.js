@@ -2,11 +2,9 @@ import { Storage } from '@google-cloud/storage';
 
 export const config = {
   api: {
-    //responseLimit: false,
-    sizeLimit: '30mb',  //
+    sizeLimit: '30mb',
   },
 };
-
 
 let storage;
 
@@ -20,20 +18,20 @@ if (process.env.VERCEL) {
 export default async function handler(req, res) {
   const { imagePath } = req.query;
   
-  const url = new URL(imagePath);
-  const filePath = url.pathname.split('/').slice(2).join('/');
+  // Decode the imagePath
+  const decodedPath = decodeURIComponent(imagePath);
 
   console.log('Inside fetchImage---- imagePath:', imagePath);
-  console.log('Inside fetchImage---- filePath:', filePath);
+  console.log('Inside fetchImage---- decodedPath:', decodedPath);
 
   try {
     const bucket = storage.bucket('fjusers');
-    const file = bucket.file(filePath);
+    const file = bucket.file(decodedPath);
     
     const [exists] = await file.exists();
     
     if (!exists) {
-      console.error(`File does not exist: ${filePath}`);
+      console.error(`File does not exist: ${decodedPath}`);
       return res.status(404).json({ message: 'Image not found' });
     }
 
