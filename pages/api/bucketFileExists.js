@@ -18,11 +18,22 @@ if (process.env.VERCEL) {
 export default async function handler(req, res) {
   const { imagePath } = req.query;
   
-  const url = new URL(imagePath);
+  // Extract the actual file path from the fetchImage API URL
+  const decodedPath = decodeURIComponent(imagePath);
+  const match = decodedPath.match(/imagePath=(.+)$/);
+  const actualImagePath = match ? match[1] : null;
+
+  if (!actualImagePath) {
+    console.error('Invalid image path');
+    return res.status(200).json({ exists: false, message: 'Invalid image path' });
+  }
+
+  // Now parse the actual image URL
+  const url = new URL(actualImagePath);
   const filePath = url.pathname.split('/').slice(2).join('/');
 
-  console.log('Inside fetchImage---- imagePath:', imagePath);
-  console.log('Inside fetchImage---- filePath:', filePath);
+  console.log('Inside bucketFileExists---- actualImagePath:', actualImagePath);
+  console.log('Inside bucketFileExists---- filePath:', filePath);
 
   try {
     const bucket = storage.bucket('fjusers');
@@ -31,15 +42,13 @@ export default async function handler(req, res) {
     const [exists] = await file.exists();
     
     if (!exists) {
-      console.error(`File does not exist: ${filePath}`);
-      return res.status(404).json({ message: 'Image not found' });
+      console.log(`File does not exist yet: ${filePath}`);
+      return res.status(200).json({ exists: false, message: 'Image not found' });
     }
+
+    res.status(200).json({ exists: true, message: 'Image exists' });
   } catch (error) {
-    console.error('Error fetching image from GCS:', error);
-    res.status(500).json({ message: 'Failed to fetch image from GCS' });
+    console.error('Error checking image in GCS:', error);
+    res.status(200).json({ exists: false, message: 'Failed to check image in GCS' });
   }
-
-  res.status(200).json({ message: 'Image exists' });
-  res.end(); // Explicitly end the response
-
 }

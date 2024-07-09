@@ -18,6 +18,45 @@ import { setCanvasDrawingEnabled } from '../redux/slices/toolSlice';
 
 const addBackgroundToPNG = require("lib/add-background-to-png");
 
+const useImageLoader = (imageSrc) => {
+  const [imageStatus, setImageStatus] = useState('loading');
+
+  useEffect(() => {
+    if (!imageSrc) {
+      setImageStatus('error');
+      return;
+    }
+
+    const checkImage = () => {
+      // We're passing the entire fetchImage URL to bucketFileExists
+      fetch(`/api/bucketFileExists?imagePath=${encodeURIComponent(imageSrc)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.exists) {
+            setImageStatus('loaded');
+          } else {
+            setImageStatus('loading');
+            setTimeout(checkImage, 2000);
+          }
+        })
+        .catch((error) => {
+          console.error('Error checking image:', error);
+          setImageStatus('loading');
+          setTimeout(checkImage, 2000);
+        });
+    };
+
+    checkImage();
+
+    return () => {
+      setImageStatus('loading'); // Reset status when changing images
+    };
+  }, [imageSrc]);
+
+  return imageStatus;
+};
+
+
 const Canvas = forwardRef((props, ref) => {
   const canvasRef = useRef(null);
   const allowDrawing = useSelector((state) => state.toolbar.canvasDrawingEnabled);
@@ -47,6 +86,8 @@ const Canvas = forwardRef((props, ref) => {
           : null
         : null;
     }, [props.predictions, index]);
+
+    const imageStatus = useImageLoader(currentPredictionImage)
     
     const currentPredictionMagicWandMask = useMemo(() => {
       return props.predictions && props.predictions.length > index && props.predictions[index]
@@ -368,11 +409,9 @@ useEffect(() => {
       style={canvasContainerStyle}
       id="canvasContainer"
       onClick={handleCanvasClick}
-      onContextMenu={handleCanvasClick} // This is for right-clicks
+      onContextMenu={handleCanvasClick}
     >
-      
-      {/* PREDICTION IMAGE */}
-      {currentPredictionImage && !viewMaskActive && (
+      {imageStatus === 'loaded' && currentPredictionImage && !viewMaskActive && (
         <Image
           alt={`Current prediction ${index}`}
           layout="fill"
@@ -380,9 +419,8 @@ useEffect(() => {
           src={currentPredictionImage}
         />
       )}
-
-      {/* PREDICTION IMAGE */}
-      {viewMaskActive && (
+  
+      {imageStatus === 'loaded' && viewMaskActive && (
         <Image
           alt={`Current prediction ${index}`}
           layout="fill"
@@ -390,11 +428,11 @@ useEffect(() => {
           src={currentPredictionMagicWandMask}
         />
       )}
-      
-
-
   
-      {/* SPINNER */}
+      {imageStatus === 'loading' && (
+        <SpinnerOverlay predStatus="Image processing..." />
+      )}
+  
       {predicting && (
         <SpinnerOverlay predStatus={props.currentPredictionStatus} />
       )}
@@ -402,7 +440,7 @@ useEffect(() => {
       {!predicting && (
         <ReactSketchCanvas
           ref={canvasRef}
-          strokeWidth={(currentToolName !== 'MaskPainter')?0:props.brushSize}
+          strokeWidth={(currentToolName !== 'MaskPainter') ? 0 : props.brushSize}
           strokeColor="white"
           canvasColor="transparent"
           onChange={onChange}
@@ -411,8 +449,7 @@ useEffect(() => {
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10 }}
         />
       )}
-
-      {/* Magic Wand Selection Image */}
+  
       {magicWandResultImg && (
         <Image
           src={magicWandResultImg}
@@ -420,7 +457,11 @@ useEffect(() => {
         />
       )}
   
-      <Cursor brushSize={(currentToolName !== 'MaskPainter')?0:props.brushSize} canvasRef={canvasRef} isDrawing={allowDrawing} />
+      <Cursor 
+        brushSize={(currentToolName !== 'MaskPainter') ? 0 : props.brushSize} 
+        canvasRef={canvasRef} 
+        isDrawing={allowDrawing} 
+      />
     </div>
   );
 });
