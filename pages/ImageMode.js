@@ -440,6 +440,8 @@ export default function Home(theUserData) {
   };
 
     useEffect(() => {
+      console.log('The Current Build Commit SHA:', process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA);
+      
       // Check if the user is logged in
       checkUserLogin();
 
