@@ -105,6 +105,7 @@ const Canvas = forwardRef((props, ref) => {
 
   useEffect(() => {
     console.log("Version 1.0.1");
+    console.log('The Current Build Commit SHA:', process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA);
   }, []);
 
 
