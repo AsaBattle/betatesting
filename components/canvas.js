@@ -18,7 +18,7 @@ import { setCanvasDrawingEnabled } from '../redux/slices/toolSlice';
 
 const addBackgroundToPNG = require("lib/add-background-to-png");
 
-const useImageLoader = (imageSrc) => {
+const useImageLoader = (imageSrc, currentIndex) => {
   const [imageStatus, setImageStatus] = useState('loading');
 
   useEffect(() => {
@@ -27,11 +27,15 @@ const useImageLoader = (imageSrc) => {
       return;
     }
 
+    let isCurrent = true;
+
     const checkImage = () => {
-      // We're passing the entire fetchImage URL to bucketFileExists
+      if (!isCurrent) return;
+
       fetch(`/api/bucketFileExists?imagePath=${encodeURIComponent(imageSrc)}`)
         .then(response => response.json())
         .then(data => {
+          if (!isCurrent) return;
           if (data.exists) {
             setImageStatus('loaded');
           } else {
@@ -40,6 +44,7 @@ const useImageLoader = (imageSrc) => {
           }
         })
         .catch((error) => {
+          if (!isCurrent) return;
           console.error('Error checking image:', error);
           setImageStatus('loading');
           setTimeout(checkImage, 2000);
@@ -49,9 +54,10 @@ const useImageLoader = (imageSrc) => {
     checkImage();
 
     return () => {
-      setImageStatus('loading'); // Reset status when changing images
+      isCurrent = false;
+      setImageStatus('loading');
     };
-  }, [imageSrc]);
+  }, [imageSrc, currentIndex]);
 
   return imageStatus;
 };
@@ -87,7 +93,7 @@ const Canvas = forwardRef((props, ref) => {
         : null;
     }, [props.predictions, index]);
 
-    const imageStatus = useImageLoader(currentPredictionImage)
+    const imageStatus = useImageLoader(currentPredictionImage, index);
     
     const currentPredictionMagicWandMask = useMemo(() => {
       return props.predictions && props.predictions.length > index && props.predictions[index]

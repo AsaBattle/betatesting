@@ -38,6 +38,7 @@ export default function Home(theUserData) {
     const [maskImage, setMaskImage] = useState(null);
     const [userUploadedImage, setUserUploadedImage] = useState(null);
     const currentToolName = useSelector((state) => state.toolbar.currentToolName);
+    const currentTool = tools.find(tool => tool.name === currentToolName);
     const brushSize = useSelector((state) => state.toolbar.brushSize);
     const dispatch = useDispatch();
     const currentImage = useSelector((state) => state.history.currentImage);
@@ -120,6 +121,7 @@ export default function Home(theUserData) {
         settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
+    
     // Old version of the incoming query handling code
     /*
     useEffect(() => {
@@ -735,10 +737,7 @@ export default function Home(theUserData) {
     return;
   }*/
 
-
-
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
-     
     
       const formattedPrediction = {
         id: body.seed.toString(),
@@ -957,10 +956,6 @@ export default function Home(theUserData) {
         setMaskImage(null);
         setUserUploadedImage(null);
     };
-
-    // Find the full tool object using the current tool's name
-    const currentTool = tools.find(tool => tool.name === currentToolName);
-
 
   const PerformUndo = () => {
     dispatch(undo());
