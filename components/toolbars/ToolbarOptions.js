@@ -34,7 +34,7 @@ function ToolbarOptions (props)  {
   const canRedo = false;
   const showUndoRedo = false;
 
-
+  const currentModel = useSelector((state) => state.toolbar.model);
   const currentToolName = useSelector((state) => state.toolbar.currentToolName);
   const brushSize = useSelector((state) => state.toolbar.brushSize);
   const zoomLevel = useSelector((state) => state.toolbar.zoomWidth);
@@ -170,7 +170,7 @@ useEffect(() => {
   if (currentTool?.name === 'NoTool') {
     return null;
   }
-  
+
   return (
     <div style={{ position: 'relative' }}>
       {currentTool?.name === 'MaskPainter' && (
@@ -507,23 +507,24 @@ useEffect(() => {
             <Button
               style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
               variant="contained"
-              onClick={() => handleModelClick('Replicate')}
+              onClick={() => handleModelClick('0')}
               startIcon={<RectangleHorizontal style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
               size="large"
               className={`${styles.button} ${selectedAspectRatio === '16:9' ? styles.selectedButton : ''}`}
             >
-              <Typography style={{ fontSize: '16px' }}>Replicate</Typography>
+              <Typography style={{ fontSize: '16px' }}>Model 0</Typography>
             </Button>
             <Button
               style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
               variant="contained"
-              onClick={() => handleModelClick('Fal')}
+              onClick={() => handleModelClick('F1al')}
               startIcon={<RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
               size="large"
               className={`${styles.button} ${selectedAspectRatio === '9:16' ? styles.selectedButton : ''}`}
             >
-              <Typography style={{ fontSize: '16px' }}>FAL</Typography>
+              <Typography style={{ fontSize: '16px' }}>Model 1</Typography>
             </Button>
+            <Typography className="text-center mt-2">Current model: {currentModel}</Typography>
           </div>
         </div>
       </div>
