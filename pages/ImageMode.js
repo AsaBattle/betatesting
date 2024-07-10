@@ -25,6 +25,8 @@ const alogger = require('../utils/alogger').default;
 
 import AuthService from '../services/authService';
 import { DialerSip, WidthWideTwoTone } from "@mui/icons-material";
+import { update } from "lodash";
+import { current } from "tailwindcss/colors";
 
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -32,12 +34,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
 export default function Home(theUserData) { 
+    const [updateCanvasPositionNow, setUpdateCanvasPositionNow] = useState(false);
     const [predictions, setPredictions] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null);
     const [errorRoute, setErrorRoute] = useState(null);
     const [maskImage, setMaskImage] = useState(null);
     const [userUploadedImage, setUserUploadedImage] = useState(null);
     const currentToolName = useSelector((state) => state.toolbar.currentToolName);
+    const currentTool = tools.find(tool => tool.name === currentToolName);
     const brushSize = useSelector((state) => state.toolbar.brushSize);
     const dispatch = useDispatch();
     const currentImage = useSelector((state) => state.history.currentImage);
@@ -60,6 +64,8 @@ export default function Home(theUserData) {
     const hamburgerVisible = useSelector((state) => state.toolbar.hamburgerVisible);
     const hamXOffset = (hamburgerVisible ? -20 : 100);
     const hamYOffset = (hamburgerVisible ? -105 : 5);
+    const hamXOffsetNoTool = (hamburgerVisible ? -10 : 0);
+    const hamYOffsetNoTool = (hamburgerVisible ? 75 : 0);
 
     const canvasContainerRef = useRef(null);
     const toolbaroptionsRef = useRef(null);
@@ -101,6 +107,10 @@ export default function Home(theUserData) {
         
         // Construct the fetchImageUrl with the relevant part of the path
         const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
+
+        alert("****the incoming imageUrl is: ", imageUrl);
+        alert("****the cleaned up is: ",cleanPath);
+        return;
         
         const formattedPrediction = {
           id: randomSeed.toString(),
@@ -120,6 +130,7 @@ export default function Home(theUserData) {
         settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
+    
     // Old version of the incoming query handling code
     /*
     useEffect(() => {
@@ -240,18 +251,34 @@ export default function Home(theUserData) {
         // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
 
          //alogger("1hamburgerVisible is: " + hamburgerVisible);
-       
+         alogger("canvas position updated");
+
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + hamYOffset}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - hamXOffset}px`;
+            const oX = currentToolName === 'NoTool' ? hamXOffset - hamXOffsetNoTool : hamXOffset;
+            const oY = currentToolName === 'NoTool' ? hamYOffset + hamYOffsetNoTool : hamYOffset;
+
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + oY}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - oX}px`;
           }
 
         //localStorage.setItem('imageTokens', 3);
     };
 
+    useEffect(() => {
+      if (updateCanvasPositionNow === true) {
+        updateCanvasPosition();
+        setUpdateCanvasPositionNow(false);
+      }
+    }, [updateCanvasPositionNow]);
 
+    useEffect(() => {
+      if (currentTool) {
+        alogger("NoTool IS SETTING THE CANVAS POSITION");
+        updateCanvasPosition();
+      }
+    }, [currentTool]);
     
     useEffect(() => {
         const handleScroll = () => {
@@ -494,8 +521,11 @@ export default function Home(theUserData) {
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + hamYOffset}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - hamXOffset}px`;
+            const oX = currentToolName === 'NoTool' ? hamXOffset - hamXOffsetNoTool : hamXOffset;
+            const oY = currentToolName === 'NoTool' ? hamYOffset + hamYOffsetNoTool : hamYOffset;
+
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + oY}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - oX}px`;
           }
     }, [zoomWidth, hamburgerVisible]);
 
@@ -712,7 +742,7 @@ export default function Home(theUserData) {
       const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
       alogger("Response from /api/generateImage:", response.data);
       alogger("Filename from genimage:", fileName);
-
+      alogger("****PATH IS: ",path);
 
   /* OLD CODE TO CHECK IF THE IMAGE IS THERE YET(AS WE USED TO TRY TO LOAD THE IMAGE IMMEDIATELY)
   // the following uses the above code to check if the image exists in the bucket using =${encodeURIComponent(path)}
@@ -735,10 +765,8 @@ export default function Home(theUserData) {
     return;
   }*/
 
-
-
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
-     
+      alogger("****fetchImageUrl: ",fetchImageUrl);
     
       const formattedPrediction = {
         id: body.seed.toString(),
@@ -957,10 +985,6 @@ export default function Home(theUserData) {
         setMaskImage(null);
         setUserUploadedImage(null);
     };
-
-    // Find the full tool object using the current tool's name
-    const currentTool = tools.find(tool => tool.name === currentToolName);
-
 
   const PerformUndo = () => {
     dispatch(undo());

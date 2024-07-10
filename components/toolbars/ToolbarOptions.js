@@ -45,6 +45,8 @@ function ToolbarOptions (props)  {
   const canvasRef = props.canvasRef;
 
   const currentTool = tools.find(tool => tool.name === currentToolName);
+
+  
   const dispatch = useDispatch();
   const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
   const hamburgerVisible = useWindowWidth(); // If the screens width is less than 768px, set hamburgerVisible to true(Which means the menu/hamburger icon is visible)
@@ -164,6 +166,11 @@ useEffect(() => {
   const incrementZoom = () => dispatch(alterZoomWidth(10));
   const decrementZoom = () => dispatch(alterZoomWidth(-10));
 
+  // If the current tool is "NoTool", return null (render nothing)
+  if (currentTool?.name === 'NoTool') {
+    return null;
+  }
+  
   return (
     <div style={{ position: 'relative' }}>
       {currentTool?.name === 'MaskPainter' && (
