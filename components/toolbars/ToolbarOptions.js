@@ -517,7 +517,7 @@ useEffect(() => {
             <Button
               style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
               variant="contained"
-              onClick={() => handleModelClick('F1al')}
+              onClick={() => handleModelClick('1')}
               startIcon={<RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
               size="large"
               className={`${styles.button} ${selectedAspectRatio === '9:16' ? styles.selectedButton : ''}`}
