@@ -107,6 +107,10 @@ export default function Home(theUserData) {
         
         // Construct the fetchImageUrl with the relevant part of the path
         const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
+
+        alert("the incoming imageUrl is: ", imageUrl);
+        alert("the cleaned up is: ",cleanPath);
+        return;
         
         const formattedPrediction = {
           id: randomSeed.toString(),
@@ -738,7 +742,7 @@ export default function Home(theUserData) {
       const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
       alogger("Response from /api/generateImage:", response.data);
       alogger("Filename from genimage:", fileName);
-
+      alogger("****PATH IS: ",path);
 
   /* OLD CODE TO CHECK IF THE IMAGE IS THERE YET(AS WE USED TO TRY TO LOAD THE IMAGE IMMEDIATELY)
   // the following uses the above code to check if the image exists in the bucket using =${encodeURIComponent(path)}
@@ -762,6 +766,7 @@ export default function Home(theUserData) {
   }*/
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
+      alogger("****fetchImageUrl: ",fetchImageUrl);
     
       const formattedPrediction = {
         id: body.seed.toString(),
