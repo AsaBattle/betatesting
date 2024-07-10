@@ -524,7 +524,6 @@ useEffect(() => {
             >
               <Typography style={{ fontSize: '16px' }}>Model 1</Typography>
             </Button>
-            <Typography className="text-center mt-2">Current model: {currentModel}</Typography>
           </div>
         </div>
       </div>
