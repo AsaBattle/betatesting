@@ -115,7 +115,7 @@ export default function Home(theUserData) {
         const formattedPrediction = {
           id: randomSeed.toString(),
           status: "succeeded",
-          output: [imageUrl],
+          output: [fetchImageUrl],
           created_at: new Date().toISOString(),
           fsamGenerationCounter: 0,
           aspectRatioName: aspectRatioName,

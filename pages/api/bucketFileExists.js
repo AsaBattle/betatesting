@@ -32,6 +32,7 @@ export default async function handler(req, res) {
   const url = new URL(actualImagePath);
   const filePath = url.pathname.split('/').slice(2).join('/');
 
+  console.log('Inside bucketFileExists---- imagePath:', imagePath);
   console.log('Inside bucketFileExists---- actualImagePath:', actualImagePath);
   console.log('Inside bucketFileExists---- filePath:', filePath);
 
