@@ -111,12 +111,11 @@ export default function Home(theUserData) {
         alogger.log("****the incoming imageUrl is: "+ imageUrl);
         alogger.log("****the cleaned up is: " + cleanPath);
         alogger.log("****the fetchImageUrl is: " + fetchImageUrl);
-        return;
         
         const formattedPrediction = {
           id: randomSeed.toString(),
           status: "succeeded",
-          output: [fetchImageUrl],
+          output: [imageUrl],
           created_at: new Date().toISOString(),
           fsamGenerationCounter: 0,
           aspectRatioName: aspectRatioName,
