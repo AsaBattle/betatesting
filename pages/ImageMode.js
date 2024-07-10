@@ -108,8 +108,8 @@ export default function Home(theUserData) {
         // Construct the fetchImageUrl with the relevant part of the path
         const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
 
-        alert("the incoming imageUrl is: ", imageUrl);
-        alert("the cleaned up is: ",cleanPath);
+        alert("****the incoming imageUrl is: ", imageUrl);
+        alert("****the cleaned up is: ",cleanPath);
         return;
         
         const formattedPrediction = {
