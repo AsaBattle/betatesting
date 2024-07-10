@@ -4,7 +4,7 @@ import { tools } from '../../components/tools/Tools';
 export const toolbarSlice = createSlice({
   name: 'toolbar',
   initialState: {
-    currentToolName: tools[1].name,       // The default tool is No Tool(the tool representing nothing being selected)
+    currentToolName: tools[3].name,       // The default tool is No Tool(the tool representing nothing being selected)
     brushSize: 40,
     aspectRatioName: '1:1',
     zoomWidth: 512,

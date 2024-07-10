@@ -25,6 +25,8 @@ const alogger = require('../utils/alogger').default;
 
 import AuthService from '../services/authService';
 import { DialerSip, WidthWideTwoTone } from "@mui/icons-material";
+import { update } from "lodash";
+import { current } from "tailwindcss/colors";
 
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -32,6 +34,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
 export default function Home(theUserData) { 
+    const [updateCanvasPositionNow, setUpdateCanvasPositionNow] = useState(false);
     const [predictions, setPredictions] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null);
     const [errorRoute, setErrorRoute] = useState(null);
@@ -61,6 +64,8 @@ export default function Home(theUserData) {
     const hamburgerVisible = useSelector((state) => state.toolbar.hamburgerVisible);
     const hamXOffset = (hamburgerVisible ? -20 : 100);
     const hamYOffset = (hamburgerVisible ? -105 : 5);
+    const hamXOffsetNoTool = (hamburgerVisible ? -10 : 0);
+    const hamYOffsetNoTool = (hamburgerVisible ? 75 : 0);
 
     const canvasContainerRef = useRef(null);
     const toolbaroptionsRef = useRef(null);
@@ -242,18 +247,34 @@ export default function Home(theUserData) {
         // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
 
          //alogger("1hamburgerVisible is: " + hamburgerVisible);
-       
+         alogger("canvas position updated");
+
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + hamYOffset}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - hamXOffset}px`;
+            const oX = currentToolName === 'NoTool' ? hamXOffset - hamXOffsetNoTool : hamXOffset;
+            const oY = currentToolName === 'NoTool' ? hamYOffset + hamYOffsetNoTool : hamYOffset;
+
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + oY}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - oX}px`;
           }
 
         //localStorage.setItem('imageTokens', 3);
     };
 
+    useEffect(() => {
+      if (updateCanvasPositionNow === true) {
+        updateCanvasPosition();
+        setUpdateCanvasPositionNow(false);
+      }
+    }, [updateCanvasPositionNow]);
 
+    useEffect(() => {
+      if (currentTool) {
+        alogger("NoTool IS SETTING THE CANVAS POSITION");
+        updateCanvasPosition();
+      }
+    }, [currentTool]);
     
     useEffect(() => {
         const handleScroll = () => {
@@ -496,8 +517,11 @@ export default function Home(theUserData) {
           if (canvasContainerRef.current && toolbarRef.current) {
             const canvasRect = canvasContainerRef.current.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + hamYOffset}px`;
-            toolbarRef.current.style.left = `${canvasRect.left - hamXOffset}px`;
+            const oX = currentToolName === 'NoTool' ? hamXOffset - hamXOffsetNoTool : hamXOffset;
+            const oY = currentToolName === 'NoTool' ? hamYOffset + hamYOffsetNoTool : hamYOffset;
+
+            toolbarRef.current.style.top = `${canvasRect.top + scrollTop + oY}px`;
+            toolbarRef.current.style.left = `${canvasRect.left - oX}px`;
           }
     }, [zoomWidth, hamburgerVisible]);
 
