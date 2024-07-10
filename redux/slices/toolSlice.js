@@ -18,7 +18,7 @@ export const toolbarSlice = createSlice({
     userIsLoggedInWithAccount:  false,    // Whether the user is logged in with an account(So if false, the user has no membership or account of any kind)
     canvasDrawingEnabled: false,           // Whether the user can draw on the canvas
     imageSavePath: '',
-    model: 'Replicate',               // The Model to use for the prediction                    
+    model: 0,                               // The Model to use for the prediction                    
   },
   reducers: {
     setModel: (state, action) => {

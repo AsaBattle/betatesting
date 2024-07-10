@@ -18,43 +18,38 @@ if (process.env.VERCEL) {
 export default async function handler(req, res) {
   const { imagePath } = req.query;
   
-  if (!imagePath) {
+  // Extract the actual file path from the fetchImage API URL
+  const decodedPath = decodeURIComponent(imagePath);
+  const match = decodedPath.match(/imagePath=(.+)$/);
+  const actualImagePath = match ? match[1] : null;
+
+  if (!actualImagePath) {
     console.error('Invalid image path');
-    return res.status(400).json({ exists: false, message: 'Invalid image path' });
+    return res.status(200).json({ exists: false, message: 'Invalid image path' });
   }
 
-  // Decode the URL-encoded imagePath
-  const decodedPath = decodeURIComponent(imagePath);
-
-  // Extract the actual file path from the nested fetchImage API URL
-  const match = decodedPath.match(/imagePath=(.+)$/);
-  const actualImagePath = match ? match[1] : decodedPath;
-
-  // Further decode the actualImagePath to handle any remaining URL encoding
-  const fullyDecodedPath = decodeURIComponent(actualImagePath);
+  // Now parse the actual image URL
+  const url = new URL(actualImagePath);
+  const filePath = url.pathname.split('/').slice(2).join('/');
 
   console.log('Inside bucketFileExists---- imagePath:', imagePath);
   console.log('Inside bucketFileExists---- actualImagePath:', actualImagePath);
-  console.log('Inside bucketFileExists---- fullyDecodedPath:', fullyDecodedPath);
-
-  // Split the path into user email and file path
-  const [userEmail, ...fileParts] = fullyDecodedPath.split('/');
-  const filePath = fileParts.join('/');
+  console.log('Inside bucketFileExists---- filePath:', filePath);
 
   try {
     const bucket = storage.bucket('fjusers');
-    const file = bucket.file(`${userEmail}/${filePath}`);
+    const file = bucket.file(filePath);
     
     const [exists] = await file.exists();
     
     if (!exists) {
-      console.log(`File does not exist yet: ${userEmail}/${filePath}`);
+      console.log(`File does not exist yet: ${filePath}`);
       return res.status(200).json({ exists: false, message: 'Image not found' });
     }
 
     res.status(200).json({ exists: true, message: 'Image exists' });
   } catch (error) {
     console.error('Error checking image in GCS:', error);
-    res.status(500).json({ exists: false, message: 'Failed to check image in GCS' });
+    res.status(200).json({ exists: false, message: 'Failed to check image in GCS' });
   }
 }
