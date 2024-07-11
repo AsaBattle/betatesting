@@ -20,6 +20,8 @@ import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
+import { useWorkspace } from '../components/WorkspaceProcessor';
+
 const alogger = require('../utils/alogger').default;
 
 
@@ -76,7 +78,8 @@ export default function Home(theUserData) {
     const updatedPrediction = null;
 
     const [generateClicked, setGenerateClicked] = useState(false); // Keep track of the generate button click, so that canvas knows when to reset it mask data
-     
+    const { saveWorkspace, loadWorkspace, workspaceIsLoading } = useWorkspace();
+
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
      ? predictions[index].aspectRatioName
@@ -130,45 +133,7 @@ export default function Home(theUserData) {
         settheUpdatedPrediction(formattedPrediction);        
       }
     }, [router.query]);
-    
-    // Old version of the incoming query handling code
-    /*
-    useEffect(() => {
-      const { imageUrl, aspectRatioName } = router.query;
-      alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
-
-      const convertImageUrlToDataUrl = async (imageUrl) => {
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } catch (error) {
-          console.error("Error converting image URL to data URL: ", error);
-          return null;
-        }
-      };
-    
-      if (imageUrl && aspectRatioName) {
-        alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
-        
-        convertImageUrlToDataUrl(imageUrl)
-          .then((dataUrl) => {
-            if (dataUrl) {
-              handleImageAsFirstPrediction(dataUrl, aspectRatioName);
-            }
-          });
-      }
-    }, [router.query]);
-
-    */
-
-
-
+ 
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
         if (parseInt(theUserData.userData.credits) > 100)
@@ -186,12 +151,9 @@ export default function Home(theUserData) {
     useEffect(() => {
       alogger("theUserData changed or component just mounted - theUserData is: ", theUserData);
       alogger("allowing use rto draw to canvas is: ", canDrawToCanvas);
-      checkUserLoginAndCreditsForChange();
-      
-      // This is where we will make a call to our express api to get the user's default gcs bucket path(the save path for their images)
-      // and set it in the redux store
-      // But for now, we just set it to a default value
-      let theLocalUserId;
+      checkUserLoginAndCreditsForChange();      
+
+      let theLocalUserId = '';
       let ipUser = false;
     
       if (!theUserData.userData) {
@@ -201,20 +163,24 @@ export default function Home(theUserData) {
         setIPUser(false);
         //theLocalUserId = theUserData.userData.user_id;
         theLocalUserId = theUserData.userData.email;
+
+        // we only want to load the workspace if the user is logged in(ip users don't have workspaces)
+        loadWorkspace(theLocalUserId);
       }
 
-      const userId = theLocalUserId; //IPUser ? 'anonymous' : theLocalUserId;
+    
       const folderPath = `BaseFolder`;
       dispatch(setImageSavePath(folderPath));
       
     }, [theUserData, localUserCredits]);
 
 
+
+
     useEffect(() => {      
     alogger("Can draw to canvas is: ", canDrawToCanvas);
     }, [canDrawToCanvas]);
     
-
 
     // Function to clear the mask
     const clearMaskImage = async () => {
@@ -489,7 +455,7 @@ export default function Home(theUserData) {
           const data = await response.json();
           //alogger("Response from ipify.org is: ", data);
           setLocalUserIp(data.ip);
-          //alogger("Yours IP address is: ", data.ip);
+          alogger("Yours IP address is: ", data.ip);
           const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
           //alogger("User credits are: ", userCredits);
           setLocalUserCredits(userCredits);
@@ -743,27 +709,6 @@ export default function Home(theUserData) {
       alogger("Response from /api/generateImage:", response.data);
       alogger("Filename from genimage:", fileName);
       console.log("****PATH IS: ",path);
-
-  /* OLD CODE TO CHECK IF THE IMAGE IS THERE YET(AS WE USED TO TRY TO LOAD THE IMAGE IMMEDIATELY)
-  // the following uses the above code to check if the image exists in the bucket using =${encodeURIComponent(path)}
-  // if it does not exist, we return a 404 error
-  try {
-    const response = await fetch(`/api/bucketFileExists?imagePath=${encodeURIComponent(path)}`);
-    const data = await response.json();
-    if (response.status !== 200) {
-      setErrorMessage({ message: data.message });
-      setIsLoading(false);
-      return;
-    }
-
-    alogger('Image exists in the bucket:', data.message);
-
-  } catch (error) {
-    console.error('Error checking if image exists in the bucket:', error);
-    setError({ message: 'Failed to check if the image exists in the bucket. Please try again.' });
-    setIsLoading(false);
-    return;
-  }*/
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
       console.log("****fetchImageUrl: ",fetchImageUrl);
