@@ -44,7 +44,7 @@ export const WorkspaceProcessor = ({ children }) => {
                 imageSavePath: imageSavePath,
                 currentFiles: ['file1.jpg', 'file2.jpg'], // Replace with the actual list of files
             };
-            await axios.post('/api/saveWorkspace', workspaceData); // Adjust the URL as needed
+            await axios.post('/api/user/saveWorkspace', workspaceData); // Adjust the URL as needed
             console.log('Workspace saved successfully');
         } catch (error) {
             console.error('Error saving workspace:', error);
