@@ -1,4 +1,4 @@
-// pages/api/workspace/saveWorkspace.js
+// pages/api/saveWorkspace.js
 import { Storage } from '@google-cloud/storage';
 
 export const config = {
@@ -19,6 +19,7 @@ if (process.env.VERCEL) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
+    console.log("Method not allowed:", req.method);
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
