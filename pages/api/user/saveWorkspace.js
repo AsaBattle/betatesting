@@ -1,45 +1,44 @@
-// pages/api/saveWorkspace.js
 import { Storage } from '@google-cloud/storage';
 
 export const config = {
   api: {
-    responseLimit: false,
-  },
+    bodyParser: {
+      sizeLimit: '30mb',
+    },
+  }
 };
 
 let storage;
 
 if (process.env.VERCEL) {
+  // Running on Vercel
   const serviceAccountKey = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
   storage = new Storage({ credentials: serviceAccountKey });
 } else {
+  // Running locally
   storage = new Storage();
 }
 
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    console.log("Method not allowed:", req.method);
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
+  if (req.method === 'POST') {
+    const { userId, ...workspaceData } = req.body;
 
-  const { userId } = req.body;
+    try {
+      console.log("Attempting to save workspace for user:", userId);
+      const bucket = storage.bucket('fjusers');
+      const file = bucket.file(`${userId}/fjuserworkspace.dat`);
 
-  const storage = new Storage();
-  const bucket = storage.bucket('fjusers');
-  const file = bucket.file(`${userId}/fjuserworkspace.dat`);
+      const saveData = JSON.stringify(workspaceData);
+      await file.save(saveData);
 
-  // We dont' want to save the userId in the workspace file
-  delete req.body.userId;
-
-  try {
-    const saveData = JSON.stringify(req.body);
-    await file.save(saveData); // Save all attributes from req.body
-    console.log('Workspace saved successfully, data saved to ' + `${userId}/fjuserworkspace.dat`);
-    console.log('Data saved was: ', saveData);
-    res.status(200).json({ message: 'Workspace saved successfully' });
-  } catch (error) {
-    console.error('Error saving workspace:', error);
-    res.status(500).json({ message: 'Error saving workspace' });
+      console.log('Workspace saved successfully, data saved to:', `${userId}/fjuserworkspace.dat`);
+      console.log('Data saved was:', saveData);
+      res.status(200).json({ message: 'Workspace saved successfully' });
+    } catch (error) {
+      console.error('Error saving workspace:', error);
+      res.status(500).json({ message: 'Error saving workspace', error: error.message });
+    }
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });
   }
 }
