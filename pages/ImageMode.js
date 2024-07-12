@@ -78,7 +78,7 @@ export default function Home(theUserData) {
     const belowCanvasRef = useRef(null); 
     const updatedPrediction = null;
 
-    const [generateClicked, setGenerateClicked] = useState(false); // Keep track of the generate button click, so that canvas knows when to reset it mask data
+    const [generateClicked, setGenerateClicked] = useState(false);              // Keep track of the generate button click, so that canvas knows when to reset it mask data
     const { saveWorkspace, loadWorkspace, workspaceIsLoading } = useWorkspace();
 
     // Calculate aspect ratio from the current prediction if available
