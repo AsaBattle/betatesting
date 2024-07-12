@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useWorkspace } from '../../components/WorkspaceProcessor';
+import { useWorkspace } from '../components/WorkspaceProcessor';
 
 export function useImageModeWorkspace() {
   const router = useRouter();
