@@ -109,11 +109,8 @@ export default async function handler(req, res) {
           console.log("In inpainting, apiUrl is:", apiUrl);
           console.log("In inpainting, so posting this: ", form);
 
-          response = await axios.post(apiUrl, form, {
-            headers: {
-              ...form.getHeaders(),
-            },
-            timeout: 300000 // 5 minutes
+          response = await axios.post(apiUrl, form, { headers: {...form.getHeaders(),},
+            timeout: 290000
           });
 
 
@@ -141,10 +138,8 @@ export default async function handler(req, res) {
           }
 
           try {
-            console.time('apiCall');
-            c
-            response = await axios.post(apiUrl, requestBody, { timeout: 290000 });
-            console.timeEnd('apiCall');
+            response = await axios.post(apiUrl, requestBody,
+               { timeout: 290000 });
           } catch (error) {
             console.error("Error posting to the API:", error);
             return res.status(500).json({ error: "Failed to post to the API" });
