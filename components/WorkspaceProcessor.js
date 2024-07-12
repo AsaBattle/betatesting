@@ -83,6 +83,7 @@ export const WorkspaceProcessor = ({ children }) => {
 
     // this effect will run when the component mounts and will add an event listener to the window object
     useEffect(() => {
+        console.log('WorkspaceProcessor mounted/updated');
         // Add an event listener to the window object to save the workspace when the user navigates away from the page 
         // for any reason, i.e. when the user logs out, closes the browser, or navigates away from the page
         window.addEventListener('beforeunload', saveWorkspace);
