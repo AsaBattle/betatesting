@@ -103,7 +103,7 @@ function ToolbarOptions (props)  {
     console.log("right before await FSAMProcessor...");
     setCurrentPredictionFSAMGenerationCounter('***');
     // Start the process of generating the AI mask via the fast segmentation model
-  await FSAMProcessor(props.predictions[index], props.setPredictions);
+    await FSAMProcessor(props.predictions[index], props.setPredictions);
     console.log("...right after await FSAMProcessor");
 
     // flip flops the viewmaskactive state
