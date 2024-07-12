@@ -58,7 +58,8 @@ export default async function handler(req, res) {
       const isInpainting = requestBody.image && requestBody.mask;
       const apiUrl = isInpainting ? "https://api.craftful.ai/geninpaint" : "https://api.craftful.ai/genimage";
 
-      if (isInpainting) {
+      if (isInpainting && requestBody.userEmail) {
+        console.log("In inpainting, AND there is an user email... so making the userid the email.");
         requestBody.userid = requestBody.userEmail;
       }
 
