@@ -1,10 +1,10 @@
-// hooks/useImageModeWorkspace.js
+// pages/hooks/useImageModeWorkspace.js
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useWorkspace } from '../../components/WorkspaceProcessor'
+import { useWorkspace } from '../../components/WorkspaceProcessor';
 
-export default function useImageModeWorkspace() {
+export function useImageModeWorkspace() {
   const router = useRouter();
   const workspaceContext = useWorkspace();
 
@@ -32,6 +32,6 @@ export default function useImageModeWorkspace() {
     };
   }, [router, workspaceContext]);
 
-  // Return nothing, as the hook handles everything internally
+  // Return nothing as we're just setting up side effects
   return null;
 }
