@@ -106,12 +106,17 @@ export default async function handler(req, res) {
             form.append('mask', maskBuffer, { filename: 'mask.png', contentType: 'image/png' });
           }
 
+          console.log("In inpainting, apiUrl is:", apiUrl);
+          console.log("In inpainting, so posting this: ", form);
+
           response = await axios.post(apiUrl, form, {
             headers: {
               ...form.getHeaders(),
             },
             timeout: 300000 // 5 minutes
           });
+
+
         } else {
           // Handle genimage request (original method)
           if (requestBody.image && requestBody.image.startsWith('/api/fetchImage')) {
@@ -137,6 +142,7 @@ export default async function handler(req, res) {
 
           try {
             console.time('apiCall');
+            c
             response = await axios.post(apiUrl, requestBody, { timeout: 290000 });
             console.timeEnd('apiCall');
           } catch (error) {
@@ -149,6 +155,7 @@ export default async function handler(req, res) {
         res.status(200).json(response.data);
       } catch (apiError) {
         console.log("API request failed:", apiError.message);
+
         if (apiError.response) {
           console.log("API response status:", apiError.response.status);
           console.log("API response data:", apiError.response.data);
