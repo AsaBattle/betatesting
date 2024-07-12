@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useWorkspace } from '../components/WorkspaceProcessor';
+const alogger = require('../utils/alogger').default;
 
 export function useImageModeWorkspace() {
   const router = useRouter();
@@ -10,12 +11,16 @@ export function useImageModeWorkspace() {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
+      alogger('Route changed:', url);
+
       if (!url.includes('/ImageMode')) {
+        alogger('Saving workspace before navigating away, since url does not include /ImageMode');
         workspaceContext.saveWorkspace();
       }
     };
 
     const handleBeforeUnload = (event) => {
+      alogger('Saving workspace before unloading page');
       workspaceContext.saveWorkspace();
       // The following is for older browsers
       event.preventDefault();
