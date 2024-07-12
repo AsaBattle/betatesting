@@ -21,6 +21,7 @@ import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 import { useWorkspace } from '../components/WorkspaceProcessor';
+import { useImageModeWorkspace } from '../hooks/useImageModeWorkspace';
 
 const alogger = require('../utils/alogger').default;
 
@@ -92,6 +93,8 @@ export default function Home(theUserData) {
     const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
+
+    useImageModeWorkspace(); // Setup our auto-save functionality
 
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
