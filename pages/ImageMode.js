@@ -21,7 +21,7 @@ import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 import { useWorkspace } from '../components/WorkspaceProcessor';
-import { useImageModeWorkspace } from '../hooks/useImageModeWorkspace';
+import { useImageModeWorkspace } from '../pages/hooks/useImageModeWorkspace.js'
 
 const alogger = require('../utils/alogger').default;
 
