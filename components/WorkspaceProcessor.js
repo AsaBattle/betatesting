@@ -37,7 +37,7 @@ export const WorkspaceProcessor = ({ children }) => {
     // - The user navigates away from the page
     // This component will be named saveWorkspace and will be called from the WorkspaceFile component
     const saveWorkspace = async () => {
-        console.log('Saving workspace');
+        console.log('Saving workspace: localUserId:', localUserId, 'imageSavePath:', imageSavePath);
         try {
             const workspaceData = {
                 userId: localUserId,

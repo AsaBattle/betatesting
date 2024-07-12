@@ -23,6 +23,11 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { userId, ...workspaceData } = req.body;
 
+    if (!userId){
+      console.error('No userId provided. Cannot save workspace.');
+      return;
+    }
+
     try {
       console.log("Attempting to save workspace for user:", userId);
       const bucket = storage.bucket('fjusers');
@@ -31,6 +36,7 @@ export default async function handler(req, res) {
       const saveData = JSON.stringify(workspaceData);
       await file.save(saveData);
 
+      console.log("Userid is:", userId)
       console.log('Workspace saved successfully, data saved to:', `${userId}/fjuserworkspace.dat`);
       console.log('Data saved was:', saveData);
       res.status(200).json({ message: 'Workspace saved successfully' });
