@@ -299,6 +299,11 @@ const combineImages = async (img1, img2, width, height) => {
 // Expose these methods to the parent component
 useImperativeHandle(ref, () => ({
 
+  clearCombinedMask: () => {
+    setCombinedImg(null);
+    setSketchMask(null);
+  },
+
   getCombinedMask: async () => {
     let combinedImage = null;
 

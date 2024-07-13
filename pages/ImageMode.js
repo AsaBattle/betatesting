@@ -189,7 +189,8 @@ export default function Home(theUserData) {
     // Function to clear the mask
     const clearMaskImage = async () => {
    
-      await canvasRef.current.setCombinedMask(null);
+      console.log("CLEAR - clearMaskImage is being called");
+      await canvasRef.current.clearCombinedMask();
 
       setMaskImage(null); // or setMaskImage('');
       setClearMask(true); // Set clearMask to true when clearing the mask
@@ -579,6 +580,14 @@ export default function Home(theUserData) {
     const GetRequestBody = (e, combinedMask, currentPredictionOutput, width, height, currentAspectRatioName, theLocalUserId, ipUser, userEmail) => {  
       let body = null;
       const randomSeed = Math.floor(Math.random() * 1000000);
+
+      if (combinedMask)
+      {
+        alogger("GetRequestBody called with combinedMask is: ", combinedMask);
+      } else {
+        alogger("GetRequestBody called with combinedMask is NULL");
+      }
+
       body = {
         prompt: e.target.prompt.value,
         foldername: imageSavePath,
@@ -735,6 +744,8 @@ export default function Home(theUserData) {
       setPredictions(predictions.concat([formattedPrediction]));
       dispatch(setIndex(predictions.length+1));
       setIsLoading(false);
+
+      await clearMaskImage();
 
       //await updateLocalUserCredits();
     };
