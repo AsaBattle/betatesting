@@ -113,4 +113,8 @@ export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
     return null; // This component doesn't render anything
 });
 
+// Vercel needs this displayName to build correctly
+WorkspaceProcessor.displayName = 'WorkspaceProcessor';
+
+
 export default WorkspaceProcessor;
