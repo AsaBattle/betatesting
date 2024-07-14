@@ -9,8 +9,12 @@ export const historySlice = createSlice({
     index: 0,
     userId: null,
     currentImage: null,
+    viewModeLoadedImages: [],
   },
   reducers: {
+    setViewModeLoadedImages: (state, action) => {
+      state.viewModeLoadedImages = action.payload;
+    },
     setUserId: (state, action) => {
       state.userId = action.payload;
     },
@@ -58,5 +62,6 @@ export const historySlice = createSlice({
   },
 });
 
-export const { incIndex, decIndex, setIndex, pushToUndo, setCurrentImage, undo, redo, setUserId } = historySlice.actions;
+export const { incIndex, decIndex, setIndex, pushToUndo, setCurrentImage, 
+                undo, redo, setUserId, setViewModeLoadedImages } = historySlice.actions;
 export default historySlice.reducer;

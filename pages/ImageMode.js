@@ -46,6 +46,7 @@ export default function Home(theUserData) {
     const dispatch = useDispatch();
     const currentImage = useSelector((state) => state.history.currentImage);
     const currentUserId = useSelector((state) => state.history.userId);
+    const viewModeLoadedImages = useSelector((state) => state.history.viewModeLoadedImages);
 
     const router = useRouter();
     const placeholderHandler = () => alogger('Handler not implemented yet.');
@@ -98,7 +99,7 @@ export default function Home(theUserData) {
       console.log('ImageMode first useEffect fired');
     }, []);
     
-    
+    /*
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
       alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
@@ -139,7 +140,7 @@ export default function Home(theUserData) {
         dispatch(setIndex(predictions.length+1));
         settheUpdatedPrediction(formattedPrediction);        
       }
-    }, [router.query]);
+    }, [router.query]);*/
  
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
@@ -500,6 +501,11 @@ export default function Home(theUserData) {
       } else {
         alogger("WorkspaceProcessor is not available to load the workspace.");
       }
+      
+      dispatch(setIndex(predictions.length+1));
+
+       //Now we check to see if ViewMode sent us an image to load onto the end of the predictions array
+       //we use viewModeLoadedImages 
     };
 
      const checkUserLogin = async () => {
