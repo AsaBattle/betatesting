@@ -5,12 +5,13 @@ import axios from 'axios';
 import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
   const router = useRouter();
   const currentUserId = useSelector((state) => state.history.userId);
+  const dispatch = useDispatch();
 
 
   useEffect(() => {
@@ -37,9 +38,10 @@ export default function ViewMode( theUserData ) {
     try {
       const imageUrl = file.url;
       const aspectRatioName = calculateAspectRatio(file.width, file.height);
+      dispatch(setViewModeLoadedImages(imageUrl));
       router.push({
         pathname: '/ImageMode',
-        query: { imageUrl, aspectRatioName },
+        //query: { imageUrl, aspectRatioName },
       });
     } catch (error) {
       console.error('Error handling image click:', error);
