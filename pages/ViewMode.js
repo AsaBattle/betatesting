@@ -5,22 +5,27 @@ import axios from 'axios';
 import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
 import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
 
 export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
   const router = useRouter();
+  const currentUserId = useSelector((state) => state.history.userId);
 
 
   useEffect(() => {
     //console.log("theUserData is: ", theUserData);
-    console.log("theUserData.user_id is: ", theUserData.userData)
+    console.log("the current user id is: ", currentUserId);
 
   const fetchFiles = async () => {
+    console.log("fetching files for user id: ", currentUserId);
       try {
-        const response = await axios.get(`/api/files?userId=${theUserData.userData.email}`);
+        const response = await axios.get(`/api/files?userId=${currentUserId}`);
         setFiles(response.data.files);
+        console.log("Files fetched!");
       } catch (error) {
         console.error('Error fetching files:', error);
+        console.log("Error fetching files!");
       }
     };
 

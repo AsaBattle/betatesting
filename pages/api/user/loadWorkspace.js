@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     const { userId } = req.body;
 
     try {
-      console.log("Attempting to load workspace for user:", userId);
+      console.log("Attempting to load workspace from bucket path:", `${userId}/fjuserworkspace.dat`);
       const bucket = storage.bucket('fjusers');
       const file = bucket.file(`${userId}/fjuserworkspace.dat`);
 
@@ -34,9 +34,13 @@ export default async function handler(req, res) {
       }
 
       const [contents] = await file.download();
+      console.log("Raw file contents:", contents.toString());
+
       const workspaceData = JSON.parse(contents.toString());
 
-      console.log("Loaded workspace data:", workspaceData);
+      console.log("Parsed workspace data:", workspaceData);
+      console.log("imageSavePath:", workspaceData.imageSavePath);
+      console.log("currentFiles:", workspaceData.currentFiles);
       res.status(200).json(workspaceData);
     } catch (error) {
       console.error('Error loading workspace:', error);

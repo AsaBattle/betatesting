@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { set } from 'lodash';
 
 export const historySlice = createSlice({
   name: 'history',
@@ -6,9 +7,13 @@ export const historySlice = createSlice({
     undoStack: [],
     redoStack: [],
     index: 0,
+    userId: null,
     currentImage: null,
   },
   reducers: {
+    setUserId: (state, action) => {
+      state.userId = action.payload;
+    },
     incIndex: (state) => {
       console.log('incIndex is executing');
       state.index += 1;
@@ -53,5 +58,5 @@ export const historySlice = createSlice({
   },
 });
 
-export const { incIndex, decIndex, setIndex, pushToUndo, setCurrentImage, undo, redo } = historySlice.actions;
+export const { incIndex, decIndex, setIndex, pushToUndo, setCurrentImage, undo, redo, setUserId } = historySlice.actions;
 export default historySlice.reducer;

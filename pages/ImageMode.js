@@ -15,21 +15,18 @@ import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount, setImageSavePath } from '../redux/slices/toolSlice';
-import { undo, redo, setIndex} from '../redux/slices/historySlice'; // Adjust the import path
+import { undo, redo, setIndex, setUserId } from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
-import { useWorkspace } from '../components/WorkspaceProcessor';
-import { useImageModeWorkspace } from '../hooks/useImageModeWorkspace';
+import WorkspaceProcessor from '../components/WorkspaceProcessor';
 
 const alogger = require('../utils/alogger').default;
 
 
 import AuthService from '../services/authService';
-import { DialerSip, WidthWideTwoTone } from "@mui/icons-material";
-import { update } from "lodash";
-import { current } from "tailwindcss/colors";
+
 
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -48,7 +45,8 @@ export default function Home(theUserData) {
     const brushSize = useSelector((state) => state.toolbar.brushSize);
     const dispatch = useDispatch();
     const currentImage = useSelector((state) => state.history.currentImage);
-    const [userData, setUserData] = useState(null);
+    const currentUserId = useSelector((state) => state.history.userId);
+
     const router = useRouter();
     const placeholderHandler = () => alogger('Handler not implemented yet.');
     const undoStack = useSelector((state) => state.history.undoStack);
@@ -61,6 +59,7 @@ export default function Home(theUserData) {
     const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
     const [IPUser, setIPUser] = useState(false);
     const imageModel = useSelector((state) => state.toolbar.model);
+    const workspaceProcessorRef = useRef();
 
     // Get the current aspect ratio's width and height
     const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
@@ -79,7 +78,6 @@ export default function Home(theUserData) {
     const updatedPrediction = null;
 
     const [generateClicked, setGenerateClicked] = useState(false);              // Keep track of the generate button click, so that canvas knows when to reset it mask data
-    const { saveWorkspace, loadWorkspace, workspaceIsLoading } = useWorkspace();
 
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
@@ -94,8 +92,13 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-    useImageModeWorkspace(); // Setup our auto-save functionality
+    console.log('ImageMode component started rendering');
 
+    useEffect(() => {
+      console.log('ImageMode first useEffect fired');
+    }, []);
+    
+    
     useEffect(() => {
       const { imageUrl, aspectRatioName } = router.query;
       alogger("received image URL and aspect ratio from router query: ", imageUrl, aspectRatioName);
@@ -150,6 +153,13 @@ export default function Home(theUserData) {
         setUserLoginNameAndCredits(`FREE Credits Remaining: ${localUserCredits}`);
       }
     }
+
+
+    const handleSaveWorkspace = () => {
+      if (workspaceProcessorRef.current) {
+          workspaceProcessorRef.current.saveWorkspace();
+      }
+  };
     
 
     useEffect(() => {
@@ -169,7 +179,7 @@ export default function Home(theUserData) {
         theLocalUserId = theUserData.userData.email;
 
         // we only want to load the workspace if the user is logged in(ip users don't have workspaces)
-        loadWorkspace(theLocalUserId);
+        //loadWorkspace(theLocalUserId);
       }
 
     
@@ -449,43 +459,99 @@ export default function Home(theUserData) {
       } else {
           alogger("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
       }
-
-      // Get ip address
-      // use ip to log into express api's freeuser route
-      // this returns their credits based on ip address
-      // we store this in its localUserCredits var
-      const getIP = async () => {
-          alogger("getIP is Getting IP address...");
-          const response = await fetch('https://api.ipify.org?format=json');
-          const data = await response.json();
-          //alogger("Response from ipify.org is: ", data);
-          setLocalUserIp(data.ip);
-          alogger("Yours IP address is: ", data.ip);
-          const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
-          //alogger("User credits are: ", userCredits);
-          setLocalUserCredits(userCredits);
-      }
-      getIP();
   }, []);
 
+    // Function to load the workspace from the user's GCS bucket
+    const LoadWorkspace = async () => {
+      alogger("Attempting to LoadWorkspace in ImageMode.js...");
+    
+      if (workspaceProcessorRef.current) {
+        const loadedWorkspace = await workspaceProcessorRef.current.loadWorkspace();
+        alogger("Loaded workspace is: ", loadedWorkspace);
+    
+        if (loadedWorkspace && loadedWorkspace.currentFiles) {
+          // Convert the loaded files into the format expected by predictions
+          const loadedPredictions = loadedWorkspace.currentFiles.map(file => ({
+            id: file.id || Math.random().toString(36).substr(2, 9),
+            status: "succeeded",
+            output: [file.fileUrl],
+            fileUrl: file.fileUrl,
+            created_at: file.created_at || new Date().toISOString(),
+            fsamGenerationCounter: file.fsamGenerationCounter || 0,
+            aspectRatioName: file.aspectRatioName || "1:1", // default to 1:1 if not provided
+            type: file.type || 1,
+            input: {
+              prompt: file.input?.prompt || "NOT YET AVAILABLE",
+            },
+          }));
+    
+          // Update the predictions state
+          setPredictions(loadedPredictions);
+    
+          // Update the image save path if it exists in the loaded workspace
+          if (loadedWorkspace.imageSavePath) {
+            dispatch(setImageSavePath(loadedWorkspace.imageSavePath));
+          }
+    
+          alogger("Predictions loaded from workspace: ", loadedPredictions);
+        } else {
+          alogger("No currentFiles found in loaded workspace");
+        }
+      } else {
+        alogger("WorkspaceProcessor is not available to load the workspace.");
+      }
+    };
+
      const checkUserLogin = async () => {
+  
+          // Get ip address
+          // use ip to log into express api's freeuser route
+          // this returns their credits based on ip address
+          // we store this in its localUserCredits var
+          const getIP = async () => {
+            alogger("getIP is Getting IP address...");
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            //alogger("Response from ipify.org is: ", data);
+            setLocalUserIp(data.ip);
+            dispatch(setUserId(data.ip));
+            alogger("Yours IP address is: ", data.ip);
+            const userCredits = await AuthService.getFreeUserCredits(data.ip); // directly use data.ip here
+            //alogger("User credits are: ", userCredits);
+            setLocalUserCredits(userCredits);
+        }
+
+
         if (!theUserData) {
           dispatch(setUserIsLoggedInWithAccount(false));
+          getIP();
         } else {
             if (theUserData.userData) {
                 dispatch(setUserIsLoggedInWithAccount(true));
-                setUserData(theUserData.userData);
+                dispatch(setUserId(theUserData.userData.email));
             } else {
                 dispatch(setUserIsLoggedInWithAccount(false));
+                getIP();
             }
         }
     };
+
+    useEffect(() => {
+      if (currentUserId) {
+        alogger("Current user ID changed or component just mounted - currentUserId is: ", currentUserId);
+        LoadWorkspace();
+      }
+  }, [currentUserId]);
 
   
     useEffect(() => {
       dispatch(setZoomWidth(displayWidth));
     }, [displayWidth]);
 
+
+    useEffect(() => {
+      alogger("ASASAASASASA - theUserData.email changed or component just mounted - theUserData is: ", theUserData);
+  }, [ theUserData]);
 
     // Position the toolbar based on the viewport and canvas container
     useEffect(() => {
@@ -785,7 +851,7 @@ export default function Home(theUserData) {
 
 
   const ModeButton = () => {
-    if (!IPUser) {
+    if (!IPUser || 1) {
       return (
         <button onClick={handleViewModePush} 
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -821,11 +887,17 @@ export default function Home(theUserData) {
   }
 
   return (
+    console.log('ImageMode about to return JSX'),
     <div className={styles.layout}>
       <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
         <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef} />
       </div>
       <div className={styles.content}>
+        <WorkspaceProcessor 
+          ref={workspaceProcessorRef} 
+          userId={theUserData.userData ? theUserData.userData.email : localUserIp}
+          predictions={predictions}
+        />
         <Head>
           <title>CraftFul.ai Studio V1.0</title>
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
