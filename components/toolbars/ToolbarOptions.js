@@ -151,15 +151,17 @@ useEffect(() => {
 
     if (dec.includes('storage.googleapis.com')) {
       console.log('It does include the string, so nothing necessary to do');
+      return url;
     } else {
       console.log('It did NOT include the string, so adding it!!!');
 
       // ok so I need to add this string inside the double quotes "https://storage.googleapis.com/fjusers/" into the middle
       // of the dec string, right after the "imagePath=" string
       const firstPart = dec.substring(0, dec.indexOf('imagePath=')+9);
-      const secondPart = dec.substring(dec.indexOf('imagePath=')+9, dec.length);
-      const newUrl = `${firstPart}https://storage.googleapis.com/fjusers/${secondPart}`;
+      const secondPart = dec.substring(dec.indexOf('imagePath=')+10, dec.length);
+      const newUrl = `/api/fetchImage?imagePath=https://storage.googleapis.com/fjusers/${secondPart}`;
       console.log('newUrl is: ', newUrl);
+      return newUrl;
     }
   }
 
@@ -175,7 +177,7 @@ useEffect(() => {
     console.log('----------------------------------');
     props.predictions.forEach((prediction,i) => {
       console.log('index: ', i);
-      dIt(prediction.output[0]);
+      prediction.output[0] = dIt(prediction.output[0]);
     });
 
     setSelectedAspectRatio(aspectRatio);

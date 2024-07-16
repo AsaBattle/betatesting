@@ -520,6 +520,7 @@ export default function Home(theUserData) {
       }
 
 
+      // If the user clicked on an image in ViewMode, load it into the predictions array
       if (viewModeLoadedImages && viewModeLoadedImages.imageUrl && viewModeLoadedImages.aspectRatioName) {
         alogger("Image URL:", viewModeLoadedImages.imageUrl);
         alogger("Aspect Ratio Name:", viewModeLoadedImages.aspectRatioName);
@@ -535,9 +536,26 @@ export default function Home(theUserData) {
         
         // Remove any query parameters
         const cleanPath = relevantPath.split('?')[0];
-        
+
+        // If the path is not a proper GCS path, construct the GCS path
+        alogger("url before encoding is `/api/fetchImage?imagePath=" + cleanPath + "`");
+        const cleanPathPlus = `/api/fetchImage?imagePath=${cleanPath}`;
+        let newUrl = null;
+        if (!cleanPathPlus.includes('storage.googleapis.com')) {
+          const secondPart = cleanPathPlus.substring(cleanPathPlus.indexOf('imagePath=')+10, cleanPathPlus.length);
+          newUrl = `https://storage.googleapis.com/fjusers/${secondPart}`;
+          console.log('newUrl is: ', newUrl);
+        }
+
+
         // Construct the fetchImageUrl with the relevant part of the path
-        const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
+        let fetchImageUrl;
+
+        // Use the newly corrected URL if it exists
+        if (newUrl) 
+          fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(newUrl)}`;
+        else
+          fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
       
         // No need to use formatFileUrl here as we've already formatted it correctly
         alogger("***The formatted file URL is: ", fetchImageUrl);
