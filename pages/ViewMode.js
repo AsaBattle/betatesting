@@ -6,6 +6,8 @@ import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
+import { setViewModeLoadedImages } from '../redux/slices/historySlice'; // Adjust the import path
+
 
 export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
@@ -38,7 +40,8 @@ export default function ViewMode( theUserData ) {
     try {
       const imageUrl = file.url;
       const aspectRatioName = calculateAspectRatio(file.width, file.height);
-      dispatch(setViewModeLoadedImages(imageUrl));
+      console.log('IMAGE CLICKED:', imageUrl, aspectRatioName);
+      dispatch(setViewModeLoadedImages({ imageUrl, aspectRatioName }));
       router.push({
         pathname: '/ImageMode',
         //query: { imageUrl, aspectRatioName },
