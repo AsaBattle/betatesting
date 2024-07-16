@@ -9,11 +9,16 @@ export const historySlice = createSlice({
     index: 0,
     userId: null,
     currentImage: null,
-    viewModeLoadedImages: [],
+    viewModeLoadedImages: {
+      imageUrl: null,
+      aspectRatioName: null,
+    },
   },
   reducers: {
     setViewModeLoadedImages: (state, action) => {
-      state.viewModeLoadedImages = action.payload;
+      const { imageUrl, aspectRatioName } = action.payload;
+      console.log('setViewModeLoadedImages is executing');
+      state.viewModeLoadedImages = { imageUrl, aspectRatioName };
     },
     setUserId: (state, action) => {
       state.userId = action.payload;

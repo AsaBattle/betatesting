@@ -15,7 +15,7 @@ import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount, setImageSavePath } from '../redux/slices/toolSlice';
-import { undo, redo, setIndex, setUserId } from '../redux/slices/historySlice'; // Adjust the import path
+import { undo, redo, setIndex, setUserId, setViewModeLoadedImages } from '../redux/slices/historySlice'; // Adjust the import path
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
@@ -93,10 +93,10 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-    console.log('ImageMode component started rendering');
+    alogger('ImageMode component started rendering');
 
     useEffect(() => {
-      console.log('ImageMode first useEffect fired');
+      alogger('ImageMode first useEffect fired');
     }, []);
     
     /*
@@ -200,7 +200,7 @@ export default function Home(theUserData) {
     // Function to clear the mask
     const clearMaskImage = async () => {
    
-      console.log("CLEAR - clearMaskImage is being called");
+      alogger("CLEAR - clearMaskImage is being called");
       await canvasRef.current.clearCombinedMask();
 
       setMaskImage(null); // or setMaskImage('');
@@ -447,6 +447,16 @@ export default function Home(theUserData) {
       }
   };
 
+    const formatFileUrl = (url) => {
+      if (!url.includes('https://storage.googleapis.com/fjusers/')) {
+        const fullStorageUrl = `https://storage.googleapis.com/fjusers/${url.split('imagePath=')[1]}`;
+        return `/api/fetchImage?imagePath=${encodeURIComponent(fullStorageUrl)}`;
+      }
+      return url;
+    };
+  
+
+
     useEffect(() => {
       
       // Check if the user is logged in
@@ -464,6 +474,7 @@ export default function Home(theUserData) {
 
     // Function to load the workspace from the user's GCS bucket
     const LoadWorkspace = async () => {
+      let newPredictionsCount = 0;
       alogger("Attempting to LoadWorkspace in ImageMode.js...");
     
       if (workspaceProcessorRef.current) {
@@ -472,7 +483,9 @@ export default function Home(theUserData) {
     
         if (loadedWorkspace && loadedWorkspace.currentFiles) {
           // Convert the loaded files into the format expected by predictions
-          const loadedPredictions = loadedWorkspace.currentFiles.map(file => ({
+          const loadedPredictions = loadedWorkspace.currentFiles.map(file => {
+            alogger("Loaded file url is: ", file.fileUrl);
+            return {
             id: file.id || Math.random().toString(36).substr(2, 9),
             status: "succeeded",
             output: [file.fileUrl],
@@ -484,10 +497,14 @@ export default function Home(theUserData) {
             input: {
               prompt: file.input?.prompt || "NOT YET AVAILABLE",
             },
-          }));
+            };
+          });
     
           // Update the predictions state
           setPredictions(loadedPredictions);
+
+          newPredictionsCount = loadedPredictions.length;
+          alogger("First Loaded predctions count is: ", newPredictionsCount);
     
           // Update the image save path if it exists in the loaded workspace
           if (loadedWorkspace.imageSavePath) {
@@ -501,11 +518,54 @@ export default function Home(theUserData) {
       } else {
         alogger("WorkspaceProcessor is not available to load the workspace.");
       }
-      
-      dispatch(setIndex(predictions.length+1));
 
-       //Now we check to see if ViewMode sent us an image to load onto the end of the predictions array
-       //we use viewModeLoadedImages 
+
+      if (viewModeLoadedImages && viewModeLoadedImages.imageUrl && viewModeLoadedImages.aspectRatioName) {
+        alogger("Image URL:", viewModeLoadedImages.imageUrl);
+        alogger("Aspect Ratio Name:", viewModeLoadedImages.aspectRatioName);
+        const randomSeed = Math.floor(Math.random() * 1000000);
+        
+        // Decode the URL once
+        const decodedUrl = decodeURIComponent(viewModeLoadedImages.imageUrl);
+        
+        // Extract the path without creating a URL object
+        const pathParts = decodedUrl.split('/');
+        const fjusersIndex = pathParts.findIndex(part => part === 'fjusers');
+        const relevantPath = pathParts.slice(fjusersIndex + 1).join('/');
+        
+        // Remove any query parameters
+        const cleanPath = relevantPath.split('?')[0];
+        
+        // Construct the fetchImageUrl with the relevant part of the path
+        const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
+      
+        // No need to use formatFileUrl here as we've already formatted it correctly
+        alogger("***The formatted file URL is: ", fetchImageUrl);
+        const formattedPrediction = {
+          id: randomSeed.toString(),
+          status: "succeeded",
+          output: [fetchImageUrl],
+          fileUrl: fetchImageUrl,
+          created_at: new Date().toISOString(),
+          fsamGenerationCounter: 0,
+          aspectRatioName: viewModeLoadedImages.aspectRatioName,
+          type: 1,
+          input: {
+            prompt: "NOT YET AVAILABLE",
+          },
+        };
+      
+        setPredictions(predictions => predictions.concat([formattedPrediction]));
+        settheUpdatedPrediction(formattedPrediction);
+      
+        newPredictionsCount += 1;
+        alogger("Incoming total Loaded predctions count is: ", newPredictionsCount);
+      
+        // reset the viewModeLoadedImages(we only want to load it once)
+        dispatch(setViewModeLoadedImages({}));
+      }``
+      
+      dispatch(setIndex((newPredictionsCount)));
     };
 
      const checkUserLogin = async () => {
@@ -794,10 +854,10 @@ export default function Home(theUserData) {
       const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
       alogger("Response from /api/generateImage:", response.data);
       alogger("Filename from genimage:", fileName);
-      console.log("****PATH IS: ",path);
+      alogger("****PATH IS: ",path);
 
       const fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(path)}`;
-      console.log("****fetchImageUrl: ",fetchImageUrl);
+      alogger("****fetchImageUrl: ",fetchImageUrl);
     
       const formattedPrediction = {
         id: body.seed.toString(),
@@ -814,7 +874,7 @@ export default function Home(theUserData) {
       };
     
       setPredictions(predictions.concat([formattedPrediction]));
-      dispatch(setIndex(predictions.length+1));
+      dispatch(setIndex((predictions.length+1)));
       setIsLoading(false);
 
       await clearMaskImage();
@@ -893,7 +953,7 @@ export default function Home(theUserData) {
   }
 
   return (
-    console.log('ImageMode about to return JSX'),
+    alogger('ImageMode about to return JSX'),
     <div className={styles.layout}>
       <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
         <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef} />

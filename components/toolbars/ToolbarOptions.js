@@ -135,9 +135,40 @@ useEffect(() => {
   }, [currentPredictionImageMask]);
 
 
+  const formatFileUrl = (url) => {
+    if (!url.includes('https://storage.googleapis.com/fjusers/')) {
+      const fullStorageUrl = `https://storage.googleapis.com/fjusers/${url.split('imagePath=')[1]}`;
+      return `/api/fetchImage?imagePath=${encodeURIComponent(fullStorageUrl)}`;
+    }
+    return url;
+  };
+
+  const dIt = (url) => {
+  
+    console.log('dIt url is: ', url);
+
+    if (url.includes('storage.googleapis.com/fjusers/')) {
+      console.log('It included the storage.googleapis.com string!!!');
+    } else {
+      console.log('It did NOT include the stostorage.googleapis.com string!!!');
+    }
+  }
+
+
+
   const handleAspectRatioClick = (aspectRatio) => {
 
     alogger("The predictions list is: ", props.predictions);
+
+    // Run the dIt function on each of the props.predictions
+    console.log('----------------------------------');
+    console.log('----------------------------------');
+    console.log('----------------------------------');
+    props.predictions.forEach((prediction,i) => {
+      console.log('index: ', i);
+      dIt(prediction.output[0]);
+    });
+
     setSelectedAspectRatio(aspectRatio);
       dispatch(setAspectRatio(aspectRatio)); 
   };
