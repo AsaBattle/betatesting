@@ -149,10 +149,17 @@ useEffect(() => {
     const dec = decodeURIComponent(url);
     console.log('--- decoded is: ', dec);
 
-    if (url.includes('storage.googleapis.com')) {
-      console.log('It included the storage.googleapis.com string!!!');
+    if (dec.includes('storage.googleapis.com')) {
+      console.log('It does include the string, so nothing necessary to do');
     } else {
-      console.log('It did NOT include the stostorage.googleapis.com string!!!');
+      console.log('It did NOT include the string, so adding it!!!');
+
+      // ok so I need to add this string inside the double quotes "https://storage.googleapis.com/fjusers/" into the middle
+      // of the dec string, right after the "imagePath=" string
+      const firstPart = dec.substring(0, dec.indexOf('imagePath=')+9);
+      const secondPart = dec.substring(dec.indexOf('imagePath=')+9, dec.length);
+      const newUrl = `${firstPart}https://storage.googleapis.com/fjusers/${secondPart}`;
+      console.log('newUrl is: ', newUrl);
     }
   }
 
