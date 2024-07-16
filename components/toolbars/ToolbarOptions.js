@@ -146,8 +146,10 @@ useEffect(() => {
   const dIt = (url) => {
   
     console.log('dIt url is: ', url);
+    const dec = decodeURIComponent(url);
+    console.log('--- decoded is: ', dec);
 
-    if (url.includes('storage.googleapis.com/fjusers/')) {
+    if (url.includes('storage.googleapis.com')) {
       console.log('It included the storage.googleapis.com string!!!');
     } else {
       console.log('It did NOT include the stostorage.googleapis.com string!!!');
