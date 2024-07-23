@@ -15,6 +15,7 @@ import { tools, getResolution } from './tools/Tools'; // Adjust the import path 
 import Cursor from './cursor';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCanvasDrawingEnabled } from '../redux/slices/toolSlice';
+import alogger from '../utils/alogger';
 
 const addBackgroundToPNG = require("lib/add-background-to-png");
 
@@ -165,10 +166,10 @@ const Canvas = forwardRef((props, ref) => {
     }
 
     if (currentToolName === 'NoTool') {
-      console.log('Drawing is Disabled because currentToolName is NoTool');
+      alogger('Drawing is Disabled because currentToolName is NoTool');
       dispatch(setCanvasDrawingEnabled(false));
     } else {
-      console.log('Drawing is Enabled because currentToolName is not NoTool');
+      alogger('Drawing is Enabled because currentToolName is not NoTool');
       dispatch(setCanvasDrawingEnabled(currentToolName !== 'NoTool'));
     }
 
@@ -188,7 +189,7 @@ const Canvas = forwardRef((props, ref) => {
     if (currentToolName === 'NoTool') 
       return;
 
-    console.log('Inside isToolbarVisible ---> Setting canvas drawing enabled:', !isToolbarVisible);
+    alogger('Inside isToolbarVisible ---> Setting canvas drawing enabled:', !isToolbarVisible);
     dispatch(setCanvasDrawingEnabled(!isToolbarVisible));
   }, [isToolbarVisible]);
 
@@ -202,21 +203,21 @@ const Canvas = forwardRef((props, ref) => {
 
   const handleCanvasClick = (event) => {
     if (!allowDrawing) {
-      console.log('Drawing is disabled, in handleCanvasClick');
+      alogger('Drawing is disabled, in handleCanvasClick');
       return;
     }  else {
-      console.log('Drawing is enabled, in handleCanvasClick');
+      alogger('Drawing is enabled, in handleCanvasClick');
     }
 
 
     const cc = document.getElementById('canvasContainer');
-    //console.log('Canvascontainer: ', cc);
+    //alogger('Canvascontainer: ', cc);
   
     // Get the bounding rectangle of the image container
     const rect = event.target.getBoundingClientRect();
   
     // Log the rendered size of the element
-    //console.log('Rendered size:', rect.width, 'x', rect.height);
+    //alogger('Rendered size:', rect.width, 'x', rect.height);
   
     // Assuming the image ref holds the currentPredictionImage
     currentPredictionImageRef.current = (currentPredictionMagicWandMask)?currentPredictionMagicWandMask:currentPredictionImage;
@@ -259,7 +260,7 @@ const Canvas = forwardRef((props, ref) => {
           clientY: event.clientY,
         };
   
-        //console.log('Canvas.js: modifiedEvent: ', modifiedEvent);
+        //alogger('Canvas.js: modifiedEvent: ', modifiedEvent);
 
         // Call the tool's process function with the modified event
         currentTool.processTool(dispatch, modifiedEvent, imageSrc, mask, setMask, setMagicWandResultImg, magicWandTolerance, controlKeyDown);
@@ -310,17 +311,17 @@ useImperativeHandle(ref, () => ({
 
     if (sketchMask && !magicWandResultImg){
       combinedImage = sketchMask;
-      console.log('No magic wand result, using sketchMask');
+      alogger('No magic wand result, using sketchMask');
     }
     else if (magicWandResultImg && !sketchMask) {
       combinedImage = await addBackgroundToPNG(magicWandResultImg);
-      console.log('No sketchMask, using magicWandResultImg');
+      alogger('No sketchMask, using magicWandResultImg');
     }
     else
     // If the magic wand tool has been used, then combine its results
     // with the ReactSketchCanvas mask if it exists
     if (magicWandResultImg && sketchMask) {
-        //console.log('magicWandResultImg and sketchMask exist, combining images');
+        //alogger('magicWandResultImg and sketchMask exist, combining images');
         const tmp = await addBackgroundToPNG(magicWandResultImg);
         combinedImage = await combineImages(tmp, sketchMask, width, height);
     }
@@ -333,19 +334,19 @@ useImperativeHandle(ref, () => ({
   },
 
   ClearMagicWandResult: () => {
-    console.log("Clearing magic wand result");
+    alogger("Clearing magic wand result");
     setMagicWandResultImg(null);
   },
   UndoLastMaskLine: () => {
-    console.log("Undoing last mask line");
+    alogger("Undoing last mask line");
     canvasRef.current.undo();
   },  
   RedoLastMaskLine: () => {
-    console.log("Redoing last mask line");
+    alogger("Redoing last mask line");
     canvasRef.current.redo();
   },
   ClearMaskLines: () => {
-    console.log("Clearing mask lines");
+    alogger("Clearing mask lines");
     canvasRef.current.resetCanvas();
   },
 }));
@@ -362,7 +363,7 @@ const onChange = async () => {
     if (data !== canvasStateRef.current) {
       canvasStateRef.current = data;
       dataWasSet = true;
-     //console.log("Set props.onDraw(data) in Canvas.js");
+     //alogger("Set props.onDraw(data) in Canvas.js");
       setSketchMask(data);
       //props.onDraw(data);
     }
@@ -383,13 +384,13 @@ function findScale(elementId) {
   // Get the computed style of the element
   var style = window.getComputedStyle(element);
 
-  console.log('Style:', style);
+  alogger('Style:', style);
 
   // Get the relevant transformation values
   var transform = style.transform || style.webkitTransform || style.mozTransform;
 
   // Log the transform properties to the console
-  console.log('Transform:', transform);
+  alogger('Transform:', transform);
 
   // If you need to get the scale specifically
   var matrix = transform.match(/^matrix\((.+)\)$/);
@@ -397,7 +398,7 @@ function findScale(elementId) {
       var values = matrix[1].split(', ');
       var scaleX = parseFloat(values[0]);
       var scaleY = parseFloat(values[3]);
-      console.log('ScaleX:', scaleX, 'ScaleY:', scaleY);
+      alogger('ScaleX:', scaleX, 'ScaleY:', scaleY);
   }
 
   return { scaleX, scaleY };

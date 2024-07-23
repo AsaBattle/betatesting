@@ -97,6 +97,8 @@ const Dropzone = forwardRef((props, ref) => {
         if (props.onDropComplete) {
           props.onDropComplete();
         }
+
+        
       } catch (error) {
         console.error("Error preloading image: ", error);
       }

@@ -4,6 +4,7 @@ import { Eraser, Dice5, DivideSquare } from "lucide-react";
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentTool } from '../redux/slices/toolSlice';
 import Tooltip from './tooltip';
+import alogger from '../utils/alogger';
 
 export default function PromptForm(props) {
   const [prompt, setPrompt] = useState("");
@@ -40,7 +41,7 @@ export default function PromptForm(props) {
 
   // Set an initial random prompt when the component mounts
   useEffect(() => {
-    console.log('currentImagePrompt:', currentImagePrompt);
+    alogger('currentImagePrompt:', currentImagePrompt);
 
     if (currentImagePrompt && currentImagePrompt !== "default") {
       setPrompt(currentImagePrompt);
