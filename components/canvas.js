@@ -107,6 +107,7 @@ const Canvas = forwardRef((props, ref) => {
     : 'default'; // Default or fallback aspect ratio
 
 
+
   const { width, height } = getResolution(currentAspectRatioName);
 
   const isTall = false; //height > width;

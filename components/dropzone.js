@@ -1,16 +1,13 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from "react";
 import { useDropzone } from "react-dropzone";
-import { pushToUndo } from '../redux/slices/historySlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { setAspectRatio } from '../redux/slices/toolSlice'; // Adjust the import path as necessary
+import { setAspectRatio } from '../redux/slices/toolSlice';
 
-export default function Dropzone(props) {
+const Dropzone = forwardRef((props, ref) => {
   const dispatch = useDispatch();
+  const fileInputRef = useRef(null);
 
-  const onImageDropped = props.onImageAsFirstPrediction;
-  const currentAspectRatioName = useSelector((state) => state.toolbar.aspectRatioName); 
   let aspectRatioName = 'none';
-
 
   const calculateAspectRatio = (width, height) => {
     // Define your aspect ratios and names here
@@ -18,8 +15,8 @@ export default function Dropzone(props) {
       '1:1': 1,
       '16:9': 16 / 9,
       '9:16': 9 / 16,
-      '43': 4 / 3,
-      '34': 3 / 4,
+      '4:3': 4 / 3,
+      '3:4': 3 / 4,
     };
 
     let closestAspectRatioName = '1:1';
@@ -96,25 +93,36 @@ export default function Dropzone(props) {
     async (acceptedFiles) => {
       try {
         const preloadedImage = await preloadImage(acceptedFiles[0]);
-        onImageDropped(preloadedImage,aspectRatioName);
+        props.onImageAsFirstPrediction(preloadedImage, aspectRatioName);
+        if (props.onDropComplete) {
+          props.onDropComplete();
+        }
       } catch (error) {
         console.error("Error preloading image: ", error);
       }
     },
-    [onImageDropped, dispatch]
+    [props.onImageAsFirstPrediction, props.onDropComplete]
   );
+
+  const openFilePicker = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    openFilePicker
+  }));
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  if (props.predictions.length) return null;
-
   return (
     <div
-      className="absolute z-50 flex w-full h-full text-gray-500 text-sm text-center cursor-pointer select-none"
+      className={`absolute z-50 flex w-full h-full text-gray-500 text-sm text-center cursor-pointer select-none ${props.predictions.length ? 'invisible' : ''}`}
       {...getRootProps()}
     >
       <div className="m-auto">
-        <input {...getInputProps()} />
+        <input {...getInputProps()} ref={fileInputRef} />
         {isDragActive ? (
           <p>Drop the image here ...</p>
         ) : (
@@ -123,4 +131,6 @@ export default function Dropzone(props) {
       </div>
     </div>
   );
-}
+});
+
+export default Dropzone;
