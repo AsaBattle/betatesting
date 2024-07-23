@@ -698,6 +698,9 @@ export default function Home(theUserData) {
     
         setPredictions(prevPredictions => [formattedPrediction, ...prevPredictions]);
         settheUpdatedPrediction(formattedPrediction);
+
+        dispatch(setIndex((predictions.length+1)));
+
         
         alogger("New prediction added to the beginning of the array");
       } catch (error) {
