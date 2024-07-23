@@ -93,26 +93,26 @@ function ToolbarOptions (props)  {
 
   // This function is called when the aspect ratio button is clicked
   const handleGenAIMask = async () => {
-    console.log("handleGenAIMask props.predictions: ", props.predictions);
+    alogger("handleGenAIMask props.predictions: ", props.predictions);
 
     // If the current prediction is null, return as we can't generate a mask with no image
     if (props.predictions[index] === null ||
       props.predictions.length <= 0)
       return;
 
-    console.log("right before await FSAMProcessor...");
+    alogger("right before await FSAMProcessor...");
     setCurrentPredictionFSAMGenerationCounter('***');
     // Start the process of generating the AI mask via the fast segmentation model
     await FSAMProcessor(props.predictions[index], props.setPredictions);
-    console.log("...right after await FSAMProcessor");
+    alogger("...right after await FSAMProcessor");
 
     // flip flops the viewmaskactive state
     //setViewMaskActive(!viewMaskActive);
   // Update the currentPredictionFSAMGenerationCounter state after FSAMProcessor completes
   const updatedCounter = props.predictions[index].fsamGenerationCounter;
   setCurrentPredictionFSAMGenerationCounter(updatedCounter);
-  console.log('@@@Generating AI Mask');
-  console.log('@@@predictions: ', props.predictions);
+  alogger('@@@Generating AI Mask');
+  alogger('@@@predictions: ', props.predictions);
   setViewMaskRadioButton(true);
 };
 
@@ -145,22 +145,22 @@ useEffect(() => {
 
   const dIt = (url) => {
   
-    console.log('dIt url is: ', url);
+    alogger('dIt url is: ', url);
     const dec = decodeURIComponent(url);
-    console.log('--- decoded is: ', dec);
+    alogger('--- decoded is: ', dec);
 
     if (dec.includes('storage.googleapis.com')) {
-      console.log('It does include the string, so nothing necessary to do');
+      alogger('It does include the string, so nothing necessary to do');
       return url;
     } else {
-      console.log('It did NOT include the string, so adding it!!!');
+      alogger('It did NOT include the string, so adding it!!!');
 
       // ok so I need to add this string inside the double quotes "https://storage.googleapis.com/fjusers/" into the middle
       // of the dec string, right after the "imagePath=" string
       const firstPart = dec.substring(0, dec.indexOf('imagePath=')+9);
       const secondPart = dec.substring(dec.indexOf('imagePath=')+10, dec.length);
       const newUrl = `/api/fetchImage?imagePath=https://storage.googleapis.com/fjusers/${secondPart}`;
-      console.log('newUrl is: ', newUrl);
+      alogger('newUrl is: ', newUrl);
       return newUrl;
     }
   }
@@ -172,11 +172,11 @@ useEffect(() => {
     alogger("The predictions list is: ", props.predictions);
 
     // Run the dIt function on each of the props.predictions
-    console.log('----------------------------------');
-    console.log('----------------------------------');
-    console.log('----------------------------------');
+    alogger('----------------------------------');
+    alogger('----------------------------------');
+    alogger('----------------------------------');
     props.predictions.forEach((prediction,i) => {
-      console.log('index: ', i);
+      alogger('index: ', i);
       prediction.output[0] = dIt(prediction.output[0]);
     });
 

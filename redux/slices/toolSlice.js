@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { tools } from '../../components/tools/Tools';
 
+const alogger = require('../../utils/alogger').default;
+
 export const toolbarSlice = createSlice({
   name: 'toolbar',
   initialState: {
@@ -28,7 +30,7 @@ export const toolbarSlice = createSlice({
       state.imageSavePath = action.payload;
     },
     setCanvasDrawingEnabled: (state, action) => {
-      console.log("setCanvasDrawingEnabled() called. Settting to: ", action.payload);
+      alogger("setCanvasDrawingEnabled() called. Settting to: ", action.payload);
       state.canvasDrawingEnabled = action.payload;
     },
     setUserIsLoggedInWithAccount: (state, action) => {

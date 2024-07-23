@@ -105,7 +105,7 @@ export default function Home(theUserData) {
  
     // When the user wants to manually upload an image, they click the upload button
     const handleUploadClick = () => {
-      console.log('Upload button clicked'); 
+      alogger('Upload button clicked'); 
       if (dropzoneRef.current) {
         dropzoneRef.current.openFilePicker();
       }
@@ -513,7 +513,7 @@ export default function Home(theUserData) {
         if (!cleanPathPlus.includes('storage.googleapis.com')) {
           const secondPart = cleanPathPlus.substring(cleanPathPlus.indexOf('imagePath=')+10, cleanPathPlus.length);
           newUrl = `https://storage.googleapis.com/fjusers/${secondPart}`;
-          console.log('newUrl is: ', newUrl);
+          alogger('newUrl is: ', newUrl);
         }
 
 

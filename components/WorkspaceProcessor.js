@@ -18,6 +18,7 @@ import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'rea
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import alogger from '../utils/logger';
 
 export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
     const [workspaceIsLoading, setWorkspaceIsLoading] = useState(false);
@@ -33,10 +34,10 @@ export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
     // This component will be named saveWorkspace and will be called from the WorkspaceFile component
     const saveWorkspace = async () => {
         let predList = predictions
-        console.log('Saving workspace: userId:', userId, 'imageSavePath:', imageSavePath);
+        alogger('Saving workspace: userId:', userId, 'imageSavePath:', imageSavePath);
         
         if (!predictions || predictions.length === 0) {
-            console.log('No predictions to save');
+            alogger('No predictions to save');
 
         }
 
@@ -47,7 +48,7 @@ export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
                 currentFiles: predList,
             };
             await axios.post('/api/user/saveWorkspace', workspaceData);
-            console.log('Workspace saved successfully');
+            alogger('Workspace saved successfully');
         } catch (error) {
             console.error('Error saving workspace:', error);
         }
@@ -61,13 +62,13 @@ export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
         // - Current image save path(just the name of the folder where the images are saved in the bucket)
         // - List of gcs bucket files currently being worked on
         // It will NOT use firebase, but will use the GCS bucket directly
-        console.log('Loading workspace for user:', currentUserId);
+        alogger('Loading workspace for user:', currentUserId);
         setWorkspaceIsLoading(true);
         try {
             const response = await axios.post('/api/user/loadWorkspace', { userId: currentUserId });
             const loadedWorkspace = response.data;
-            console.log("Workspace data loaded is: ", loadedWorkspace);
-            console.log('Workspace loaded successfully');
+            alogger("Workspace data loaded is: ", loadedWorkspace);
+            alogger('Workspace loaded successfully');
             return loadedWorkspace;
         } catch (error) {
             console.error('Error loading workspace:', error);
@@ -81,18 +82,18 @@ export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
 
     // this effect will run when the component mounts and will add an event listener to the window object
     useEffect(() => {
-        console.log('WorkspaceProcessor mounted/updated');
+        alogger('WorkspaceProcessor mounted/updated');
         // Add an event listener to the window object to save the workspace when the user navigates away from the page 
         // for any reason, i.e. when the user logs out, closes the browser, or navigates away from the page
         const handleBeforeUnload = (event) => {
-            console.log('Saving workspace before unload');
+            alogger('Saving workspace before unload');
             event.preventDefault();
             event.returnValue = '';
             saveWorkspace();
         };
 
         const handleRouteChange = () => {
-            console.log('Saving workspace before route change');
+            alogger('Saving workspace before route change');
             saveWorkspace();
         };
 

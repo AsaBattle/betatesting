@@ -5,6 +5,7 @@ import { decIndex, incIndex, setIndex } from '../redux/slices/historySlice'; // 
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+import alogger from '../utils/logger';
 
 const ImageNavigation = (props) => {
     const index = useSelector((state) => state.history.index);
@@ -19,7 +20,7 @@ const ImageNavigation = (props) => {
     };
 
     const handleChange = (event, value) => {
-        console.log('handleChange is executing: ' + (value));
+        alogger('handleChange is executing: ' + (value));
         dispatch(setIndex(value));
     };
 
