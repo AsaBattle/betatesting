@@ -133,4 +133,5 @@ const Dropzone = forwardRef((props, ref) => {
   );
 });
 
+Dropzone.displayName = 'Dropzone'; // Add display name here
 export default Dropzone;
