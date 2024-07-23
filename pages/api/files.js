@@ -22,12 +22,16 @@ if (process.env.VERCEL) {
 }
 
 export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    const { userId } = req.query;
+  if (req.method === 'POST') {
+
+    const {userId,folder} = req.body;
+
+    console.log('Inside files.js---- userId:', userId);
+    console.log('Inside files.js---- folders:', folder);
 
     try {
       const bucket = storage.bucket('fjusers');
-      const [files] = await bucket.getFiles({ prefix: `${userId}/` });
+      const [files] = await bucket.getFiles({ prefix: `${userId}/${folder}` });
       //const [files] = await bucket.getFiles({ prefix: `anon/` });
       
       console.log('Files:', files);

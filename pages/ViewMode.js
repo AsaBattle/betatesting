@@ -1,5 +1,3 @@
-
-// ViewMode.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AuthService from '../services/authService';
@@ -9,11 +7,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setViewModeLoadedImages } from '../redux/slices/historySlice'; // Adjust the import path
 
 
+
+
 export default function ViewMode( theUserData ) {
   const [files, setFiles] = useState([]);
   const router = useRouter();
   const currentUserId = useSelector((state) => state.history.userId);
   const dispatch = useDispatch();
+
 
 
   useEffect(() => {
@@ -23,7 +24,8 @@ export default function ViewMode( theUserData ) {
   const fetchFiles = async () => {
     console.log("fetching files for user id: ", currentUserId);
       try {
-        const response = await axios.get(`/api/files?userId=${currentUserId}`);
+        const body = { userId: currentUserId, folder: 'BaseFolder/generatedImages' };
+        const response = await axios.post(`/api/files`,body);
         setFiles(response.data.files);
         console.log("Files fetched!");
       } catch (error) {
@@ -35,6 +37,8 @@ export default function ViewMode( theUserData ) {
     fetchFiles();
   }, [theUserData]);
   
+
+
 
   const handleImageClick = async (file) => {
     try {
@@ -58,8 +62,8 @@ export default function ViewMode( theUserData ) {
       '1:1': 1,
       '16:9': 16 / 9,
       '9:16': 9 / 16,
-      '43': 4 / 3,
-      '34': 3 / 4,
+      '4:3': 4 / 3,
+      '3:4': 3 / 4,
     };
 
     let closestAspectRatioName = '1:1';
