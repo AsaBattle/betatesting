@@ -4,7 +4,7 @@ import { Eraser, Dice5, DivideSquare } from "lucide-react";
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentTool } from '../redux/slices/toolSlice';
 import Tooltip from './tooltip';
-import alogger from '../utils/logger';
+import alogger from '../utils/alogger';
 
 export default function PromptForm(props) {
   const [prompt, setPrompt] = useState("");

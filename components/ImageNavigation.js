@@ -5,7 +5,7 @@ import { decIndex, incIndex, setIndex } from '../redux/slices/historySlice'; // 
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
-import alogger from '../utils/logger';
+import alogger from '../utils/alogger';
 
 const ImageNavigation = (props) => {
     const index = useSelector((state) => state.history.index);

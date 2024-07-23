@@ -15,7 +15,7 @@ import { tools, getResolution } from './tools/Tools'; // Adjust the import path 
 import Cursor from './cursor';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCanvasDrawingEnabled } from '../redux/slices/toolSlice';
-import alogger from '../utils/logger';
+import alogger from '../utils/alogger';
 
 const addBackgroundToPNG = require("lib/add-background-to-png");
 

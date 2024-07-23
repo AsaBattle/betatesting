@@ -18,7 +18,7 @@ import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'rea
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import alogger from '../utils/logger';
+import alogger from '../utils/alogger';
 
 export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
     const [workspaceIsLoading, setWorkspaceIsLoading] = useState(false);
