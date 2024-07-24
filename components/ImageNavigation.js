@@ -1,23 +1,14 @@
-// ImageNavigation.js
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { decIndex, incIndex, setIndex } from '../redux/slices/historySlice'; // Import relevant action creators
-import Typography from '@mui/material/Typography';
+import { decIndex, incIndex, setIndex } from '../redux/slices/historySlice';
 import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import alogger from '../utils/alogger';
 
-const ImageNavigation = (props) => {
+const ImageNavigation = ({ imageTotal, maxWidth }) => {
     const index = useSelector((state) => state.history.index);
     const dispatch = useDispatch();
-
-    const handleLeftClick = () => {
-        dispatch(decIndex());
-    };
-
-    const handleRightClick = () => {
-        dispatch(incIndex());
-    };
 
     const handleChange = (event, value) => {
         alogger('handleChange is executing: ' + (value));
@@ -25,41 +16,71 @@ const ImageNavigation = (props) => {
     };
 
     return (
-        <div>
-            {props.imageTotal === 0 && 
+        <div style={{ 
+            maxWidth: maxWidth, 
+            margin: '0 auto',
+            overflow: 'hidden' // Prevent content from spilling out
+        }}>
+            {imageTotal === 0 && 
                 <div className="text-center font-helvetica text-xl text-white">
                     <div className="flex flex-col items-center justify-center">
                         No Images to Display
                     </div>
                 </div>
             }
-            {props.imageTotal > 0 && (
+            {imageTotal > 0 && (
                <div className="text-center font-helvetica text-xl text-white">
-               <div className="flex flex-col items-center justify-center">
                    <Pagination 
-                       count={props.imageTotal} 
+                       count={imageTotal} 
                        page={index}
                        onChange={handleChange} 
+                       size="large"
+                       siblingCount={1}
+                       boundaryCount={1}
+                       renderItem={(item) => (
+                           <PaginationItem
+                               {...item}
+                               components={{
+                                   previous: (props) => <span {...props}>&#8249;</span>,
+                                   next: (props) => <span {...props}>&#8250;</span>,
+                               }}
+                           />
+                       )}
                        sx={{
-                           "& .MuiPaginationItem-root": {
-                               color: 'pink', // Color of all items
-                               fontSize: '1.5rem', // Increase the font size of the numbers
-                               margin: '0 1.25rem', // Add horizontal margin between numbers
+                           display: 'flex',
+                           justifyContent: 'center',
+                           alignItems: 'center',
+                           '& .MuiPagination-ul': {
+                               flexWrap: 'nowrap',
+                               overflowX: 'auto',
+                               overflowY: 'hidden',
+                               '&::-webkit-scrollbar': {
+                                   display: 'none'
+                               },
+                               msOverflowStyle: 'none',
+                               scrollbarWidth: 'none',
                            },
-                           "& .MuiPaginationItem-root.Mui-selected": {
-                               color: 'yellow', // Color of the selected item
+                           '& .MuiPaginationItem-root': {
+                               color: 'pink',
+                               fontSize: '1.75rem',
+                               minWidth: '32px',
+                               height: '32px',
+                               padding: '0 12px',
+                               margin: '0 2px',
                            },
-                           "& .MuiPaginationItem-ellipsis": {
-                               color: 'white', // Color of the ellipsis (...)
+                           '& .MuiPaginationItem-root.Mui-selected': {
+                               color: 'yellow',
                            },
-                           "& .MuiPaginationItem-icon": {
-                               color: 'white', // Color of the icons
-                               fontSize: '2rem', // Increase the size of the icons
+                           '& .MuiPaginationItem-ellipsis': {
+                               color: 'white',
+                           },
+                           '& .MuiPaginationItem-icon': {
+                               color: 'white',
+                               fontSize: '1.5rem',
                            },
                        }}
                    />
                </div>
-           </div>
             )}
         </div>
     );

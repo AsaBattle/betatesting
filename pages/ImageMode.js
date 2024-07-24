@@ -21,10 +21,13 @@ import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 import WorkspaceProcessor from '../components/WorkspaceProcessor';
+
+
 const alogger = require('../utils/alogger').default;
 
 import AuthService from '../services/authService';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 
 
 
@@ -89,6 +92,7 @@ export default function Home(theUserData) {
     const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
+    const [maxNavigationWidth, setMaxNavigationWidth] = useState(1024);          // Default max width for image navigation component
 
     alogger('ImageMode component has started rendering');
 
@@ -194,6 +198,7 @@ export default function Home(theUserData) {
 
 
 
+
     const handleCanvasSizeChange = (size) => {
       alogger('Received Canvas Size:', size); // Log the size received from Canvas
       setCanvasSize(size); // Callback to receive canvas size
@@ -239,7 +244,7 @@ export default function Home(theUserData) {
     }, [currentTool]);
     
 
-
+/* old code before adding the new imagenavigation variable width
     useEffect(() => {
         const handleScroll = () => {
             updateCanvasPosition();
@@ -254,7 +259,31 @@ export default function Home(theUserData) {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [hamburgerVisible]);
+*/
 
+useEffect(() => {
+  const handleScroll = () => {
+      updateCanvasPosition();
+  };
+
+  const updateMaxWidth = () => {
+      const canvasWidth = canvasContainerRef.current?.offsetWidth || 512;
+      setMaxNavigationWidth(Math.min(canvasWidth, 512));
+  };
+
+  updateCanvasPosition();
+  updateMaxWidth();
+  
+  window.addEventListener('resize', updateCanvasPosition);
+  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('resize', updateMaxWidth);
+
+  return () => {
+      window.removeEventListener('resize', updateCanvasPosition);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateMaxWidth);
+  };
+}, [hamburgerVisible]);
 
 
     const FSAMTest = async () => {
@@ -357,6 +386,7 @@ export default function Home(theUserData) {
     };
     
 
+
     // updates localUserCredits to the current number of credits of the user
     const updateLocalUserCredits = async () => {
       let theLocalUserId;
@@ -382,9 +412,11 @@ export default function Home(theUserData) {
       }
     };
 
+
     const handleViewModePush = () => {
       router.push('/ViewMode');
     };
+
 
     const handleLogin = async () => {
       alogger("Logging in the user...");
@@ -392,6 +424,7 @@ export default function Home(theUserData) {
       await handleLogout(false);
       router.push('/LoginForm');
     };
+
 
     const handleLogout = async (redirect = false) => {
       alogger("Logging out the user...");
@@ -1007,7 +1040,6 @@ export default function Home(theUserData) {
 
 
   return (
-    alogger('ImageMode about to return JSX'),
     <div className={styles.layout}>
       <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
         <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef} />
@@ -1027,8 +1059,24 @@ export default function Home(theUserData) {
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
-          {ModeButton()}          
-          {LogINOUTButton()}
+          <button onClick={handleViewModePush} 
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              View My Images
+          </button>
+          {theUserData.userData ? (
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Login
+            </button>
+          )}
           {userLoginNameAndCredits}
         </p>
         </div>
@@ -1062,19 +1110,17 @@ export default function Home(theUserData) {
             </div>
           </div>
           
-          <div className="relative max-w-[512px] mx-auto mt-4">
-            {/* New Upload Button */}
-            <button 
-              onClick={handleUploadClick}
-              className="absolute left-0 top-8 transform -translate-y-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              style={{ marginBottom: '10px' }}
-            >
-              IMG
-            </button>
-  
-            {/* ImageNavigation component */}
+          <div className="relative mx-auto mt-4" style={{ maxWidth: `${maxNavigationWidth}px` }}>
+            <div className="flex justify-between items-center mb-2">
+              <button 
+                onClick={handleUploadClick}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                IMG
+              </button>
+              <ImageNavigation imageTotal={predictions.length} maxWidth={maxNavigationWidth - 0} />
+            </div>
             <div id="asathisisit" ref={belowCanvasRef}>
-              <ImageNavigation imageTotal={predictions.length} />
               <PromptForm onSubmit={handleSubmit} predictions={predictions} />
               <div className="text-center">
                 {undoStack.length > 0 && (
@@ -1104,7 +1150,7 @@ export default function Home(theUserData) {
         )}
       </div>
     </div>
-  );
+);
 }
 
 
