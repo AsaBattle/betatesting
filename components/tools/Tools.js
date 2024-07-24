@@ -1,7 +1,7 @@
 import { set } from 'lodash';
 import { Wand2, Brush, ZoomIn, Divide, X, Component } from 'lucide-react';
 import { setCanvasDrawingEnabled } from '../../redux/slices/toolSlice';
-
+import alogger from '../../utils/alogger';
 
 function concatMasks(mask, old) {
 	let 
@@ -60,12 +60,12 @@ function concatMasks(mask, old) {
 function floodFillWithoutBorders(image, px, py, colorThreshold, mask) {
 
   if (!image) {
-    console.log('Image is undefined or not provided');
+    alogger('Image is undefined or not provided');
     return null;
   }
 
   if (!image.data) {
-    console.log('Image.data is undefined or not provided');
+    alogger('Image.data is undefined or not provided');
     return null;
   }
 
@@ -82,10 +82,10 @@ function floodFillWithoutBorders(image, px, py, colorThreshold, mask) {
 
   // Before using `data.length`, ensure `data` is defined
   if (!data) {
-    console.log('data is undefined');
+    alogger('data is undefined');
     return null;
   }
-  console.log(`Calculated index (i): ${i}, Data length: ${data.length}`);
+  alogger(`Calculated index (i): ${i}, Data length: ${data.length}`);
 if (i < 0 || i + 3 >= data.length) {
   console.error(`Index out of bounds: ${i}`);
   return null; // Or handle the error as appropriate
@@ -263,13 +263,13 @@ function findScale(elementId) {
   // Get the computed style of the element
   var style = window.getComputedStyle(element);
 
-  console.log('Style:', style);
+  alogger('Style:', style);
 
   // Get the relevant transformation values
   var transform = style.transform || style.webkitTransform || style.mozTransform;
 
   // Log the transform properties to the console
-  console.log('Transform:', transform);
+  alogger('Transform:', transform);
 
   // If you need to get the scale specifically
   var matrix = transform.match(/^matrix\((.+)\)$/);
@@ -277,7 +277,7 @@ function findScale(elementId) {
       var values = matrix[1].split(', ');
       var scaleX = parseFloat(values[0]);
       var scaleY = parseFloat(values[3]);
-      console.log('ScaleX:', scaleX, 'ScaleY:', scaleY);
+      alogger('ScaleX:', scaleX, 'ScaleY:', scaleY);
   }
 
   return { scaleX, scaleY };
@@ -300,7 +300,7 @@ function setupCanvas(image) {
   const ctx = canvas.getContext('2d');
   canvas.width = image.width;
   canvas.height = image.height;
-  console.log("Setting up canvas - width: ", canvas.width, "height: ", canvas.height);
+  alogger("Setting up canvas - width: ", canvas.width, "height: ", canvas.height);
   ctx.drawImage(image, 0, 0);
   return { hiddenCanvas: canvas, ctx };
 }
@@ -404,11 +404,11 @@ export const tools = [
     renderInToolbar: true,
     setup: function (dispatch) {
       dispatch(setCanvasDrawingEnabled(true));
-      console.log('Setting up MaskPainter');
+      alogger('Setting up MaskPainter');
     },
     processTool: function (dispatch, event) {
 
-      console.log('Processing MaskPainter');
+      alogger('Processing MaskPainter');
     }
   },
   magicWandTool,
@@ -420,11 +420,11 @@ export const tools = [
     cursor: 'zoom-in',
     setup: function (dispatch) {
       dispatch(setCanvasDrawingEnabled(false));
-      console.log('Setting up aspect ratio');
+      alogger('Setting up aspect ratio');
     },
     processTool: function (dispatch, event) {
 
-      console.log('Processing aspect ratio');
+      alogger('Processing aspect ratio');
     }
   },
   { 
@@ -435,11 +435,11 @@ export const tools = [
     cursor: 'zoom-in',
    setup: (dispatch) => {
       dispatch(setCanvasDrawingEnabled(false));
-      console.log('Setting No Tool selected tool');
+      alogger('Setting No Tool selected tool');
     },
 
     processTool: (dispatch,event) => {
-      console.log('Processing No Tool selected tool');
+      alogger('Processing No Tool selected tool');
     }
   },
   {
@@ -450,11 +450,11 @@ export const tools = [
     cursor: 'zoom-in',
     setup: function (dispatch) {
       dispatch(setCanvasDrawingEnabled(false));
-      console.log('Setting up ModelSelector');
+      alogger('Setting up ModelSelector');
     },
     processTool: function (dispatch, event) {
 
-      console.log('Processing  Model Selector');
+      alogger('Processing  Model Selector');
     }
   },
 
