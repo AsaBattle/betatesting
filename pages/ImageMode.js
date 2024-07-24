@@ -15,20 +15,15 @@ import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount, setImageSavePath } from '../redux/slices/toolSlice';
-import { undo, redo, setIndex, setUserId, setViewModeLoadedImages } from '../redux/slices/historySlice'; // Adjust the import path
+import { undo, redo, setIndex, setUserId, setViewModeLoadedImages } from '../redux/slices/historySlice';
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 import WorkspaceProcessor from '../components/WorkspaceProcessor';
-
 const alogger = require('../utils/alogger').default;
 
-
 import AuthService from '../services/authService';
-
-
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
@@ -95,7 +90,7 @@ export default function Home(theUserData) {
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
 
-    alogger('ImageMode component started rendering');
+    alogger('ImageMode component has started rendering');
 
     useEffect(() => {
       alogger('ImageMode first useEffect fired');
@@ -129,13 +124,13 @@ export default function Home(theUserData) {
       if (workspaceProcessorRef.current) {
           workspaceProcessorRef.current.saveWorkspace();
       }
-  };
+    };
     
 
     useEffect(() => {
       alogger("theUserData changed or component just mounted - theUserData is: ", theUserData);
       alogger("allowing use rto draw to canvas is: ", canDrawToCanvas);
-      checkUserLoginAndCreditsForChange();      
+      checkUserLoginAndCreditsForChange();
 
       let theLocalUserId = '';
       let ipUser = false;
@@ -160,11 +155,11 @@ export default function Home(theUserData) {
 
 
 
-
     useEffect(() => {      
     alogger("Can draw to canvas is: ", canDrawToCanvas);
     }, [canDrawToCanvas]);
     
+
 
     // Function to clear the mask
     const clearMaskImage = async () => {
@@ -176,6 +171,8 @@ export default function Home(theUserData) {
       setClearMask(true); // Set clearMask to true when clearing the mask
     };
     
+
+
     // Reset clearMask to false after it's been set to true
     useEffect(() => {
       if (clearMask) {
@@ -189,14 +186,20 @@ export default function Home(theUserData) {
         dispatch(setCurrentTool(tool));
     };
 
+
+
     const handleBrushSizeChange = (size) => {
         dispatch(setBrushSize(size));
     };
+
+
 
     const handleCanvasSizeChange = (size) => {
       alogger('Received Canvas Size:', size); // Log the size received from Canvas
       setCanvasSize(size); // Callback to receive canvas size
     };      
+
+
 
     const updateCanvasPosition = () => {
         // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
@@ -217,12 +220,16 @@ export default function Home(theUserData) {
         //localStorage.setItem('imageTokens', 3);
     };
 
+
+
     useEffect(() => {
       if (updateCanvasPositionNow === true) {
         updateCanvasPosition();
         setUpdateCanvasPositionNow(false);
       }
     }, [updateCanvasPositionNow]);
+
+
 
     useEffect(() => {
       if (currentTool) {
@@ -231,6 +238,8 @@ export default function Home(theUserData) {
       }
     }, [currentTool]);
     
+
+
     useEffect(() => {
         const handleScroll = () => {
             updateCanvasPosition();
@@ -346,6 +355,7 @@ export default function Home(theUserData) {
         }
       }
     };
+    
 
     // updates localUserCredits to the current number of credits of the user
     const updateLocalUserCredits = async () => {
@@ -416,6 +426,7 @@ export default function Home(theUserData) {
       }
   };
 
+
     const formatFileUrl = (url) => {
       if (!url.includes('https://storage.googleapis.com/fjusers/')) {
         const fullStorageUrl = `https://storage.googleapis.com/fjusers/${url.split('imagePath=')[1]}`;
@@ -424,6 +435,7 @@ export default function Home(theUserData) {
       return url;
     };
   
+
 
 
     useEffect(() => {
@@ -440,6 +452,8 @@ export default function Home(theUserData) {
           alogger("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
       }
   }, []);
+
+
 
     // Function to load the workspace from the user's GCS bucket
     const LoadWorkspace = async () => {
@@ -620,29 +634,13 @@ export default function Home(theUserData) {
     }, [zoomWidth, hamburgerVisible]);
 
 
+
     // This function puts the image with given aspectRatio into end of the predictions array
     //
     // Dropzone calls this function When the user uploads an image
     // ViewMode calls this function when the user clicks on an image in their bucket that they want to edit/play with
     //  the image data URL and aspect ratio name(see toolSlice) calculated from the image's dimensions
-    /* Old function before we started using gcs bucket for images
-    const handleImageAsFirstPrediction = (imageDataUrl, aspectRatio) => {
-      alogger("handleImageAsFirstPrediction called with image data URL: ", imageDataUrl, " and aspect ratio: ", aspectRatio);
-      monkey
-      const newPrediction = {
-        id: 'local-image', // or generate a unique ID as needed
-        output: [imageDataUrl],
-        fileUrl: imageDataUrl,
-        status: 'succeeded', // or the appropriate status
-        aspectRatioName: aspectRatio,
-      };
-
-      setPredictions([newPrediction, ...predictions]);
-     // alogger("setting index to predictions.length: " + predictions.length);
-      dispatch(setIndex(predictions.length+1));
-
-      settheUpdatedPrediction(newPrediction);
-    }; */
+    // Old function before we started using gcs bucket for images
     const handleImageAsFirstPrediction = async (imageDataUrl, aspectRatio) => {
       alogger("handleImageAsFirstPrediction called with aspect ratio: ", aspectRatio);
       
@@ -710,6 +708,7 @@ export default function Home(theUserData) {
     };
 
 
+
     function findLastPercentageWithAdjustedGraphic(inputString) {
       // Use a regular expression to find all occurrences of percentages followed by the progress bar graphic
       const pattern = /\b(\d+)%\|([^|]*)\|/g;
@@ -732,6 +731,7 @@ export default function Home(theUserData) {
         return null;
       }
     }
+
 
     // Function to subtract credits from the user's account and check if they have enough credits
     // uses local storage to store the user's credits in imageTokens var
