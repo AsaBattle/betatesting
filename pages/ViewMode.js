@@ -83,9 +83,7 @@ export default function ViewMode(theUserData) {
   return (
     <Container maxWidth="lg" className={styles.viewMode}>
       <Paper elevation={3} className={styles.controlPanel}>
-        <Typography variant="h4" gutterBottom className={styles.heading}>
-          <ViewModule /> Your Generated Files
-        </Typography>
+       
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
             <Typography gutterBottom>Columns: {columns}</Typography>
