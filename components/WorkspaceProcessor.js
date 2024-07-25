@@ -9,11 +9,6 @@ This component will support the following functionality:
 - Save workspace
 - Load workspace
 */
-
-// First I'll make a component that runs a function named saveWorkspace which will be called when the user clicks the save button or
-// when the user logs out, closes the browser or navigates away from the page. This function will save the workspace to the user's
-// GCS bucket. This component will be called WorkspaceProcessor
-
 import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -31,14 +26,12 @@ export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
     // - The user logs out
     // - The user closes the browser
     // - The user navigates away from the page
-    // This component will be named saveWorkspace and will be called from the WorkspaceFile component
     const saveWorkspace = async () => {
         let predList = predictions
         alogger('Saving workspace: userId:', userId, 'imageSavePath:', imageSavePath);
         
         if (!predictions || predictions.length === 0) {
             alogger('No predictions to save');
-
         }
 
         try {
@@ -61,7 +54,6 @@ export const WorkspaceProcessor = forwardRef(({ userId, predictions }, ref) => {
         // The workspace is saved as a JSON object containing the following fields:
         // - Current image save path(just the name of the folder where the images are saved in the bucket)
         // - List of gcs bucket files currently being worked on
-        // It will NOT use firebase, but will use the GCS bucket directly
         alogger('Loading workspace for user:', currentUserId);
         setWorkspaceIsLoading(true);
         try {

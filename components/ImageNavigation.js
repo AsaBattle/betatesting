@@ -1,9 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { decIndex, incIndex, setIndex } from '../redux/slices/historySlice';
+import { setIndex } from '../redux/slices/historySlice';
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
-import Stack from '@mui/material/Stack';
 import alogger from '../utils/alogger';
 
 const ImageNavigation = ({ imageTotal, maxWidth }) => {
@@ -17,9 +16,10 @@ const ImageNavigation = ({ imageTotal, maxWidth }) => {
 
     return (
         <div style={{ 
-            maxWidth: maxWidth, 
+            width: '100%',
+            maxWidth: maxWidth,
             margin: '0 auto',
-            overflow: 'hidden' // Prevent content from spilling out
+            overflow: 'hidden',
         }}>
             {imageTotal === 0 && 
                 <div className="text-center font-helvetica text-xl text-white">
@@ -34,7 +34,7 @@ const ImageNavigation = ({ imageTotal, maxWidth }) => {
                        count={imageTotal} 
                        page={index}
                        onChange={handleChange} 
-                       size="large"
+                       size="small"
                        siblingCount={1}
                        boundaryCount={1}
                        renderItem={(item) => (
@@ -62,11 +62,11 @@ const ImageNavigation = ({ imageTotal, maxWidth }) => {
                            },
                            '& .MuiPaginationItem-root': {
                                color: 'pink',
-                               fontSize: '1.75rem',
-                               minWidth: '32px',
-                               height: '32px',
-                               padding: '0 12px',
-                               margin: '0 2px',
+                               fontSize: '1.5rem',
+                               minWidth: '28px',
+                               height: '28px',
+                               padding: '0 8px',
+                               margin: '0 1px',
                            },
                            '& .MuiPaginationItem-root.Mui-selected': {
                                color: 'yellow',
@@ -76,7 +76,7 @@ const ImageNavigation = ({ imageTotal, maxWidth }) => {
                            },
                            '& .MuiPaginationItem-icon': {
                                color: 'white',
-                               fontSize: '1.5rem',
+                               fontSize: '1.25rem',
                            },
                        }}
                    />

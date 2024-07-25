@@ -54,7 +54,7 @@ export default function PromptForm(props) {
   return (
     <form
       onSubmit={props.onSubmit}
-      className="py-6 animate-in fade-in duration-700"
+      className="animate-in fade-in duration-700"
     >
       <div className="mb-3">
         <input

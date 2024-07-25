@@ -4,120 +4,173 @@ import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import { setViewModeLoadedImages } from '../redux/slices/historySlice'; // Adjust the import path
+import { setViewModeLoadedImages } from '../redux/slices/historySlice';
+import { setImageSavePath } from '../redux/slices/toolSlice';
+import { Grid, Slider, TextField, Button, Typography, Paper, Container } from '@mui/material';
+import { ViewModule, Folder, ImageSearch } from '@mui/icons-material';
 
-
-
-
-export default function ViewMode( theUserData ) {
+export default function ViewMode(theUserData) {
   const [files, setFiles] = useState([]);
+  const [columns, setColumns] = useState(5);
+  const [rows, setRows] = useState(0);
+  const [maxImagesPerPage, setMaxImagesPerPage] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const currentUserId = useSelector((state) => state.history.userId);
   const dispatch = useDispatch();
-
-
+  const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
 
   useEffect(() => {
-    //console.log("theUserData is: ", theUserData);
-    console.log("the current user id is: ", currentUserId);
-
-  const fetchFiles = async () => {
-    console.log("fetching files for user id: ", currentUserId);
+    const fetchFiles = async () => {
       try {
-        const body = { userId: currentUserId, folder: 'BaseFolder/generatedImages' };
-        const response = await axios.post(`/api/files`,body);
+        const body = { userId: currentUserId, folder: imageSavePath };
+        const response = await axios.post(`/api/files`, body);
         setFiles(response.data.files);
-        console.log("Files fetched!");
+        setRows(Math.ceil(response.data.files.length / columns));
       } catch (error) {
         console.error('Error fetching files:', error);
-        console.log("Error fetching files!");
       }
     };
 
     fetchFiles();
-  }, [theUserData]);
-  
-
-
+  }, [currentUserId, imageSavePath, columns]);
 
   const handleImageClick = async (file) => {
     try {
       const imageUrl = file.url;
       const aspectRatioName = calculateAspectRatio(file.width, file.height);
-      console.log('IMAGE CLICKED:', imageUrl, aspectRatioName);
       dispatch(setViewModeLoadedImages({ imageUrl, aspectRatioName }));
-      router.push({
-        pathname: '/ImageMode',
-        //query: { imageUrl, aspectRatioName },
-      });
+      router.push('/ImageMode');
     } catch (error) {
       console.error('Error handling image click:', error);
     }
   };
- 
 
   const calculateAspectRatio = (width, height) => {
-    // Define your aspect ratios and names here
     const aspectRatios = {
-      '1:1': 1,
-      '16:9': 16 / 9,
-      '9:16': 9 / 16,
-      '4:3': 4 / 3,
-      '3:4': 3 / 4,
+      '1:1': 1, '16:9': 16/9, '9:16': 9/16, '4:3': 4/3, '3:4': 3/4
     };
-
-    let closestAspectRatioName = '1:1';
-    let smallestDifference = Infinity;
-    const imageAspectRatio = width / height;
-
+    let closestRatio = '1:1';
+    let smallestDiff = Infinity;
+    const imageRatio = width / height;
+    
     Object.entries(aspectRatios).forEach(([name, ratio]) => {
-      const difference = Math.abs(ratio - imageAspectRatio);
-      if (difference < smallestDifference) {
-        smallestDifference = difference;
-        closestAspectRatioName = name;
+      const diff = Math.abs(ratio - imageRatio);
+      if (diff < smallestDiff) {
+        smallestDiff = diff;
+        closestRatio = name;
       }
     });
-
-    return closestAspectRatioName;
+    
+    return closestRatio;
   };
 
+  const handleColumnsChange = (event, newValue) => {
+    setColumns(newValue);
+    setRows(Math.ceil(files.length / newValue));
+  };
+
+  const handleImageSavePathChange = (event) => {
+    dispatch(setImageSavePath(event.target.value));
+  };
+
+  const handleMaxImagesPerPageChange = (event, newValue) => {
+    setMaxImagesPerPage(newValue);
+  };
+
+  const paginatedFiles = files.slice((currentPage - 1) * maxImagesPerPage, currentPage * maxImagesPerPage);
+
   return (
-    <div className={styles.viewMode}>
-      <h2 className={styles.heading}>Your Generated Files</h2>
-      <div className={styles.fileGrid}>
-        {files.map((file) => (
+    <Container maxWidth="lg" className={styles.viewMode}>
+      <Paper elevation={3} className={styles.controlPanel}>
+        <Typography variant="h4" gutterBottom className={styles.heading}>
+          <ViewModule /> Your Generated Files
+        </Typography>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <Typography gutterBottom>Columns: {columns}</Typography>
+            <Slider
+              value={columns}
+              onChange={handleColumnsChange}
+              min={1}
+              max={10}
+              marks
+              valueLabelDisplay="auto"
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              label="Image Save Path"
+              value={imageSavePath}
+              onChange={handleImageSavePathChange}
+              fullWidth
+              InputProps={{
+                startAdornment: <Folder />,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Typography gutterBottom>Max Images Per Page: {maxImagesPerPage}</Typography>
+            <Slider
+              value={maxImagesPerPage}
+              onChange={handleMaxImagesPerPageChange}
+              min={1}
+              max={100}
+              step={1}
+              marks
+              valueLabelDisplay="auto"
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+
+      <Paper elevation={3} className={styles.statsPanel}>
+        <Typography variant="h6">Current Layout: {columns} x {rows}</Typography>
+        <Typography variant="h6">Total Images: {files.length}</Typography>
+        <Typography variant="h6">Pages: {Math.ceil(files.length / maxImagesPerPage)}</Typography>
+      </Paper>
+
+      <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        {paginatedFiles.map((file) => (
           <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
             <img src={file.url} alt={file.name} className={styles.fileImage} />
-            <p className={styles.fileName}>{file.name}</p>
+            <Typography className={styles.fileName}>{file.name}</Typography>
           </div>
         ))}
       </div>
-    </div>
+
+      <div className={styles.pagination}>
+        <Button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(prev => prev - 1)}
+        >
+          Previous
+        </Button>
+        <Typography>Page {currentPage} of {Math.ceil(files.length / maxImagesPerPage)}</Typography>
+        <Button
+          disabled={currentPage === Math.ceil(files.length / maxImagesPerPage)}
+          onClick={() => setCurrentPage(prev => prev + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </Container>
   );
 }
-
 
 export async function getServerSideProps(context) {
   const { req, res } = context;
 
-  // If we are working locally, we don't need to check for authentication
-  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY == 'true')
+  if (process.env.NEXT_PUBLIC_WORKING_LOCALLY === 'true')
     return { props: {} };
-  else {
-    try {
-      console.log("Checking if user is already logged in...")
-      const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
 
-      if (userData) {
-        console.log("Yes, logged in - UserData returned from checkIfUserIsAlreadyLoggedIn is: ", userData)
-        // The user is authenticated, pass the user data as props
-        return { props: { userData } };
-      }
-      // If userData is null, the user is not authenticated
-    } catch (error) {
-      console.error('Error during authentication:', error);
+  try {
+    const userData = await AuthService.checkIfUserIsAlreadyLoggedIn(req, res);
+    if (userData) {
+      return { props: { userData } };
     }
+  } catch (error) {
+    console.error('Error during authentication:', error);
   }
-  // Return empty props if not authenticated
   return { props: {} };
 }

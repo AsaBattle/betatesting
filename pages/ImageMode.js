@@ -545,6 +545,8 @@ useEffect(() => {
         // Decode the URL once
         const decodedUrl = decodeURIComponent(viewModeLoadedImages.imageUrl);
         
+        alogger("The original imageUrl from viewModeLoadedImages.imageUrl is: ", decodedUrl);
+
         // Extract the path without creating a URL object
         const pathParts = decodedUrl.split('/');
         const fjusersIndex = pathParts.findIndex(part => part === 'fjusers');
@@ -563,6 +565,7 @@ useEffect(() => {
           alogger('newUrl is: ', newUrl);
         }
 
+        
 
         // Construct the fetchImageUrl with the relevant part of the path
         let fetchImageUrl;
@@ -572,6 +575,8 @@ useEffect(() => {
           fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(newUrl)}`;
         else
           fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
+
+        
       
         // No need to use formatFileUrl here as we've already formatted it correctly
         alogger("***The formatted file URL is: ", fetchImageUrl);
@@ -667,6 +672,26 @@ useEffect(() => {
     }, [zoomWidth, hamburgerVisible]);
 
 
+    const loadCFTData = async (userId, imagePath) => {
+      try {
+        const response = await axios.post('/api/loadCFT', {
+          userId,
+          fileAndPath: imagePath.split('/').pop().split('.')[0] // Extract filename without extension
+        });
+        
+        if (response.status === 200) {
+          return response.data;
+        } else {
+          console.error('Failed to load CFT data:', response.data.message);
+          return null;
+        }
+      } catch (error) {
+        console.error('Error loading CFT data:', error);
+        return null;
+      }
+    };
+
+
 
     // This function puts the image with given aspectRatio into end of the predictions array
     //
@@ -706,6 +731,9 @@ useEffect(() => {
         } 
         
         // Construct the URL for the uploaded image
+       // const path =   `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
+        alogger("The body is: ", body);
+
         const fileUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
         
         // Use the returned URL, which should be compatible with your bucketFileExists API
@@ -729,8 +757,21 @@ useEffect(() => {
     
         setPredictions(prevPredictions => [formattedPrediction, ...prevPredictions]);
         settheUpdatedPrediction(formattedPrediction);
-
         dispatch(setIndex((predictions.length+1)));
+
+        // Load CFT data
+        const cftData = await loadCFTData(currentUserId, fileName);
+        if (cftData) {
+          // Update the prediction with CFT data
+          setPredictions(prevPredictions => {
+            const updatedPredictions = [...prevPredictions];
+            updatedPredictions[0] = {
+              ...updatedPredictions[0],
+              input: cftData
+            };
+            return updatedPredictions;
+          });
+        }
 
         
         alogger("New prediction added to the beginning of the array");
@@ -957,6 +998,8 @@ useEffect(() => {
         type: 1,
         input: {
           prompt: body.prompt,
+          negative_prompt: body.negative_prompt,
+          modelid: body.modelid,
         },
       };
     
@@ -1109,7 +1152,6 @@ useEffect(() => {
               />
             </div>
           </div>
-          
           <div className="relative mx-auto mt-4" style={{ maxWidth: `${maxNavigationWidth}px` }}>
             <div className="flex justify-between items-center mb-2">
               <button 
@@ -1118,7 +1160,12 @@ useEffect(() => {
               >
                 IMG
               </button>
-              <ImageNavigation imageTotal={predictions.length} maxWidth={maxNavigationWidth - 0} />
+              <ImageNavigation imageTotal={predictions.length} maxWidth={maxNavigationWidth+25} />
+                <div 
+                  className="text-right text-pink-400">
+                <div className="text-center">saving to</div>
+                <div className="text-center">'{imageSavePath}'</div>
+              </div>
             </div>
             <div id="asathisisit" ref={belowCanvasRef}>
               <PromptForm onSubmit={handleSubmit} predictions={predictions} />

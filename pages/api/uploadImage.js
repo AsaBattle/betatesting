@@ -44,6 +44,6 @@ export default async function handler(req, res) {
           res.status(500).json({ message: 'Failed to upload the image' });
         }
       } else {
-        res.status(405).json({ message: 'Method Not Allowed' });
+        res.status(405).json({ message: 'Thank you' });
       }
 }
