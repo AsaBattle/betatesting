@@ -1,16 +1,13 @@
 import { Storage } from '@google-cloud/storage';
-import sharp from 'sharp';
-import { promises as fs } from 'fs';
-import path from 'path';
-import os from 'os';
+import sizeOf from 'image-size';
 
 export const config = {
     api: {
       bodyParser: {
         sizeLimit: '30mb',
       },
-    },
-  }
+    }
+}
 
 let storage;
 
@@ -43,16 +40,18 @@ const calculateAspectRatio = (width, height) => {
 };
 
 async function getImageDimensions(file) {
-  const tempFilePath = path.join(os.tmpdir(), file.name);
-  try {
-    await file.download({ destination: tempFilePath });
-    const metadata = await sharp(tempFilePath).metadata();
-    await fs.unlink(tempFilePath);
-    return { width: metadata.width, height: metadata.height };
-  } catch (error) {
-    console.error(`Error processing file ${file.name}:`, error);
-    return { width: 0, height: 0 };
-  }
+  return new Promise((resolve, reject) => {
+    file.createReadStream()
+      .on('error', reject)
+      .pipe(sizeOf((err, dimensions) => {
+        if (err) {
+          console.error(`Error processing file ${file.name}:`, err);
+          resolve({ width: 0, height: 0 });
+        } else {
+          resolve(dimensions);
+        }
+      }));
+  });
 }
 
 export default async function handler(req, res) {
@@ -72,7 +71,7 @@ export default async function handler(req, res) {
         files.map(async (file) => {
           const [url] = await file.getSignedUrl({
             action: 'read',
-            expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1, // URL expires in 1 years
+            expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1, // URL expires in 1 year
           });
 
           const { width, height } = await getImageDimensions(file);
