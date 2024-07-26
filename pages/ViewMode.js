@@ -82,8 +82,16 @@ export default function ViewMode(theUserData) {
 
   return (
     <Container maxWidth="lg" className={styles.viewMode}>
+      <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        {paginatedFiles.map((file) => (
+          <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
+            <img src={file.url} alt={file.name} className={styles.fileImage} />
+            {/*<Typography className={styles.fileName}>{file.name}</Typography>*/}
+          </div>
+        ))}
+      </div>
+
       <Paper elevation={3} className={styles.controlPanel}>
-       
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
             <Typography gutterBottom>Columns: {columns}</Typography>
@@ -121,15 +129,6 @@ export default function ViewMode(theUserData) {
           </Grid>
         </Grid>
       </Paper>
-
-        <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
-        {paginatedFiles.map((file) => (
-          <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
-            <img src={file.url} alt={file.name} className={styles.fileImage} />
-            <Typography className={styles.fileName}>{file.name}</Typography>
-          </div>
-        ))}
-      </div>
 
       <Paper elevation={3} className={styles.statsPanel}>
         <Typography variant="h6">Current Layout: {columns} x {rows}</Typography>
