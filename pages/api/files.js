@@ -21,6 +21,28 @@ if (process.env.VERCEL) {
   storage = new Storage();
 }
 
+
+
+const calculateAspectRatio = (width, height) => {
+  const aspectRatios = {
+    '1:1': 1, '16:9': 16/9, '9:16': 9/16, '4:3': 4/3, '3:4': 3/4
+  };
+  let closestRatio = '1:1';
+  let smallestDiff = Infinity;
+  const imageRatio = width / height;
+  
+  Object.entries(aspectRatios).forEach(([name, ratio]) => {
+    const diff = Math.abs(ratio - imageRatio);
+    if (diff < smallestDiff) {
+      smallestDiff = diff;
+      closestRatio = name;
+    }
+  });
+  
+  return closestRatio;
+};
+
+
 export default async function handler(req, res) {
   if (req.method === 'POST') {
 
