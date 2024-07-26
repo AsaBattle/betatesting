@@ -15,21 +15,19 @@ import ToolbarOptions from '../components/toolbars/ToolbarOptions';
 import { tools, getResolution } from '../components/tools/Tools';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentTool, setBrushSize, setZoomWidth, setUserIsLoggedInWithAccount, setImageSavePath } from '../redux/slices/toolSlice';
-import { undo, redo, setIndex, setUserId, setViewModeLoadedImages } from '../redux/slices/historySlice'; // Adjust the import path
+import { undo, redo, setIndex, setUserId, setViewModeLoadedImages } from '../redux/slices/historySlice';
 import ImageNavigation from '../components/ImageNavigation';
 import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 import WorkspaceProcessor from '../components/WorkspaceProcessor';
 
+
 const alogger = require('../utils/alogger').default;
 
-
 import AuthService from '../services/authService';
-
-
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 
 
 
@@ -94,8 +92,9 @@ export default function Home(theUserData) {
     const [userLoginNameAndCredits, setUserLoginNameAndCredits] = useState('');
     const [localUserCredits, setLocalUserCredits] = useState(0);
     const [localUserIp, setLocalUserIp] = useState('');
+    const [maxNavigationWidth, setMaxNavigationWidth] = useState(1024);          // Default max width for image navigation component
 
-    alogger('ImageMode component started rendering');
+    alogger('ImageMode component has started rendering');
 
     useEffect(() => {
       alogger('ImageMode first useEffect fired');
@@ -129,13 +128,13 @@ export default function Home(theUserData) {
       if (workspaceProcessorRef.current) {
           workspaceProcessorRef.current.saveWorkspace();
       }
-  };
+    };
     
 
     useEffect(() => {
       alogger("theUserData changed or component just mounted - theUserData is: ", theUserData);
       alogger("allowing use rto draw to canvas is: ", canDrawToCanvas);
-      checkUserLoginAndCreditsForChange();      
+      checkUserLoginAndCreditsForChange();
 
       let theLocalUserId = '';
       let ipUser = false;
@@ -160,11 +159,11 @@ export default function Home(theUserData) {
 
 
 
-
     useEffect(() => {      
     alogger("Can draw to canvas is: ", canDrawToCanvas);
     }, [canDrawToCanvas]);
     
+
 
     // Function to clear the mask
     const clearMaskImage = async () => {
@@ -176,6 +175,8 @@ export default function Home(theUserData) {
       setClearMask(true); // Set clearMask to true when clearing the mask
     };
     
+
+
     // Reset clearMask to false after it's been set to true
     useEffect(() => {
       if (clearMask) {
@@ -189,14 +190,21 @@ export default function Home(theUserData) {
         dispatch(setCurrentTool(tool));
     };
 
+
+
     const handleBrushSizeChange = (size) => {
         dispatch(setBrushSize(size));
     };
+
+
+
 
     const handleCanvasSizeChange = (size) => {
       alogger('Received Canvas Size:', size); // Log the size received from Canvas
       setCanvasSize(size); // Callback to receive canvas size
     };      
+
+
 
     const updateCanvasPosition = () => {
         // If the hamburger is visible, position the hambuger icon/toolbar on the toolbaroptions menu
@@ -217,12 +225,16 @@ export default function Home(theUserData) {
         //localStorage.setItem('imageTokens', 3);
     };
 
+
+
     useEffect(() => {
       if (updateCanvasPositionNow === true) {
         updateCanvasPosition();
         setUpdateCanvasPositionNow(false);
       }
     }, [updateCanvasPositionNow]);
+
+
 
     useEffect(() => {
       if (currentTool) {
@@ -231,6 +243,8 @@ export default function Home(theUserData) {
       }
     }, [currentTool]);
     
+
+/* old code before adding the new imagenavigation variable width
     useEffect(() => {
         const handleScroll = () => {
             updateCanvasPosition();
@@ -245,7 +259,31 @@ export default function Home(theUserData) {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [hamburgerVisible]);
+*/
 
+useEffect(() => {
+  const handleScroll = () => {
+      updateCanvasPosition();
+  };
+
+  const updateMaxWidth = () => {
+      const canvasWidth = canvasContainerRef.current?.offsetWidth || 512;
+      setMaxNavigationWidth(Math.min(canvasWidth, 512));
+  };
+
+  updateCanvasPosition();
+  updateMaxWidth();
+  
+  window.addEventListener('resize', updateCanvasPosition);
+  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('resize', updateMaxWidth);
+
+  return () => {
+      window.removeEventListener('resize', updateCanvasPosition);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateMaxWidth);
+  };
+}, [hamburgerVisible]);
 
 
     const FSAMTest = async () => {
@@ -346,6 +384,8 @@ export default function Home(theUserData) {
         }
       }
     };
+    
+
 
     // updates localUserCredits to the current number of credits of the user
     const updateLocalUserCredits = async () => {
@@ -372,9 +412,11 @@ export default function Home(theUserData) {
       }
     };
 
+
     const handleViewModePush = () => {
       router.push('/ViewMode');
     };
+
 
     const handleLogin = async () => {
       alogger("Logging in the user...");
@@ -382,6 +424,7 @@ export default function Home(theUserData) {
       await handleLogout(false);
       router.push('/LoginForm');
     };
+
 
     const handleLogout = async (redirect = false) => {
       alogger("Logging out the user...");
@@ -416,6 +459,7 @@ export default function Home(theUserData) {
       }
   };
 
+
     const formatFileUrl = (url) => {
       if (!url.includes('https://storage.googleapis.com/fjusers/')) {
         const fullStorageUrl = `https://storage.googleapis.com/fjusers/${url.split('imagePath=')[1]}`;
@@ -424,6 +468,7 @@ export default function Home(theUserData) {
       return url;
     };
   
+
 
 
     useEffect(() => {
@@ -440,6 +485,8 @@ export default function Home(theUserData) {
           alogger("Failed to be able to setup the current tool!!! currentTool is null - currentToolName is: ", currentToolName);
       }
   }, []);
+
+
 
     // Function to load the workspace from the user's GCS bucket
     const LoadWorkspace = async () => {
@@ -498,6 +545,8 @@ export default function Home(theUserData) {
         // Decode the URL once
         const decodedUrl = decodeURIComponent(viewModeLoadedImages.imageUrl);
         
+        alogger("The original imageUrl from viewModeLoadedImages.imageUrl is: ", decodedUrl);
+
         // Extract the path without creating a URL object
         const pathParts = decodedUrl.split('/');
         const fjusersIndex = pathParts.findIndex(part => part === 'fjusers');
@@ -516,6 +565,7 @@ export default function Home(theUserData) {
           alogger('newUrl is: ', newUrl);
         }
 
+        
 
         // Construct the fetchImageUrl with the relevant part of the path
         let fetchImageUrl;
@@ -525,6 +575,8 @@ export default function Home(theUserData) {
           fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(newUrl)}`;
         else
           fetchImageUrl = `/api/fetchImage?imagePath=${encodeURIComponent(cleanPath)}`;
+
+        
       
         // No need to use formatFileUrl here as we've already formatted it correctly
         alogger("***The formatted file URL is: ", fetchImageUrl);
@@ -620,29 +672,33 @@ export default function Home(theUserData) {
     }, [zoomWidth, hamburgerVisible]);
 
 
+    const loadCFTData = async (userId, imagePath) => {
+      try {
+        const response = await axios.post('/api/loadCFT', {
+          userId,
+          fileAndPath: imagePath.split('/').pop().split('.')[0] // Extract filename without extension
+        });
+        
+        if (response.status === 200) {
+          return response.data;
+        } else {
+          console.error('Failed to load CFT data:', response.data.message);
+          return null;
+        }
+      } catch (error) {
+        console.error('Error loading CFT data:', error);
+        return null;
+      }
+    };
+
+
+
     // This function puts the image with given aspectRatio into end of the predictions array
     //
     // Dropzone calls this function When the user uploads an image
     // ViewMode calls this function when the user clicks on an image in their bucket that they want to edit/play with
     //  the image data URL and aspect ratio name(see toolSlice) calculated from the image's dimensions
-    /* Old function before we started using gcs bucket for images
-    const handleImageAsFirstPrediction = (imageDataUrl, aspectRatio) => {
-      alogger("handleImageAsFirstPrediction called with image data URL: ", imageDataUrl, " and aspect ratio: ", aspectRatio);
-      monkey
-      const newPrediction = {
-        id: 'local-image', // or generate a unique ID as needed
-        output: [imageDataUrl],
-        fileUrl: imageDataUrl,
-        status: 'succeeded', // or the appropriate status
-        aspectRatioName: aspectRatio,
-      };
-
-      setPredictions([newPrediction, ...predictions]);
-     // alogger("setting index to predictions.length: " + predictions.length);
-      dispatch(setIndex(predictions.length+1));
-
-      settheUpdatedPrediction(newPrediction);
-    }; */
+    // Old function before we started using gcs bucket for images
     const handleImageAsFirstPrediction = async (imageDataUrl, aspectRatio) => {
       alogger("handleImageAsFirstPrediction called with aspect ratio: ", aspectRatio);
       
@@ -675,6 +731,9 @@ export default function Home(theUserData) {
         } 
         
         // Construct the URL for the uploaded image
+       // const path =   `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
+        alogger("The body is: ", body);
+
         const fileUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
         
         // Use the returned URL, which should be compatible with your bucketFileExists API
@@ -698,8 +757,21 @@ export default function Home(theUserData) {
     
         setPredictions(prevPredictions => [formattedPrediction, ...prevPredictions]);
         settheUpdatedPrediction(formattedPrediction);
-
         dispatch(setIndex((predictions.length+1)));
+
+        // Load CFT data
+        const cftData = await loadCFTData(currentUserId, fileName);
+        if (cftData) {
+          // Update the prediction with CFT data
+          setPredictions(prevPredictions => {
+            const updatedPredictions = [...prevPredictions];
+            updatedPredictions[0] = {
+              ...updatedPredictions[0],
+              input: cftData
+            };
+            return updatedPredictions;
+          });
+        }
 
         
         alogger("New prediction added to the beginning of the array");
@@ -708,6 +780,7 @@ export default function Home(theUserData) {
         // Handle the error appropriately, maybe show a message to the user
       }
     };
+
 
 
     function findLastPercentageWithAdjustedGraphic(inputString) {
@@ -732,6 +805,7 @@ export default function Home(theUserData) {
         return null;
       }
     }
+
 
     // Function to subtract credits from the user's account and check if they have enough credits
     // uses local storage to store the user's credits in imageTokens var
@@ -924,6 +998,8 @@ export default function Home(theUserData) {
         type: 1,
         input: {
           prompt: body.prompt,
+          negative_prompt: body.negative_prompt,
+          modelid: body.modelid,
         },
       };
     
@@ -1007,7 +1083,6 @@ export default function Home(theUserData) {
 
 
   return (
-    alogger('ImageMode about to return JSX'),
     <div className={styles.layout}>
       <div className={`${styles.toolbar} ${styles.verticalToolbar}`} ref={toolbarRef}>
         <VerticalToolbar currentTool={currentTool} onToolChange={handleToolChange} canvasRef={canvasRef} />
@@ -1023,12 +1098,28 @@ export default function Home(theUserData) {
           <meta name="viewport" content="initial-scale=0.7, width=device-width user-scalable=no" />
         </Head>
         <p className="pb-5 text-xl text-white text-center font-helvetica">
-          <strong>CraftFul.a.i Studio</strong>
+          <strong>CraftFul a.i Studio</strong>
         </p>
         <div className="flex flex-col items-center">
         <p className="text-white text-center font-helvetica">
-          {ModeButton()}          
-          {LogINOUTButton()}
+          <button onClick={handleViewModePush} 
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              View My Images
+          </button>
+          {theUserData.userData ? (
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Login
+            </button>
+          )}
           {userLoginNameAndCredits}
         </p>
         </div>
@@ -1061,20 +1152,22 @@ export default function Home(theUserData) {
               />
             </div>
           </div>
-          
-          <div className="relative max-w-[512px] mx-auto mt-4">
-            {/* New Upload Button */}
-            <button 
-              onClick={handleUploadClick}
-              className="absolute left-0 top-8 transform -translate-y-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              style={{ marginBottom: '10px' }}
-            >
-              IMG
-            </button>
-  
-            {/* ImageNavigation component */}
+          <div className="relative mx-auto mt-4" style={{ maxWidth: `${maxNavigationWidth}px` }}>
+            <div className="flex justify-between items-center mb-2">
+              <button 
+                onClick={handleUploadClick}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                IMG
+              </button>
+              <ImageNavigation imageTotal={predictions.length} maxWidth={maxNavigationWidth+25} />
+                <div 
+                  className="text-right text-pink-400">
+                <div className="text-center">saving to</div>
+                <div className="text-center">{imageSavePath}</div>
+              </div>
+            </div>
             <div id="asathisisit" ref={belowCanvasRef}>
-              <ImageNavigation imageTotal={predictions.length} />
               <PromptForm onSubmit={handleSubmit} predictions={predictions} />
               <div className="text-center">
                 {undoStack.length > 0 && (
@@ -1104,7 +1197,7 @@ export default function Home(theUserData) {
         )}
       </div>
     </div>
-  );
+);
 }
 
 

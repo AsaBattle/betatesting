@@ -38,6 +38,7 @@ export default async function handler(req, res) {
   const finalPath = cleanPath(decodedPath);
   console.log('Inside fetchImage---- finalPath:', finalPath);
 
+
   try {
     const bucket = storage.bucket('fjusers');
     const file = bucket.file(finalPath);
