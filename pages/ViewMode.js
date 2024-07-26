@@ -122,13 +122,7 @@ export default function ViewMode(theUserData) {
         </Grid>
       </Paper>
 
-      <Paper elevation={3} className={styles.statsPanel}>
-        <Typography variant="h6">Current Layout: {columns} x {rows}</Typography>
-        <Typography variant="h6">Total Images: {files.length}</Typography>
-        <Typography variant="h6">Pages: {Math.ceil(files.length / maxImagesPerPage)}</Typography>
-      </Paper>
-
-      <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {paginatedFiles.map((file) => (
           <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
             <img src={file.url} alt={file.name} className={styles.fileImage} />
@@ -136,6 +130,12 @@ export default function ViewMode(theUserData) {
           </div>
         ))}
       </div>
+
+      <Paper elevation={3} className={styles.statsPanel}>
+        <Typography variant="h6">Current Layout: {columns} x {rows}</Typography>
+        <Typography variant="h6">Total Images: {files.length}</Typography>
+        <Typography variant="h6">Pages: {Math.ceil(files.length / maxImagesPerPage)}</Typography>
+      </Paper>
 
       <div className={styles.pagination}>
         <Button
