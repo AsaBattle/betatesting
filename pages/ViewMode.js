@@ -85,31 +85,7 @@ export default function ViewMode(theUserData) {
 
   return (
     <Container maxWidth="false" className={styles.viewMode}>
-      <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
-        {paginatedFiles.map((file) => (
-          <Paper 
-            key={file.name}
-            elevation={6} 
-            className={styles.controlPanel} 
-            style={{ padding: '4px', margin: '4px' }} // Reduced padding and added small margin
-          >
-            <div 
-              key={file.name} 
-              className={styles.fileTile} 
-              onClick={() => handleImageClick(file)}
-              style={{ margin: 0, padding: 0 }} // Remove any margin or padding
-            >
-              <img 
-                src={file.url} 
-                alt={file.name} 
-                className={styles.fileImage} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} // Maximize image size
-              />
-            </div>
-          </Paper>
-        ))}
-      </div>
-
+      
       <Paper elevation={3} className={styles.controlPanel}>
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
@@ -155,6 +131,33 @@ export default function ViewMode(theUserData) {
         <Typography variant="h6">Pages: {Math.ceil(files.length / maxImagesPerPage)}</Typography>
       </Paper>
 
+      <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        {paginatedFiles.map((file) => (
+          <Paper 
+            key={file.name}
+            elevation={6} 
+            className={styles.controlPanel} 
+            style={{ padding: '4px', margin: '4px' }} // Reduced padding and added small margin
+          >
+            <div 
+              key={file.name} 
+              className={styles.fileTile} 
+              onClick={() => handleImageClick(file)}
+              style={{ margin: 0, padding: 0 }} // Remove any margin or padding
+            >
+              <img 
+                src={file.url} 
+                alt={file.name} 
+                className={styles.fileImage} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} // Maximize image size
+              />
+            </div>
+          </Paper>
+        ))}
+      </div>
+
+  
+  
       <div className={styles.pagination}>
         <Button
           disabled={currentPage === 1}
