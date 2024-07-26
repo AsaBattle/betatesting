@@ -9,6 +9,8 @@ import { setImageSavePath } from '../redux/slices/toolSlice';
 import { Grid, Slider, TextField, Button, Typography, Paper, Container } from '@mui/material';
 import { ViewModule, Folder, ImageSearch } from '@mui/icons-material';
 
+import alogger from '../utils/alogger';
+
 export default function ViewMode(theUserData) {
   const [files, setFiles] = useState([]);
   const [columns, setColumns] = useState(5);
@@ -39,6 +41,7 @@ export default function ViewMode(theUserData) {
     try {
       const imageUrl = file.url;
       const aspectRatioName = calculateAspectRatio(file.width, file.height);
+      alogger("^^^^^^^^^^^^^ width: ", file.width, " height: ", file.height, " aspectRatioName: ", aspectRatioName);
       dispatch(setViewModeLoadedImages({ imageUrl, aspectRatioName }));
       router.push('/ImageMode');
     } catch (error) {
@@ -81,13 +84,29 @@ export default function ViewMode(theUserData) {
   const paginatedFiles = files.slice((currentPage - 1) * maxImagesPerPage, currentPage * maxImagesPerPage);
 
   return (
-    <Container maxWidth="lg" className={styles.viewMode}>
+    <Container maxWidth="false" className={styles.viewMode}>
       <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {paginatedFiles.map((file) => (
-          <div key={file.name} className={styles.fileTile} onClick={() => handleImageClick(file)}>
-            <img src={file.url} alt={file.name} className={styles.fileImage} />
-            {/*<Typography className={styles.fileName}>{file.name}</Typography>*/}
-          </div>
+          <Paper 
+            key={file.name}
+            elevation={6} 
+            className={styles.controlPanel} 
+            style={{ padding: '4px', margin: '4px' }} // Reduced padding and added small margin
+          >
+            <div 
+              key={file.name} 
+              className={styles.fileTile} 
+              onClick={() => handleImageClick(file)}
+              style={{ margin: 0, padding: 0 }} // Remove any margin or padding
+            >
+              <img 
+                src={file.url} 
+                alt={file.name} 
+                className={styles.fileImage} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} // Maximize image size
+              />
+            </div>
+          </Paper>
         ))}
       </div>
 
