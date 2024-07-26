@@ -88,6 +88,7 @@ export default function ViewMode(theUserData) {
       <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {paginatedFiles.map((file) => (
           <Paper 
+            key={file.name}
             elevation={6} 
             className={styles.controlPanel} 
             style={{ padding: '4px', margin: '4px' }} // Reduced padding and added small margin
