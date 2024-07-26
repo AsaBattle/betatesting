@@ -30,6 +30,7 @@
     "firebase": "^10.11.1",
     "gcp-metadata": "^6.1.0",
     "google-auth-library": "^9.10.0",
+    "image-size": "^1.1.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.88.0",
     "next": "^12.3.0",
@@ -44,7 +45,6 @@
     "react-redux": "^9.0.4",
     "react-sketch-canvas": "^6.2.0",
     "redux-thunk": "^3.1.0",
-    "sharp": "^0.33.4",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
