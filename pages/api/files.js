@@ -74,13 +74,13 @@ export default async function handler(req, res) {
             expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1, // URL expires in 1 year
           });
 
-          const { width, height } = await getImageDimensions(file);
+         // const { width, height } = await getImageDimensions(file);
 
           return {
             name: file.name,
             url,
-            width,
-            height,
+           // width,
+           // height,
           };
         })
       );
