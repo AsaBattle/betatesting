@@ -92,6 +92,7 @@ export default async function handler(req, res) {
       res.status(500).json({ error: 'Failed to retrieve files' });
     }
   } else {
+    console.log("received a non-POST request of type: ", req.method);
     res.status(405).json({ error: 'Method not allowed' });
   }
 }
