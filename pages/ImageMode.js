@@ -1164,7 +1164,7 @@ useEffect(() => {
                 <div 
                   className="text-right text-pink-400">
                 <div className="text-center">saving to</div>
-                <div className="text-center">'{imageSavePath}'</div>
+                <div className="text-center">{imageSavePath}</div>
               </div>
             </div>
             <div id="asathisisit" ref={belowCanvasRef}>
