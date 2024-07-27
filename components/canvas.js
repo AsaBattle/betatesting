@@ -202,11 +202,27 @@ const Canvas = forwardRef((props, ref) => {
 
 
   const handleCanvasClick = (event) => {
+
+    // Prevent the default context menu from opening on right click
+    if (event.type === 'contextmenu') {
+      event.preventDefault();
+    }
+
+    // Show menu if there isn't a TOOl already selected
+    if (currentToolName === 'NoTool') {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      console.log("Canvas click detected for NoTool at:", x, y, "CurrentTool:", currentToolName);
+      props.onOpenMenu(event, index, { x, y });
+      return;
+    }
+
     if (!allowDrawing) {
-      alogger('Drawing is disabled, in handleCanvasClick');
+      alogger('Drawing is disabled, in handleCanvasClick currentToolName:', currentToolName);
       return;
     }  else {
-      alogger('Drawing is enabled, in handleCanvasClick');
+      alogger('Drawing is enabled, in handleCanvasClick currentToolName:', currentToolName);
     }
 
 
@@ -222,10 +238,6 @@ const Canvas = forwardRef((props, ref) => {
     // Assuming the image ref holds the currentPredictionImage
     currentPredictionImageRef.current = (currentPredictionMagicWandMask)?currentPredictionMagicWandMask:currentPredictionImage;
   
-    // Prevent the default context menu from opening on right click
-    if (event.type === 'contextmenu') {
-      event.preventDefault();
-    }
   
     // Call the processTool function of the current tool
     if (currentTool && currentTool.processTool) {

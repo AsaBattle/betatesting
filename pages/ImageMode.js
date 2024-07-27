@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { useRouter } from 'next/router';
 import Head from "next/head";
 import Canvas from "components/canvas";
@@ -21,7 +21,7 @@ import { getSession, signOut as nextAuthSignOut } from "next-auth/react";
 import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 import WorkspaceProcessor from '../components/WorkspaceProcessor';
-
+import ImageMenu from '../components/ImageMenu';
 
 const alogger = require('../utils/alogger').default;
 
@@ -80,6 +80,10 @@ export default function Home(theUserData) {
     const [isDropzoneActive, setIsDropzoneActive] = useState(false);            // Used to manually activate the dropzone component
     const dropzoneRef = useRef(null);
 
+    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
      ? predictions[index].aspectRatioName
@@ -99,9 +103,57 @@ export default function Home(theUserData) {
     useEffect(() => {
       alogger('ImageMode first useEffect fired');
     }, []);
+
+    const handleDeleteImage = (indexToDelete) => {
+      setPredictions(prevPredictions => {
+        const newPredictions = prevPredictions.filter((_, i) => i !== indexToDelete);
+        dispatch(setIndex(Math.min(newPredictions.length, index)));
+        return newPredictions;
+      });
+    };
+  
+// trying to get the new ImageMenu to render where the user clicks, I deleted a bunch of different versions of
+// the open and close function Claude gave me because they all didn't work
+
+const menuItems = useMemo(() => [
+  {
+    label: 'Delete Image',
+    onClick: () => {
+      if (selectedImageIndex !== null) {
+        handleDeleteImage(selectedImageIndex);
+      }
+    },
+  },
+  // Add more menu items here in the future
+], [selectedImageIndex]);
+
+useEffect(() => {
+  alogger('ImageMode component has started rendering');
+}, []);
+
+const handleOpenMenu = (event, index, position) => {
+  alogger("Opening menu for image index:", index);
+
+  if (canvasContainerRef.current) {
+    const canvasRect = canvasContainerRef.current.getBoundingClientRect();
+    alogger("Canvas position is: ", canvasRect.left, canvasRect.top);
+    alogger("Event position is: ", position.x, position.y);
+    const adjustedPosition = {
+      x: canvasRect.left + position.x,
+      y: canvasRect.top + position.y,
+    };
+
+    setSelectedImageIndex(index);
+    setMenuPosition(adjustedPosition);
+    setMenuOpen(true);
+  }
+};
+
+const handleCloseMenu = () => {
+  setMenuOpen(false);
+  setSelectedImageIndex(null);
+};
     
-    
- 
     // When the user wants to manually upload an image, they click the upload button
     const handleUploadClick = () => {
       alogger('Upload button clicked'); 
@@ -109,6 +161,7 @@ export default function Home(theUserData) {
         dropzoneRef.current.openFilePicker();
       }
     };
+
 
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
@@ -1148,9 +1201,10 @@ useEffect(() => {
                 currentTool={currentTool}
                 onCanvasSizeChange={handleCanvasSizeChange}
                 currentPredictionStatus={currentPredictionStatus}
+                onOpenMenu={handleOpenMenu}
                 clear
-              />
-            </div>
+            />
+          </div>
           </div>
           <div className="relative mx-auto mt-4" style={{ maxWidth: `${maxNavigationWidth}px` }}>
             <div className="flex justify-between items-center mb-2">
@@ -1196,6 +1250,12 @@ useEffect(() => {
             </div>
         )}
       </div>
+      <ImageMenu
+          open={menuOpen}
+          onClose={handleCloseMenu}
+          menuItems={menuItems}
+          anchorPosition={menuPosition}
+        />
     </div>
 );
 }
