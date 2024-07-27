@@ -22,6 +22,7 @@ import { signOut } from "firebase/auth";
 import { fauth } from "../utils/firebase";
 import WorkspaceProcessor from '../components/WorkspaceProcessor';
 import ImageMenu from '../components/ImageMenu';
+import YesNoModal from '../components/YesNoModal'; 
 
 const alogger = require('../utils/alogger').default;
 
@@ -83,7 +84,9 @@ export default function Home(theUserData) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-
+    const [isYesNoModalOpen, setIsYesNoModalOpen] = useState(false);
+    const [imageIndexToDelete, setImageIndexToDelete] = useState(null);
+    
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
      ? predictions[index].aspectRatioName
@@ -106,26 +109,41 @@ export default function Home(theUserData) {
 
     const handleDeleteImage = (indexToDelete) => {
       setPredictions(prevPredictions => {
-        const newPredictions = prevPredictions.filter((_, i) => i !== indexToDelete);
-        dispatch(setIndex(Math.min(newPredictions.length, index)));
-        return newPredictions;
+          const newPredictions = prevPredictions.filter((_, i) => i !== indexToDelete);
+          dispatch(setIndex(Math.min(newPredictions.length, index)));
+          return newPredictions;
       });
-    };
-  
-// trying to get the new ImageMenu to render where the user clicks, I deleted a bunch of different versions of
-// the open and close function Claude gave me because they all didn't work
+  };
 
-const menuItems = useMemo(() => [
-  {
-    label: 'Delete Image',
-    onClick: () => {
-      if (selectedImageIndex !== null) {
-        handleDeleteImage(selectedImageIndex);
+  const handleOpenYesNoModal = (index) => {
+      setImageIndexToDelete(index);
+      setIsYesNoModalOpen(true);
+  };
+
+  const handleCloseYesNoModal = () => {
+      setIsYesNoModalOpen(false);
+      setImageIndexToDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+      if (imageIndexToDelete !== null) {
+          handleDeleteImage(imageIndexToDelete);
       }
-    },
-  },
-  // Add more menu items here in the future
-], [selectedImageIndex]);
+      handleCloseYesNoModal();
+  };
+
+  const menuItems = useMemo(() => [
+      {
+          label: 'Delete Image',
+          onClick: () => {
+              if (selectedImageIndex !== null) {
+                  handleOpenYesNoModal(selectedImageIndex);
+              }
+          },
+      },
+      // Add more menu items here in the future
+  ], [selectedImageIndex]);
+
 
 useEffect(() => {
   alogger('ImageMode component has started rendering');
@@ -1255,7 +1273,15 @@ useEffect(() => {
           onClose={handleCloseMenu}
           menuItems={menuItems}
           anchorPosition={menuPosition}
-        />
+      />
+      <YesNoModal
+          open={isYesNoModalOpen}
+          onClose={handleCloseYesNoModal}
+          onYes={handleConfirmDelete}
+          onNo={handleCloseYesNoModal}
+          title="Confirm Deletion"
+          message="Are you sure you want to delete this image?"
+     />
     </div>
 );
 }
