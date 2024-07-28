@@ -86,7 +86,7 @@ export default function Home(theUserData) {
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const [isYesNoModalOpen, setIsYesNoModalOpen] = useState(false);
     const [imageIndexToDelete, setImageIndexToDelete] = useState(null);
-    
+
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
      ? predictions[index].aspectRatioName
@@ -932,7 +932,7 @@ useEffect(() => {
         height,
         image: combinedMask ? currentPredictionOutput : null,
         mask: combinedMask,
-        noCheck: true,
+        noCheck: false,
       };
 
       return body;
