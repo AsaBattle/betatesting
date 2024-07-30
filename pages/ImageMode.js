@@ -859,6 +859,7 @@ useEffect(() => {
         // Load CFT data
         const cftData = await loadCFTData(currentUserId, fileName);
         if (cftData) {
+          alogger("CFT returned by loadCFTData for the uploaded image:", cftData);
           // Update the prediction with CFT data
           setPredictions(prevPredictions => {
             const updatedPredictions = [...prevPredictions];
