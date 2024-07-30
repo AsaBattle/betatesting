@@ -10,6 +10,8 @@ import { tools } from '../tools/Tools';
 import { FSAMProcessor } from '../Util/Utilities';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
 import Tooltip from '../tooltip';
+import axios from "axios";
+
 const alogger = require('../../utils/alogger').default;
 
 
@@ -180,9 +182,27 @@ useEffect(() => {
       prediction.output[0] = dIt(prediction.output[0]);
     });
 
+   
+
     setSelectedAspectRatio(aspectRatio);
       dispatch(setAspectRatio(aspectRatio)); 
   };
+
+// make an async function called testcall
+  const testcall = async () => {
+    try {
+      const userCredits = await axios.post("/api/user/testPost", {
+        userId: "1182103610054684715",
+        //userId: "cus_PVaCNeRrvJL5MP",
+      });
+      alogger("User credits are: ", userCredits);
+      setLocalUserCredits(userCredits);
+    } catch (error) {
+      console.error("Error updating local user credits:", error);
+      return;
+    } 
+  }
+
 
   const handleModelClick = (model) => {
     dispatch(setModel(model));
@@ -545,7 +565,6 @@ useEffect(() => {
         >
           <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
           <Typography className="text-center mt-2">Current Model: {currentImageModel}</Typography>
-
             <Button
               style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
               variant="contained"

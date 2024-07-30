@@ -86,7 +86,7 @@ export default function Home(theUserData) {
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const [isYesNoModalOpen, setIsYesNoModalOpen] = useState(false);
     const [imageIndexToDelete, setImageIndexToDelete] = useState(null);
-    
+
     // Calculate aspect ratio from the current prediction if available
     const currentImageAspectRatio = predictions && predictions.length > index && predictions[index]
      ? predictions[index].aspectRatioName
@@ -671,6 +671,23 @@ useEffect(() => {
         newPredictionsCount += 1;
         alogger("Incoming total Loaded predctions count is: ", newPredictionsCount);
       
+          // Load CFT data
+          const cftData = await loadCFTData(currentUserId, fetchImageUrl);
+          if (cftData) {
+            alogger("CFT data found for the uploaded image:", cftData);
+            // Update the prediction with CFT data
+            setPredictions(prevPredictions => {
+              const updatedPredictions = [...prevPredictions];
+              updatedPredictions[0] = {
+                ...updatedPredictions[0],
+                input: cftData
+              };
+              return updatedPredictions;
+            });
+          } else {
+            alogger("No CFT data found for the uploaded image:", fileName);
+          } 
+        
         // reset the viewModeLoadedImages(we only want to load it once)
         dispatch(setViewModeLoadedImages({}));
       }
@@ -744,10 +761,19 @@ useEffect(() => {
 
 
     const loadCFTData = async (userId, imagePath) => {
+      const decodedUrl = decodeURIComponent(imagePath);
+
+      // Format the fileAndPath to remove the GCS URL
+      // example: this line 
+      // "/api/fetchImage?imagePath=https://storage.googleapis.com/fjusers/172.56.201.232/BaseFolder/generatedImages/output962867.png"
+      // becomes this line
+      // "172.56.201.232/BaseFolder/generatedImages/output962867.png"
+      const fileName = decodedUrl.replace(/^.*fjusers\//, '');
+
       try {
         const response = await axios.post('/api/loadCFT', {
           userId,
-          fileAndPath: imagePath.split('/').pop().split('.')[0] // Extract filename without extension
+          fileAndPath: fileName,
         });
         
         if (response.status === 200) {
@@ -833,6 +859,7 @@ useEffect(() => {
         // Load CFT data
         const cftData = await loadCFTData(currentUserId, fileName);
         if (cftData) {
+          alogger("CFT returned by loadCFTData for the uploaded image:", cftData);
           // Update the prediction with CFT data
           setPredictions(prevPredictions => {
             const updatedPredictions = [...prevPredictions];
@@ -842,6 +869,8 @@ useEffect(() => {
             };
             return updatedPredictions;
           });
+        } else {
+          alogger("No CFT data found for the uploaded image:", fileName);
         }
 
         
@@ -922,7 +951,7 @@ useEffect(() => {
       body = {
         prompt: e.target.prompt.value,
         foldername: imageSavePath,
-        negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
+        //negative_prompt: '(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)',
         modelid: imageModel,
         seed: randomSeed,
         userid: theLocalUserId,
@@ -932,7 +961,7 @@ useEffect(() => {
         height,
         image: combinedMask ? currentPredictionOutput : null,
         mask: combinedMask,
-        noCheck: true,
+        noCheck: process.env.NODE_ENV !== 'local',
       };
 
       return body;
@@ -1022,8 +1051,6 @@ useEffect(() => {
       }
 
       if (response.data.status !== 201) {
-        console.error("response.data.statuss is not 402 it is:", response.data.status);
-
         if (prediction.thecode === 5001) {
           if (response.data.status === 404) {
             setErrorMessage("The Prediction failed");

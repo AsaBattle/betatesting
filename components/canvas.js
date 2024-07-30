@@ -213,7 +213,6 @@ const Canvas = forwardRef((props, ref) => {
       const rect = event.currentTarget.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      console.log("Canvas click detected for NoTool at:", x, y, "CurrentTool:", currentToolName);
       props.onOpenMenu(event, index, { x, y });
       return;
     }

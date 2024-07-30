@@ -218,7 +218,7 @@ async function CheckAndSubtractCredits(userID, ipUser, creditsToSubtract) {
 
   console.log("IS a user with an ACCOUNT, so we're using the user's id to log them in.")
 
-  try {
+  try {                                
     response = await axios.get(`http://3.19.250.209:36734/user/${userID}`);
     const user = response.data;
     currentCredits = user.credits;
