@@ -134,7 +134,8 @@ export default async function handler(req, res) {
 
     try {
       const bucket = storage.bucket('fjusers');
-      const [files] = await bucket.getFiles({ prefix: `${userId}/${folder}` });
+      const [allFiles] = await bucket.getFiles({ prefix: `${userId}/${folder}` });
+      const files = allFiles.filter(file => file.name.endsWith('.jpg') || file.name.endsWith('.png'));
       
      // console.log('Files:', files);
 
