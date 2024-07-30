@@ -1,6 +1,6 @@
 // utils/alogger.js
 
-const isProd = ture;// process.env.NODE_ENV === 'production';
+const isProd = true;// process.env.NODE_ENV === 'production';
 
 const log = (...args) => {
   if (!isProd) {
