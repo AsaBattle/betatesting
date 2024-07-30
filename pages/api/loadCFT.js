@@ -30,20 +30,27 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { userId, fileAndPath } = req.body;
 
+    console.log("inside LoadCFT");
+    console.log("userId:", userId);
+    console.log("fileAndPath:", fileAndPath);
+
     const genericCFTData = {
         prompt: 'No prompt data found for this image',
         negative_prompt: 'default',
-        model: 1, // default model, defaulting to 1 because it's much faster to produce than 0
+        model: 0,
     };
     
     try {
-      console.log("Attempting to load the .cft file for the image:", `${userId}/${fileAndPath}`);
+      // remove the .png extension from the fileAndPath
+      const formattedFileAndPath = fileAndPath.replace('.png', '');
+      console.log("Attempting to load the .cft file for the image:", `/${formattedFileAndPath}`);
+
       const bucket = storage.bucket('fjusers');
-      const file = bucket.file(`${userId}/${fileAndPath}.cft`);
+      const file = bucket.file(`${formattedFileAndPath}.cft`);
 
       const [exists] = await file.exists();
       if (!exists) {
-        console.log('.cft file not found for user ' + userId + ' and file ' + fileAndPath);
+        console.log('.cft file not found for user ' + userId + ' and file ' + formattedFileAndPath);
         console.log('Returning generic CFT data...');
         return res.status(200).json(genericCFTData);
       }
