@@ -110,7 +110,7 @@ export default function Home(theUserData) {
     const handleDeleteImage = (indexToDelete) => {
       setPredictions(prevPredictions => {
           const newPredictions = prevPredictions.filter((_, i) => i !== indexToDelete);
-          dispatch(setIndex(Math.min(newPredictions.length, index)));
+          dispatch(setIndex(index));
           return newPredictions;
       });
   };
@@ -484,7 +484,9 @@ useEffect(() => {
     };
 
 
-    const handleViewModePush = () => {
+    const handleViewModePush = () => 
+      {
+      setIsLoading(true);
       router.push('/ViewMode');
     };
 
@@ -664,6 +666,15 @@ useEffect(() => {
             prompt: "NOT YET AVAILABLE",
           },
         };
+
+         // Load CFT data
+         const cftData = await loadCFTData(currentUserId, fetchImageUrl);
+         if (cftData) {
+           alogger("CFT data found for the uploaded image:", cftData);
+           formattedPrediction.input = cftData;
+         } else {
+           alogger("No CFT data found for the uploaded image:", fileName);
+         } 
       
         setPredictions(predictions => predictions.concat([formattedPrediction]));
         settheUpdatedPrediction(formattedPrediction);
@@ -671,22 +682,7 @@ useEffect(() => {
         newPredictionsCount += 1;
         alogger("Incoming total Loaded predctions count is: ", newPredictionsCount);
       
-          // Load CFT data
-          const cftData = await loadCFTData(currentUserId, fetchImageUrl);
-          if (cftData) {
-            alogger("CFT data found for the uploaded image:", cftData);
-            // Update the prediction with CFT data
-            setPredictions(prevPredictions => {
-              const updatedPredictions = [...prevPredictions];
-              updatedPredictions[0] = {
-                ...updatedPredictions[0],
-                input: cftData
-              };
-              return updatedPredictions;
-            });
-          } else {
-            alogger("No CFT data found for the uploaded image:", fileName);
-          } 
+         
         
         // reset the viewModeLoadedImages(we only want to load it once)
         dispatch(setViewModeLoadedImages({}));
