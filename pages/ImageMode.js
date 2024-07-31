@@ -82,9 +82,11 @@ export default function Home(theUserData) {
     const [isDropzoneActive, setIsDropzoneActive] = useState(false);            // Used to manually activate the dropzone component
     const dropzoneRef = useRef(null);
 
-    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+    const menuRef = useRef(null)
+    
     const [isYesNoModalOpen, setIsYesNoModalOpen] = useState(false);
     const [imageIndexToDelete, setImageIndexToDelete] = useState(null);
 
@@ -164,14 +166,31 @@ const handleOpenMenu = (event, index, position) => {
 
     setSelectedImageIndex(index);
     setMenuPosition(adjustedPosition);
-    setMenuOpen(true);
+    setMenuOpen(true); // Toggle the menu state
   }
 };
+
 
 const handleCloseMenu = () => {
   setMenuOpen(false);
   setSelectedImageIndex(null);
 };
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      handleCloseMenu();
+    }
+  };
+
+  if (menuOpen) {
+    document.addEventListener('mousedown', handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [menuOpen]);
     
     // When the user wants to manually upload an image, they click the upload button
     const handleUploadClick = () => {
@@ -685,7 +704,7 @@ useEffect(() => {
               updatedPredictions[updatedPredictions.length - 1].input = cftData;
               return updatedPredictions;
             });
-            
+
           } else {
             alogger("No CFT data found for the uploaded image:", fileName);
           } 
@@ -1240,6 +1259,8 @@ useEffect(() => {
                 onCanvasSizeChange={handleCanvasSizeChange}
                 currentPredictionStatus={currentPredictionStatus}
                 onOpenMenu={handleOpenMenu}
+                onCloseMenu={handleCloseMenu}
+                menuOpen={menuOpen}
                 clear
             />
           </div>
@@ -1289,10 +1310,11 @@ useEffect(() => {
         )}
       </div>
       <ImageMenu
-          open={menuOpen}
-          onClose={handleCloseMenu}
-          menuItems={menuItems}
-          anchorPosition={menuPosition}
+        ref={menuRef}
+        open={menuOpen}
+        onClose={handleCloseMenu}
+        menuItems={menuItems}
+        anchorPosition={menuPosition}
       />
       <YesNoModal
           open={isYesNoModalOpen}
