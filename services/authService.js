@@ -4,8 +4,9 @@
   // Also need to create a template/default format for the user data so it's lways consistent no matter how they login
 
 import { getSession } from "next-auth/react";
-import axios from 'axios';
+import axios from 'axios'; 
 import { serialize } from 'cookie';
+import alogger from '../utils/alogger';
 
 const AuthService = {
     checkIfUserIsAlreadyLoggedIn: async (req, res) => {
@@ -31,7 +32,7 @@ const AuthService = {
       });
 
       res.setHeader('Set-Cookie', serializedUserCookie);
-      console.error('*** User IS logged in!!! with Discord cookie***');
+      alogger('*** User IS logged in!!! with Discord cookie***');
       return userData;
     } catch (error) {
       if (error.code === 'ECONNABORTED') {
@@ -51,16 +52,16 @@ const AuthService = {
   // the ip address is not found, it will create a new user with the given number of credits a free user starts with
   // and return those 
   getFreeUserCredits: async ( ipAddress ) => {
-    console.log('Getting user credits for ip address:', ipAddress);
+    alogger('Getting user credits for ip address:', ipAddress);
     try {
       const response = await axios.post('https://www.craftful.ai/api/auth/getFreeUserCredits', {
         ipAddress: ipAddress, 
       });
 
-      console.log('User credits:', response);
+      alogger('User credits:', response);
       return response.data;
     } catch (error) {
-      console.error('Error getting user credits:', error);
+      alogger('Error getting user credits:', error);
       return null;
     }
     return 5; // this is a placeholder for now

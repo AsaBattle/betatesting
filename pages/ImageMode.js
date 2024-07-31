@@ -27,6 +27,7 @@ import YesNoModal from '../components/YesNoModal';
 const alogger = require('../utils/alogger').default;
 
 import AuthService from '../services/authService';
+import { set } from "lodash";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
@@ -110,7 +111,7 @@ export default function Home(theUserData) {
     const handleDeleteImage = (indexToDelete) => {
       setPredictions(prevPredictions => {
           const newPredictions = prevPredictions.filter((_, i) => i !== indexToDelete);
-          dispatch(setIndex(index));
+          dispatch(setIndex(Math.min(newPredictions.length, index)));
           return newPredictions;
       });
   };
@@ -484,10 +485,9 @@ useEffect(() => {
     };
 
 
-    const handleViewModePush = () => 
-      {
+    const handleViewModePush = () => {
       setIsLoading(true);
-      setCurrentPredictionStatus("Loading...");
+      setCurrentPredictionStatus("Loading Images...");
       router.push('/ViewMode');
     };
 
@@ -667,24 +667,28 @@ useEffect(() => {
             prompt: "NOT YET AVAILABLE",
           },
         };
-
-         // Load CFT data
-         const cftData = await loadCFTData(currentUserId, fetchImageUrl);
-         if (cftData) {
-           alogger("CFT data found for the uploaded image:", cftData);
-           formattedPrediction.input = cftData;
-         } else {
-           alogger("No CFT data found for the uploaded image:", fileName);
-         } 
       
-        //setPredictions(predictions => predictions.concat([formattedPrediction]));
-        setPredictions(predictions => [...predictions, formattedPrediction]);
+        setPredictions(predictions => predictions.concat([formattedPrediction]));
         settheUpdatedPrediction(formattedPrediction);
       
         newPredictionsCount += 1;
         alogger("Incoming total Loaded predctions count is: ", newPredictionsCount);
       
-         
+          // Load CFT data
+          const cftData = await loadCFTData(currentUserId, fetchImageUrl);
+          if (cftData) {
+            alogger("CFT data found for the uploaded image:", cftData);
+           
+            // add the cftdata to the last prediction in the predictions list, set its input field to the cftData
+            setPredictions(predictions => {
+              const updatedPredictions = [...predictions];
+              updatedPredictions[updatedPredictions.length - 1].input = cftData;
+              return updatedPredictions;
+            });
+            
+          } else {
+            alogger("No CFT data found for the uploaded image:", fileName);
+          } 
         
         // reset the viewModeLoadedImages(we only want to load it once)
         dispatch(setViewModeLoadedImages({}));
@@ -849,28 +853,19 @@ useEffect(() => {
             prompt: "User uploaded image",
           },
         };
-    
-        setPredictions(prevPredictions => [formattedPrediction, ...prevPredictions]);
-        settheUpdatedPrediction(formattedPrediction);
-        dispatch(setIndex((predictions.length+1)));
-
+        
         // Load CFT data
         const cftData = await loadCFTData(currentUserId, fileName);
         if (cftData) {
-          alogger("CFT returned by loadCFTData for the uploaded image:", cftData);
-          // Update the prediction with CFT data
-          setPredictions(prevPredictions => {
-            const updatedPredictions = [...prevPredictions];
-            updatedPredictions[0] = {
-              ...updatedPredictions[0],
-              input: cftData
-            };
-            return updatedPredictions;
-          });
+          alogger("CFT returned found for the uploaded image:", cftData);
         } else {
           alogger("No CFT data found for the uploaded image:", fileName);
         }
 
+    
+        setPredictions(prevPredictions => [formattedPrediction, ...prevPredictions]);
+        settheUpdatedPrediction(formattedPrediction);
+        dispatch(setIndex((predictions.length+1)));
         
         alogger("New prediction added to the beginning of the array");
       } catch (error) {
