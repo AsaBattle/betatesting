@@ -2,6 +2,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { Storage } from '@google-cloud/storage';
 import axiosRetry from 'axios-retry';
+import util from 'util';
 
 // Configure axios-retry
 axiosRetry(axios, {
@@ -72,48 +73,84 @@ export default async function handler(req, res) {
           // Handle inpainting request
           let imageBuffer, maskBuffer;
 
+          console.log("Inpainting request detected");
+
           if (requestBody.image && requestBody.image.startsWith('/api/fetchImage')) {
             const encodedImagePath = requestBody.image.split('imagePath=')[1];
             const decodedImagePath = decodeURIComponent(encodedImagePath);
             const url = new URL(decodedImagePath);
             const imagePath = url.pathname.split('/').slice(2).join('/');
             
+            console.log("Attempting to fetch image from path:", imagePath);
+
             try {
               [imageBuffer] = await storage.bucket('fjusers').file(imagePath).download();
+              console.log("Image fetched successfully, buffer length:", imageBuffer.length);
             } catch (error) {
               console.error("Error fetching image:", error);
               return res.status(500).json({ error: "Failed to fetch image data" });
             }
+          } else {
+            console.log("No image provided for inpainting");
           }
 
           if (requestBody.mask && requestBody.mask.startsWith('data:image/png;base64,')) {
             maskBuffer = Buffer.from(requestBody.mask.split(',')[1], 'base64');
+            console.log("Mask provided, buffer length:", maskBuffer.length);
+          } else {
+            console.log("No mask provided for inpainting");
           }
 
           const form = new FormData();
-          form.append('prompt', requestBody.prompt);
-          form.append('width', requestBody.width);
-          form.append('height', requestBody.height);
-          form.append('foldername', requestBody.foldername);
-          form.append('modelid', requestBody.modelid);
-          form.append('userid', requestBody.userid);
-          form.append('negative_prompt', requestBody.negative_prompt);
-          form.append('seed', requestBody.seed);
+
+          const appendToForm = (key, value, options = {}) => {
+            //console.log(`Attempting to append ${key} to form`);
+            //console.log(`Value type: ${typeof value}`);
+            //console.log(`Value:`, value);
+            try {
+              if (options.filename && options.contentType) {
+                form.append(key, value, { filename: options.filename, contentType: options.contentType });
+              } else {
+                form.append(key, value);
+              }
+              //console.log(`Successfully appended ${key} to form`);
+            } catch (error) {
+              //console.error(`Error appending ${key} to form:`, error);
+              //throw error;
+            }
+          };
+        
+          appendToForm('prompt', requestBody.prompt);
+          appendToForm('width', requestBody.width);
+          appendToForm('height', requestBody.height);
+          appendToForm('foldername', requestBody.foldername);
+          appendToForm('modelid', requestBody.modelid);
+          appendToForm('userid', requestBody.userid);
+          appendToForm('negative_prompt', requestBody.negative_prompt);
+          appendToForm('seed', requestBody.seed);
           
-          if (imageBuffer) {
+          if (imageBuffer && imageBuffer.length > 0) {
+            console.log("Appending image to form");
             form.append('image', imageBuffer, { filename: 'image.png', contentType: 'image/png' });
-          }
-          if (maskBuffer) {
-            form.append('mask', maskBuffer, { filename: 'mask.png', contentType: 'image/png' });
+          } else {
+            console.log("Image buffer is undefined or empty, not appending to form");
           }
 
+          if (maskBuffer && maskBuffer.length > 0) {
+            console.log("Appending mask to form");
+            form.append('mask', maskBuffer, { filename: 'mask.png', contentType: 'image/png' });
+          } else {
+            console.log("Mask buffer is undefined or empty, not appending to form");
+          }
+
+          console.log("Form data prepared, attempting to send request to:", apiUrl);
+
           console.log("In inpainting, apiUrl is:", apiUrl);
-          console.log("In inpainting, so posting this: ", form);
+          console.log("In inpainting, so posting this: ", util.inspect(form, { depth: null }));
 
           response = await axios.post(apiUrl, form, { headers: {...form.getHeaders(),},
             timeout: 290000
           });
-
 
         } else {
           // Handle genimage request (original method)
