@@ -487,6 +487,7 @@ useEffect(() => {
     const handleViewModePush = () => 
       {
       setIsLoading(true);
+      setCurrentPredictionStatus("Loading...");
       router.push('/ViewMode');
     };
 
@@ -676,7 +677,8 @@ useEffect(() => {
            alogger("No CFT data found for the uploaded image:", fileName);
          } 
       
-        setPredictions(predictions => predictions.concat([formattedPrediction]));
+        //setPredictions(predictions => predictions.concat([formattedPrediction]));
+        setPredictions(predictions => [...predictions, formattedPrediction]);
         settheUpdatedPrediction(formattedPrediction);
       
         newPredictionsCount += 1;
