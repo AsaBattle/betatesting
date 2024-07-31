@@ -153,7 +153,9 @@ useEffect(() => {
 }, []);
 
 const handleOpenMenu = (event, index, position) => {
-  alogger("Opening menu for image index:", index);
+
+
+  alogger("Opening menu for image index:", index, " menuOpen is: ", menuOpen);
 
   if (canvasContainerRef.current) {
     const canvasRect = canvasContainerRef.current.getBoundingClientRect();
