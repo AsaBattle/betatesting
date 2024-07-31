@@ -1,9 +1,14 @@
 // components/ImageMenu.js
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { MenuItem } from '@mui/material';
 
-const ImageMenu = ({ open, onClose, menuItems, anchorPosition }) => {
-  if (!open || !anchorPosition) return null;
+const ImageMenu = forwardRef(({ open, onClose, menuItems, anchorPosition }, ref) => {
+  console.log("ImageMenu render. Open:", open, "AnchorPosition:", anchorPosition);
+  
+  if (!open || !anchorPosition) {
+    console.log("ImageMenu not rendering due to:", !open ? "not open" : "no anchor position");
+    return null;
+  }
 
   const menuStyle = {
     position: 'fixed',
@@ -22,7 +27,7 @@ const ImageMenu = ({ open, onClose, menuItems, anchorPosition }) => {
   };
 
   return (
-    <div style={menuStyle}>
+    <div ref={ref} style={menuStyle}>
       {menuItems.map((item, index) => (
         <MenuItem key={index} onClick={() => handleItemClick(item.onClick)}>
           {item.label}
@@ -30,6 +35,8 @@ const ImageMenu = ({ open, onClose, menuItems, anchorPosition }) => {
       ))}
     </div>
   );
-};
+});
+
+ImageMenu.displayName = 'ImageMenu';
 
 export default ImageMenu;

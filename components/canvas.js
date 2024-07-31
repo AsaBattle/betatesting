@@ -210,11 +210,16 @@ const Canvas = forwardRef((props, ref) => {
 
     // Show menu if there isn't a TOOl already selected
     if (currentToolName === 'NoTool') {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      props.onOpenMenu(event, index, { x, y });
-      return;
+      console.log("currentToolName is NoTool");
+
+      event.preventDefault(); // Prevent any default behavior
+      event.stopPropagation(); // Stop the event from bubbling up
+      
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        props.onOpenMenu(event, index, { x, y });
+        return;
     }
 
     if (!allowDrawing) {
