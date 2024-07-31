@@ -60,9 +60,7 @@ export default async function handler(req, res) {
 
       const cftData = JSON.parse(contents.toString());
 
-      console.log("Parsed cft data:", cftData);
-      console.log("---prompt: ", cftData.prompt);
-      console.log("---model: ", cftData.model);
+      //console.log("Parsed cft data:", cftData);
 
       res.status(200).json(cftData);
     } catch (error) {

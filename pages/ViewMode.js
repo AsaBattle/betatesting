@@ -6,7 +6,9 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { setViewModeLoadedImages } from '../redux/slices/historySlice';
 import { setImageSavePath } from '../redux/slices/toolSlice';
-import { Grid, Slider, TextField, Button, Typography, Paper, Container } from '@mui/material';
+import { Grid, Slider, TextField, Button, Typography, Paper, Container,
+          FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+
 import { ViewModule, Folder, ImageSearch } from '@mui/icons-material';
 
 import alogger from '../utils/alogger';
@@ -21,6 +23,13 @@ export default function ViewMode(theUserData) {
   const currentUserId = useSelector((state) => state.history.userId);
   const dispatch = useDispatch();
   const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
+  const [sortBy, setSortBy] = useState('');
+
+
+  const handleSortByChange = (event) => {
+    setSortBy(event.target.value);
+  };
+
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -121,6 +130,19 @@ export default function ViewMode(theUserData) {
               marks
               valueLabelDisplay="auto"
             />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel>Sort By</InputLabel>
+              <Select
+                value={sortBy}
+                onChange={handleSortByChange}
+              >
+                <MenuItem value="name">Name</MenuItem>
+                <MenuItem value="date">Date</MenuItem>
+                <MenuItem value="size">Size</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
       </Paper>
