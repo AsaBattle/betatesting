@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from 'next/router';
 import Head from "next/head";
 import Canvas from "components/canvas";
@@ -33,7 +33,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
 
-export default function Home(theUserData) { 
+const ImageMode = React.memo((theUserData) => {
     const [updateCanvasPositionNow, setUpdateCanvasPositionNow] = useState(false);
     const [predictions, setPredictions] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -152,15 +152,10 @@ useEffect(() => {
   alogger('ImageMode component has started rendering');
 }, []);
 
-const handleOpenMenu = (event, index, position) => {
 
-
-  alogger("Opening menu for image index:", index, " menuOpen is: ", menuOpen);
-
+const handleOpenMenu = useCallback((event, index, position) => {
   if (canvasContainerRef.current) {
     const canvasRect = canvasContainerRef.current.getBoundingClientRect();
-    alogger("Canvas position is: ", canvasRect.left, canvasRect.top);
-    alogger("Event position is: ", position.x, position.y);
     const adjustedPosition = {
       x: canvasRect.left + position.x,
       y: canvasRect.top + position.y,
@@ -168,15 +163,19 @@ const handleOpenMenu = (event, index, position) => {
 
     setSelectedImageIndex(index);
     setMenuPosition(adjustedPosition);
-    setMenuOpen(true); // Toggle the menu state
+    setMenuOpen(true);
   }
-};
+}, [canvasContainerRef]);
 
-
-const handleCloseMenu = () => {
+const handleCloseMenu = useCallback(() => {
   setMenuOpen(false);
   setSelectedImageIndex(null);
-};
+  
+  // Add a small delay before allowing the menu to be opened again
+  setTimeout(() => {
+    setMenuOpen(false);
+  }, 5);
+}, []);
 
 useEffect(() => {
   const handleClickOutside = (event) => {
@@ -1327,9 +1326,11 @@ useEffect(() => {
           message="Are you sure you want to delete this image?"
      />
     </div>
-);
-}
+  );
+});
 
+ImageMode.displayName = 'ImageMode'; // Add display name here
+export default ImageMode;
 
 
 
