@@ -1,5 +1,6 @@
 import { Storage } from '@google-cloud/storage';
 import sizeOf from 'image-size';
+import { size } from 'lodash';
 
 export const config = {
     api: {
@@ -149,15 +150,20 @@ export default async function handler(req, res) {
           });
    
           const { width, height, aspectRatio } = await getImageDimensions(file);
+          const [metadata] = await file.getMetadata();
+
 
           console.log('Got file details:', file.name, width, height);
+          console.log('with Metadata:', metadata);
 
           return {
             name: file.name,
             url,
             width,
             height,
-            aspectRatio 
+            aspectRatio,
+            size: metadata.size,
+            date: metadata.timeCreated,
           };
         })
       );

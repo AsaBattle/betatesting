@@ -13,6 +13,12 @@ export const historySlice = createSlice({
       imageUrl: null,
       aspectRatioName: null,
     },
+    sortBy: 'date',
+    sortOrder: 'newest',
+    columns: 5,
+    maxImagesPerPage: 25,
+    currentPage: 1,
+    imageSavePath: 'BaseFolder',
   },
   reducers: {
     setViewModeLoadedImages: (state, action) => {
@@ -35,17 +41,16 @@ export const historySlice = createSlice({
       }
     },
     setIndex: (state, action) => {
-      //console.log('setIndex is executing and setting to: ' + action.payload);
       state.index = action.payload;
     },
     pushToUndo: (state, action) => {
       console.log('pushToUndo is executing');
-      state.undoStack.push(action.payload); // Push the current image to the undo stack
+      state.undoStack.push(action.payload);
     },
     setCurrentImage: (state, action) => {
       if (state.currentImage) {
         state.undoStack.push(state.currentImage);
-        state.redoStack = []; // Clear redo stack on new action
+        state.redoStack = [];
       }
       state.currentImage = action.payload;
     },
@@ -63,10 +68,43 @@ export const historySlice = createSlice({
         state.currentImage = nextImage;
       }
     },
-    // Optionally, add more reducers for clearing history, etc.
+    setSortBy: (state, action) => {
+      state.sortBy = action.payload;
+    },
+    setSortOrder: (state, action) => {
+      state.sortOrder = action.payload;
+    },
+    setColumns: (state, action) => {
+      state.columns = action.payload;
+    },
+    setMaxImagesPerPage: (state, action) => {
+      state.maxImagesPerPage = action.payload;
+    },
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload;
+    },
+    setImageSavePath: (state, action) => {
+      state.imageSavePath = action.payload;
+    },
   },
 });
 
-export const { incIndex, decIndex, setIndex, pushToUndo, setCurrentImage, 
-                undo, redo, setUserId, setViewModeLoadedImages } = historySlice.actions;
+export const {
+  incIndex,
+  decIndex,
+  setIndex,
+  pushToUndo,
+  setCurrentImage,
+  undo,
+  redo,
+  setUserId,
+  setViewModeLoadedImages,
+  setSortBy,
+  setSortOrder,
+  setColumns,
+  setMaxImagesPerPage,
+  setCurrentPage,
+  setImageSavePath,
+} = historySlice.actions;
+
 export default historySlice.reducer;

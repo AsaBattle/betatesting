@@ -1,6 +1,6 @@
 // utils/alogger.js
 
-const isProd = true;
+const isProd = false;
 
 const log = (...args) => {
   if (!isProd) {
