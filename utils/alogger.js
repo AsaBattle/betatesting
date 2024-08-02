@@ -2,13 +2,13 @@
 
 const isProd = false;
 
-
-// Prints colored text to the console
-// Called with: log(color, string, color, string, color, string, ...)
-// Usage examples:
-// log("red", "This is a red string");
-// log("green", "This is green", "red", "This string is red", "white", "This string is white");
 const log = (...args) => {
+  if (!isProd) {
+    console.log(...args);
+  }
+};
+
+const color = (...args) => {
   if (isProd)
     return;
   const colorCodes = {
@@ -85,5 +85,6 @@ alogger.log = log;
 alogger.error = error;
 alogger.warn = warn;
 alogger.info = info;
+alogger.color = color;
 
 export default alogger;

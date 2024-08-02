@@ -150,13 +150,13 @@ export default async function handler(req, res) {
           console.log("In inpainting, apiUrl is:", apiUrl);
           console.log("In inpainting, so posting this: ", util.inspect(form, { depth: null }));
 
-          alogger('red', 'In inpainting');
+          alogger.color('red', 'In inpainting');
           response = await axios.post(apiUrl, form, { headers: {...form.getHeaders(),},
             timeout: 290000
           });
 
         } else {
-          alogger('red', 'In regular image generation');
+          alogger.color('red', 'In regular image generation');
 
           // Handle genimage request (original method)
           if (requestBody.image && requestBody.image.startsWith('/api/fetchImage')) {
@@ -189,7 +189,7 @@ export default async function handler(req, res) {
           }
         }
         const str = `[${new Date().toISOString()}] Successful API response: ` + JSON.stringify(response.data, null, 2);
-        alogger('green', str);
+        alogger.color('green', str);
         
         //console.log(`[${new Date().toISOString()}] Successful API response:`, response.data);
         res.status(200).json(response.data);
