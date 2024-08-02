@@ -3,6 +3,8 @@ import FormData from 'form-data';
 import { Storage } from '@google-cloud/storage';
 import axiosRetry from 'axios-retry';
 import util from 'util';
+import alogger from '../../utils/alogger';
+
 
 // Configure axios-retry
 axiosRetry(axios, {
@@ -148,11 +150,14 @@ export default async function handler(req, res) {
           console.log("In inpainting, apiUrl is:", apiUrl);
           console.log("In inpainting, so posting this: ", util.inspect(form, { depth: null }));
 
+          alogger.color('red', 'In inpainting');
           response = await axios.post(apiUrl, form, { headers: {...form.getHeaders(),},
             timeout: 290000
           });
 
         } else {
+          alogger.color('red', 'In regular image generation');
+
           // Handle genimage request (original method)
           if (requestBody.image && requestBody.image.startsWith('/api/fetchImage')) {
             const encodedImagePath = requestBody.image.split('imagePath=')[1];
@@ -183,8 +188,10 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "Failed to post to the API" });
           }
         }
-
-        console.log(`[${new Date().toISOString()}] Successful API response:`, response.data);
+        const str = `[${new Date().toISOString()}] Successful API response: ` + JSON.stringify(response.data, null, 2);
+        alogger.color('green', str);
+        
+        //console.log(`[${new Date().toISOString()}] Successful API response:`, response.data);
         res.status(200).json(response.data);
       } catch (apiError) {
         console.log("API request failed:", apiError.message);

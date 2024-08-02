@@ -4,38 +4,52 @@ import AuthService from '../services/authService';
 import styles from './ViewMode.module.css';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import { setViewModeLoadedImages } from '../redux/slices/historySlice';
-import { setImageSavePath } from '../redux/slices/toolSlice';
-import { Grid, Slider, TextField, Button, Typography, Paper, Container,
-          FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-
-import { ViewModule, Folder, ImageSearch } from '@mui/icons-material';
-
+import {
+  setViewModeLoadedImages,
+  setSortBy,
+  setSortOrder,
+  setColumns,
+  setMaxImagesPerPage,
+  setCurrentPage,
+  setImageSavePath,
+} from '../redux/slices/historySlice';
+import {
+  Grid,
+  Slider,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Container,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import { Folder } from '@mui/icons-material';
 import alogger from '../utils/alogger';
 
 export default function ViewMode(theUserData) {
-  const [files, setFiles] = useState([]);
-  const [columns, setColumns] = useState(5);
-  const [rows, setRows] = useState(0);
-  const [maxImagesPerPage, setMaxImagesPerPage] = useState(25);
-  const [currentPage, setCurrentPage] = useState(1);
-  const router = useRouter();
-  const currentUserId = useSelector((state) => state.history.userId);
   const dispatch = useDispatch();
-  const imageSavePath = useSelector((state) => state.toolbar.imageSavePath);
-  const [sortBy, setSortBy] = useState('');
+  const router = useRouter();
+  
+  const currentUserId = useSelector((state) => state.history.userId);
+  const imageSavePath = useSelector((state) => state.history.imageSavePath);
+  const columns = useSelector((state) => state.history.columns);
+  const maxImagesPerPage = useSelector((state) => state.history.maxImagesPerPage);
+  const currentPage = useSelector((state) => state.history.currentPage);
+  const sortBy = useSelector((state) => state.history.sortBy);
+  const sortOrder = useSelector((state) => state.history.sortOrder);
 
-
-  const handleSortByChange = (event) => {
-    setSortBy(event.target.value);
-  };
-
+  const [files, setFiles] = useState([]);
+  const [rows, setRows] = useState(0);
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
         const body = { userId: currentUserId, folder: imageSavePath };
         const response = await axios.post(`/api/files`, body);
+        alogger('Files fetched:', response.data.files);
         setFiles(response.data.files);
         setRows(Math.ceil(response.data.files.length / columns));
       } catch (error) {
@@ -45,6 +59,29 @@ export default function ViewMode(theUserData) {
 
     fetchFiles();
   }, [currentUserId, imageSavePath, columns]);
+
+  useEffect(() => {
+    const sortedFiles = [...files].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return sortOrder === 'az'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name);
+        case 'date':
+          return sortOrder === 'newest'
+            ? new Date(b.date) - new Date(a.date)
+            : new Date(a.date) - new Date(b.date);
+        case 'size':
+          return sortOrder === 'largest'
+            ? b.size - a.size
+            : a.size - b.size;
+        default:
+          return 0;
+      }
+    });
+    setFiles(sortedFiles);
+    alogger('sortBy or sortOrder changed: ', sortBy, sortOrder);
+  }, [sortBy, sortOrder]);
 
   const handleImageClick = async (file) => {
     try {
@@ -78,7 +115,7 @@ export default function ViewMode(theUserData) {
   };
 
   const handleColumnsChange = (event, newValue) => {
-    setColumns(newValue);
+    dispatch(setColumns(newValue));
     setRows(Math.ceil(files.length / newValue));
   };
 
@@ -87,14 +124,63 @@ export default function ViewMode(theUserData) {
   };
 
   const handleMaxImagesPerPageChange = (event, newValue) => {
-    setMaxImagesPerPage(newValue);
+    dispatch(setMaxImagesPerPage(newValue));
+  };
+
+  const handleSortByChange = (event) => {
+    const newSortBy = event.target.value;
+    dispatch(setSortBy(newSortBy));
+    
+    // Reset sortOrder based on the new sortBy value
+    let newSortOrder;
+    switch (newSortBy) {
+      case 'name':
+        newSortOrder = 'az';
+        break;
+      case 'date':
+        newSortOrder = 'newest';
+        break;
+      case 'size':
+        newSortOrder = 'largest';
+        break;
+      default:
+        newSortOrder = '';
+    }
+    dispatch(setSortOrder(newSortOrder));
+    
+    alogger('handleSortByChange: ', newSortBy);
+  };
+
+  const handleSortOrderChange = (event) => {
+    dispatch(setSortOrder(event.target.value));
+  };
+
+  const getSortOrderOptions = () => {
+    switch (sortBy) {
+      case 'name':
+        return [
+          <MenuItem key="az" value="az">A-Z</MenuItem>,
+          <MenuItem key="za" value="za">Z-A</MenuItem>
+        ];
+      case 'date':
+        return [
+          <MenuItem key="newest" value="newest">Newest to Oldest</MenuItem>,
+          <MenuItem key="oldest" value="oldest">Oldest to Newest</MenuItem>
+        ];
+      case 'size':
+        return [
+          <MenuItem key="largest" value="largest">Largest to Smallest</MenuItem>,
+          <MenuItem key="smallest" value="smallest">Smallest to Largest</MenuItem>
+        ];
+      default:
+        return [<MenuItem key="default" value="">Select an option</MenuItem>];
+    }
   };
 
   const paginatedFiles = files.slice((currentPage - 1) * maxImagesPerPage, currentPage * maxImagesPerPage);
 
   return (
     <Container maxWidth="false" className={styles.viewMode}>
-      
       <Paper elevation={3} className={styles.controlPanel}>
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
@@ -131,54 +217,61 @@ export default function ViewMode(theUserData) {
               valueLabelDisplay="auto"
             />
           </Grid>
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Sort By</InputLabel>
-              <Select
-                value={sortBy}
-                onChange={handleSortByChange}
-              >
-                <MenuItem value="name">Name</MenuItem>
-                <MenuItem value="date">Date</MenuItem>
-                <MenuItem value="size">Size</MenuItem>
-              </Select>
-            </FormControl>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth className={styles.formControlWithLabel}>
+                <InputLabel className={styles.inputLabel}>Sort By</InputLabel>
+                <Select value={sortBy} onChange={handleSortByChange}>
+                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="date">Date</MenuItem>
+                  <MenuItem value="size">Size</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            {sortBy && (
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth className={styles.formControlWithLabel}>
+                  <InputLabel className={styles.inputLabel}>Sort Order</InputLabel>
+                  <Select value={sortOrder} onChange={handleSortOrderChange}>
+                    {getSortOrderOptions()}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
           </Grid>
         </Grid>
       </Paper>
-
+  
       <Paper elevation={3} className={styles.statsPanel}>
         <Typography variant="h6">Current Layout: {columns} x {rows}</Typography>
         <Typography variant="h6">Total Images: {files.length}</Typography>
         <Typography variant="h6">Pages: {Math.ceil(files.length / maxImagesPerPage)}</Typography>
       </Paper>
-
+  
       <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {paginatedFiles.map((file) => (
           <Paper 
             key={file.name}
             elevation={6} 
             className={styles.controlPanel} 
-            style={{ padding: '4px', margin: '4px' }} // Reduced padding and added small margin
+            style={{ padding: '4px', margin: '4px' }}
           >
             <div 
               key={file.name} 
               className={styles.fileTile} 
               onClick={() => handleImageClick(file)}
-              style={{ margin: 0, padding: 0 }} // Remove any margin or padding
+              style={{ margin: 0, padding: 0 }}
             >
               <img 
                 src={file.url} 
                 alt={file.name} 
                 className={styles.fileImage} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} // Maximize image size
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
           </Paper>
         ))}
       </div>
-
-  
   
       <div className={styles.pagination}>
         <Button

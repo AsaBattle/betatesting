@@ -200,27 +200,26 @@ const Canvas = forwardRef((props, ref) => {
     }
   }, [props.predictions.length]);
 
-
   const handleCanvasClick = (event) => {
-
-    // Prevent the default context menu from opening on right click
     if (event.type === 'contextmenu') {
       event.preventDefault();
     }
-
-    // Show menu if there isn't a TOOl already selected
+  
     if (currentToolName === 'NoTool') {
-      console.log("currentToolName is NoTool");
-
-      event.preventDefault(); // Prevent any default behavior
-      event.stopPropagation(); // Stop the event from bubbling up
+      event.preventDefault();
+      event.stopPropagation();
       
-        const rect = event.currentTarget.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      if (props.menuOpen) {
+        props.onCloseMenu();
+      } else {
         props.onOpenMenu(event, index, { x, y });
-        return;
+      }
     }
+  
 
     if (!allowDrawing) {
       alogger('Drawing is disabled, in handleCanvasClick currentToolName:', currentToolName);
