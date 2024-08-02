@@ -126,6 +126,73 @@ async function readJPEGDimensions(file) {
   });
 }
 
+
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    const { userId, folder, page = 1, pageSize = 20 } = req.body;
+
+    console.log('Inside files.js---- userId:', userId);
+    console.log('Inside files.js---- folders:', folder);
+    console.log('Inside files.js---- page:', page);
+    console.log('Inside files.js---- pageSize:', pageSize);
+
+    try {
+      const bucket = storage.bucket('fjusers');
+      const [allFiles] = await bucket.getFiles({ prefix: `${userId}/${folder}` });
+      const imageFiles = allFiles.filter(file => file.name.endsWith('.jpg') || file.name.endsWith('.png'));
+
+      const totalFiles = imageFiles.length;
+      const totalPages = Math.ceil(totalFiles / pageSize);
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedFiles = imageFiles.slice(startIndex, endIndex);
+
+      console.log("Inside files.js----");
+
+      const fileDetails = await Promise.all(
+        paginatedFiles.map(async (file) => {
+          const [url] = await file.getSignedUrl({
+            action: 'read',
+            expires: Date.now() + 100 * 365 * 24 * 60 * 60 * 1, // URL expires in 1 year
+          });
+   
+          const { width, height, aspectRatio } = await getImageDimensions(file);
+          const [metadata] = await file.getMetadata();
+
+          console.log('Got file details:', file.name, width, height);
+          console.log('with Metadata:', metadata);
+
+          return {
+            name: file.name,
+            url,
+            width,
+            height,
+            aspectRatio,
+            size: metadata.size,
+            date: metadata.timeCreated,
+          };
+        })
+      );
+
+      res.status(200).json({
+        files: fileDetails,
+        pagination: {
+          totalFiles,
+          totalPages,
+          currentPage: page,
+          pageSize,
+        }
+      });
+    } catch (error) {
+      console.error('Error retrieving files:', error);
+      res.status(500).json({ error: 'Failed to retrieve files' });
+    }
+  } else {
+    res.status(405).json({ error: 'Method not allowed' });
+  }
+}
+
+/* Handler before adding page size and pagination
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const {userId, folder} = req.body;
@@ -176,4 +243,4 @@ export default async function handler(req, res) {
   } else {
     res.status(405).json({ error: 'Method not allowed' });
   }
-}
+}*/

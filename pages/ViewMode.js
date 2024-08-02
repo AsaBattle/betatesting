@@ -37,30 +37,40 @@ export default function ViewMode(theUserData) {
   const imageSavePath = useSelector((state) => state.history.imageSavePath);
   const columns = useSelector((state) => state.history.columns);
   const maxImagesPerPage = useSelector((state) => state.history.maxImagesPerPage);
-  const currentPage = useSelector((state) => state.history.currentPage);
   const sortBy = useSelector((state) => state.history.sortBy);
   const sortOrder = useSelector((state) => state.history.sortOrder);
 
   const [files, setFiles] = useState([]);
   const [rows, setRows] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalFiles, setTotalFiles] = useState(0);
+  const pageSize = maxImagesPerPage; // Use maxImagesPerPage as pageSize
 
   useEffect(() => {
     alogger("Loading images for user: ", currentUserId, " from folder: ", imageSavePath, " ...");
-
-    const fetchFiles = async () => {
-      try {
-        const body = { userId: currentUserId, folder: imageSavePath };
-        const response = await axios.post(`/api/files`, body);
-        alogger('Files fetched:', response.data.files);
-        setFiles(response.data.files);
-        setRows(Math.ceil(response.data.files.length / columns));
-      } catch (error) {
-        console.error('Error fetching files:', error);
-      }
-    };
-
     fetchFiles();
-  }, [currentUserId, imageSavePath, columns]);
+  }, [currentUserId, imageSavePath, columns, currentPage, maxImagesPerPage]);
+
+  const fetchFiles = async () => {
+    try {
+      const body = { 
+        userId: currentUserId, 
+        folder: imageSavePath,
+        page: currentPage,
+        pageSize: pageSize
+      };
+      const response = await axios.post(`/api/files`, body);
+      const { files, pagination } = response.data;
+      alogger('Files fetched:', files);
+      setFiles(files);
+      setTotalPages(pagination.totalPages);
+      setTotalFiles(pagination.totalFiles);
+      setRows(Math.ceil(files.length / columns));
+    } catch (error) {
+      console.error('Error fetching files:', error);
+    }
+  };
 
   useEffect(() => {
     const sortedFiles = [...files].sort((a, b) => {
@@ -179,7 +189,17 @@ export default function ViewMode(theUserData) {
     }
   };
 
-  const paginatedFiles = files.slice((currentPage - 1) * maxImagesPerPage, currentPage * maxImagesPerPage);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <Container maxWidth="false" className={styles.viewMode}>
@@ -246,12 +266,12 @@ export default function ViewMode(theUserData) {
   
       <Paper elevation={3} className={styles.statsPanel}>
         <Typography variant="h6">Current Layout: {columns} x {rows}</Typography>
-        <Typography variant="h6">Total Images: {files.length}</Typography>
-        <Typography variant="h6">Pages: {Math.ceil(files.length / maxImagesPerPage)}</Typography>
+        <Typography variant="h6">Total Images: {totalFiles}</Typography>
+        <Typography variant="h6">Pages: {totalPages}</Typography>
       </Paper>
   
       <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
-        {paginatedFiles.map((file) => (
+        {files.map((file) => (
           <Paper 
             key={file.name}
             elevation={6} 
@@ -278,14 +298,14 @@ export default function ViewMode(theUserData) {
       <div className={styles.pagination}>
         <Button
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage(prev => prev - 1)}
+          onClick={handlePrevPage}
         >
           Previous
         </Button>
-        <Typography>Page {currentPage} of {Math.ceil(files.length / maxImagesPerPage)}</Typography>
+        <Typography>Page {currentPage} of {totalPages}</Typography>
         <Button
-          disabled={currentPage === Math.ceil(files.length / maxImagesPerPage)}
-          onClick={() => setCurrentPage(prev => prev + 1)}
+          disabled={currentPage === totalPages}
+          onClick={handleNextPage}
         >
           Next
         </Button>
