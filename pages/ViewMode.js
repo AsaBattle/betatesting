@@ -45,6 +45,8 @@ export default function ViewMode(theUserData) {
   const [rows, setRows] = useState(0);
 
   useEffect(() => {
+    alogger("Loading images for user: ", currentUserId, " from folder: ", imageSavePath, " ...");
+
     const fetchFiles = async () => {
       try {
         const body = { userId: currentUserId, folder: imageSavePath };
