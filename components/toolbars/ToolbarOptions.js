@@ -11,8 +11,9 @@ import { FSAMProcessor } from '../Util/Utilities';
 import styles from './ToolbarOptions.module.css'; // Make sure this path is correct
 import Tooltip from '../tooltip';
 import axios from "axios";
+import { Select, MenuItem } from '@mui/material'; // Updated import
 
-const alogger = require('../../utils/alogger').default;
+import alogger from '../../utils/alogger';
 
 
 // This function is a custom hook that returns the window width
@@ -48,7 +49,13 @@ function ToolbarOptions (props)  {
 
   const currentTool = tools.find(tool => tool.name === currentToolName);
 
-  
+  const options = [
+    { value: '0', label: 'Flux', icon: <RectangleHorizontal style={{ fontSize: '20px', transform: 'scale(1.2)' }} /> },
+    { value: '1', label: 'Dreamshaper', icon: <RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} /> },
+    { value: '2', label: 'RealVisXL', icon: <RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} /> },
+    { value: '3', label: 'Kolors', icon: <RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} /> },
+  ];
+
   const dispatch = useDispatch();
   const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
   const hamburgerVisible = useWindowWidth(); // If the screens width is less than 768px, set hamburgerVisible to true(Which means the menu/hamburger icon is visible)
@@ -565,26 +572,20 @@ useEffect(() => {
         >
           <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
           <Typography className="text-center mt-2">Current Model: {currentImageModel}</Typography>
-            <Button
-              style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
-              variant="contained"
-              onClick={() => handleModelClick('0')}
-              startIcon={<RectangleHorizontal style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
-              size="large"
-              className={`${styles.button} ${selectedAspectRatio === '16:9' ? styles.selectedButton : ''}`}
-            >
-              <Typography style={{ fontSize: '16px' }}>Model 0</Typography>
-            </Button>
-            <Button
-              style={{ margin: '5px', display: 'flex', alignItems: 'center', padding: '8px 16px' }}
-              variant="contained"
-              onClick={() => handleModelClick('1')}
-              startIcon={<RectangleVertical style={{ fontSize: '20px', transform: 'scale(1.2)' }} />}
-              size="large"
-              className={`${styles.button} ${selectedAspectRatio === '9:16' ? styles.selectedButton : ''}`}
-            >
-              <Typography style={{ fontSize: '16px' }}>Model 1</Typography>
-            </Button>
+            <Select
+                value={currentModel}
+                onChange={(event) => handleModelClick(event.target.value)}
+                variant="outlined"
+                style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center' }}
+                className={styles.select}
+              >
+                {options.map((option) => (
+                  <MenuItem key={option.value} value={option.value} className={styles.menuItem}>
+                    {/*option.icon*/}
+                    <Typography style={{ fontSize: '16px', marginLeft: '8px' }}>{option.label}</Typography>
+                  </MenuItem>
+                ))}
+            </Select>
           </div>
         </div>
       </div>

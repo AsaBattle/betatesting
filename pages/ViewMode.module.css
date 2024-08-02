@@ -76,7 +76,6 @@
   gap: 1rem;
   margin-top: 2rem;
 }
-
 @media (max-width: 600px) {
   .viewMode {
     padding: 1rem;
@@ -106,4 +105,20 @@
   font-weight: bold;
   padding: 0 4px;
   z-index: 1;
+}
+
+.folderOptions {
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.folderButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.folderButtons button {
+  flex: 1;
+  margin: 0 0.25rem;
 }
