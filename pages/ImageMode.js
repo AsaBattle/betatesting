@@ -1090,7 +1090,7 @@ useEffect(() => {
         return;
       }
 
-      const path = `https://storage.googleapis.com/fjusers/${idToUse}/BaseFolder/generatedImages/${fileName}`;
+      const path = `https://storage.googleapis.com/fjusers/${idToUse}/${imageSavePath}/generatedImages/${fileName}`;
       alogger("Response from /api/generateImage:", response.data);
       alogger("Filename from genimage:", fileName);
       alogger("****PATH IS: ",path);
