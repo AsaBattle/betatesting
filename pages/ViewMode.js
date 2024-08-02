@@ -183,7 +183,7 @@ export default function ViewMode(theUserData) {
     <Container maxWidth="false" className={styles.viewMode}>
       <Paper elevation={3} className={styles.controlPanel}>
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <Typography gutterBottom>Columns: {columns}</Typography>
             <Slider
               value={columns}
@@ -194,7 +194,7 @@ export default function ViewMode(theUserData) {
               valueLabelDisplay="auto"
             />
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <TextField
               label="Image Save Path"
               value={imageSavePath}
@@ -205,7 +205,7 @@ export default function ViewMode(theUserData) {
               }}
             />
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <Typography gutterBottom>Max Images Per Page: {maxImagesPerPage}</Typography>
             <Slider
               value={maxImagesPerPage}
@@ -217,37 +217,37 @@ export default function ViewMode(theUserData) {
               valueLabelDisplay="auto"
             />
           </Grid>
-          <Grid item xs={12} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Sort By</InputLabel>
-              <Select value={sortBy} onChange={handleSortByChange}>
-                <MenuItem value="name">Name</MenuItem>
-                <MenuItem value="date">Date</MenuItem>
-                <MenuItem value="size">Size</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Sort Order</InputLabel>
-              <Select 
-                value={sortOrder} 
-                onChange={handleSortOrderChange}
-                displayEmpty
-              >
-                {getSortOrderOptions()}
-              </Select>
-            </FormControl>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth className={styles.formControlWithLabel}>
+                <InputLabel className={styles.inputLabel}>Sort By</InputLabel>
+                <Select value={sortBy} onChange={handleSortByChange}>
+                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="date">Date</MenuItem>
+                  <MenuItem value="size">Size</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            {sortBy && (
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth className={styles.formControlWithLabel}>
+                  <InputLabel className={styles.inputLabel}>Sort Order</InputLabel>
+                  <Select value={sortOrder} onChange={handleSortOrderChange}>
+                    {getSortOrderOptions()}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
           </Grid>
         </Grid>
       </Paper>
-
+  
       <Paper elevation={3} className={styles.statsPanel}>
         <Typography variant="h6">Current Layout: {columns} x {rows}</Typography>
         <Typography variant="h6">Total Images: {files.length}</Typography>
         <Typography variant="h6">Pages: {Math.ceil(files.length / maxImagesPerPage)}</Typography>
       </Paper>
-
+  
       <div className={styles.fileGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {paginatedFiles.map((file) => (
           <Paper 
@@ -257,6 +257,7 @@ export default function ViewMode(theUserData) {
             style={{ padding: '4px', margin: '4px' }}
           >
             <div 
+              key={file.name} 
               className={styles.fileTile} 
               onClick={() => handleImageClick(file)}
               style={{ margin: 0, padding: 0 }}
@@ -271,18 +272,18 @@ export default function ViewMode(theUserData) {
           </Paper>
         ))}
       </div>
-
+  
       <div className={styles.pagination}>
         <Button
           disabled={currentPage === 1}
-          onClick={() => dispatch(setCurrentPage(currentPage - 1))}
+          onClick={() => setCurrentPage(prev => prev - 1)}
         >
           Previous
         </Button>
         <Typography>Page {currentPage} of {Math.ceil(files.length / maxImagesPerPage)}</Typography>
         <Button
           disabled={currentPage === Math.ceil(files.length / maxImagesPerPage)}
-          onClick={() => dispatch(setCurrentPage(currentPage + 1))}
+          onClick={() => setCurrentPage(prev => prev + 1)}
         >
           Next
         </Button>
