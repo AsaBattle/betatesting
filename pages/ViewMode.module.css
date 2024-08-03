@@ -76,23 +76,6 @@
   gap: 1rem;
   margin-top: 2rem;
 }
-@media (max-width: 600px) {
-  .viewMode {
-    padding: 1rem;
-  }
-
-  .controlPanel {
-    padding: 1rem;
-  }
-
-  .fileGrid {
-    gap: 1rem;
-  }
-
-  .fileImage {
-    height: 150px;
-  }
-}
 
 .formControlWithLabel {
   position: relative;
@@ -121,4 +104,45 @@
 .folderButtons button {
   flex: 1;
   margin: 0 0.25rem;
+  color: black !important; /* This will make the text black */
+}
+
+.responsiveFormControl {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .viewMode {
+    padding: 1rem;
+  }
+
+  .controlPanel {
+    padding: 1rem;
+  }
+
+  .fileGrid {
+    gap: 1rem;
+  }
+
+  .fileImage {
+    height: 150px;
+  }
+
+  .formControlWithLabel {
+    margin-top: 8px !important;
+  }
+
+  .inputLabel {
+    font-size: 1rem;
+  }
+
+  .responsiveFormControl {
+    min-width: 120px;
+  }
+
+  /* Ensure the Select component doesn't overflow */
+  .responsiveFormControl > div {
+    max-width: 100%;
+  }
 }
