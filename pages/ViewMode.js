@@ -64,25 +64,69 @@ export default function ViewMode(theUserData) {
   const [totalFiles, setTotalFiles] = useState(0);
   const pageSize = maxImagesPerPage;
 
-  // New shell functions for folder operations
-  const handleNewFolder = () => {
+// each option needs to open it's own input dialog to get the folder path or whatever is needed
+
+
+  const handleNewFolder = async () => {
     alogger("New Folder button clicked");
-    // Implement new folder creation logic here
+    try {
+      const body = {
+        userId: currentUserId,
+        folderAction: 'createFolder',
+        newFolderPath: 'path/to/new/folder' // Replace with actual new folder path
+      };
+      const response = await axios.post('/api/user/folderOptions', body);
+      alogger('New folder created:', response.data);
+    } catch (error) {
+      alogger('Error creating new folder:', error);
+    }
   };
-
-  const handleDeleteFolder = () => {
+  
+  const handleDeleteFolder = async () => {
     alogger("Delete Folder button clicked");
-    // Implement folder deletion logic here
+    try {
+      const body = {
+        userId: currentUserId,
+        folderAction: 'delete',
+        folderPath: 'path/to/folder' // Replace with actual folder path to delete
+      };
+      const response = await axios.post('/api/user/folderOptions', body);
+      alogger('Folder deleted:', response.data);
+    } catch (error) {
+      alogger('Error deleting folder:', error);
+    }
   };
-
-  const handleRenameFolder = () => {
+  
+  const handleRenameFolder = async () => {
     alogger("Rename Folder button clicked");
-    // Implement folder renaming logic here
+    try {
+      const body = {
+        userId: currentUserId,
+        folderAction: 'rename',
+        oldFolderPath: 'path/to/old/folder', // Replace with actual old folder path
+        newFolderPath: 'path/to/new/folder' // Replace with actual new folder path
+      };
+      const response = await axios.post('/api/user/folderOptions', body);
+      alogger('Folder renamed:', response.data);
+    } catch (error) {
+      alogger('Error renaming folder:', error);
+    }
   };
-
-  const handleMoveFolder = () => {
+  
+  const handleMoveFolder = async () => {
     alogger("Move Folder button clicked");
-    // Implement folder moving logic here
+    try {
+      const body = {
+        userId: currentUserId,
+        folderAction: 'move',
+        sourceFolderPath: 'path/to/source/folder', // Replace with actual source folder path
+        destinationFolderPath: 'path/to/destination/folder' // Replace with actual destination folder path
+      };
+      const response = await axios.post('/api/user/folderOptions', body);
+      alogger('Folder moved:', response.data);
+    } catch (error) {
+      alogger('Error moving folder:', error);
+    }
   };
 
   useEffect(() => {
@@ -285,28 +329,26 @@ export default function ViewMode(theUserData) {
               valueLabelDisplay="auto"
             />
           </Grid>
-          <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth className={`${styles.formControlWithLabel} ${styles.responsiveFormControl} ${styles.adjustedFormControl}`}>
+              <InputLabel className={styles.inputLabel}>Sort By</InputLabel>
+              <Select value={sortBy} onChange={handleSortByChange}>
+                <MenuItem value="name">Name</MenuItem>
+                <MenuItem value="date">Date</MenuItem>
+                <MenuItem value="size">Size</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          {sortBy && (
             <Grid item xs={12} md={4}>
-              <FormControl fullWidth className={styles.formControlWithLabel}>
-                <InputLabel className={styles.inputLabel}>Sort By</InputLabel>
-                <Select value={sortBy} onChange={handleSortByChange}>
-                  <MenuItem value="name">Name</MenuItem>
-                  <MenuItem value="date">Date</MenuItem>
-                  <MenuItem value="size">Size</MenuItem>
+              <FormControl fullWidth className={`${styles.formControlWithLabel} ${styles.responsiveFormControl} ${styles.adjustedFormControl}`}>
+                <InputLabel className={styles.inputLabel}>Sort Order</InputLabel>
+                <Select value={sortOrder} onChange={handleSortOrderChange}>
+                  {getSortOrderOptions()}
                 </Select>
               </FormControl>
             </Grid>
-            {sortBy && (
-              <Grid item xs={12} md={4}>
-                <FormControl fullWidth className={styles.formControlWithLabel}>
-                  <InputLabel className={styles.inputLabel}>Sort Order</InputLabel>
-                  <Select value={sortOrder} onChange={handleSortOrderChange}>
-                    {getSortOrderOptions()}
-                  </Select>
-                </FormControl>
-              </Grid>
-            )}
-          </Grid>
+          )}
         </Grid>
       </Paper>
   
