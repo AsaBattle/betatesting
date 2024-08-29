@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './errorModal.module.css';
 import { useRouter } from 'next/router';
 
-import styles from './errorModal.module.css';
 
 function ErrorModal({ error, onClose }) {
     const router = useRouter();

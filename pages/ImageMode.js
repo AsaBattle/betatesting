@@ -1045,7 +1045,7 @@ useEffect(() => {
       // discord server "To use loras and other great features join us on Discord"
       // make sure the check is not case sensitive
       if (body.prompt.toLowerCase().includes('loracreate')) {
-        setErrorMessage(`To use Loras and other great features, <a href="https://discord.gg/kukNqTv7jA" target="_blank" class="clickable-link">join us on Discord</a>`);
+        setErrorMessage(`To use Loras and other great features, <a href="https://discord.gg/kukNqTv7jA" target="_blank" class="${styles.clickableLink}">join us on Discord</a>`);
         setIsLoading(false);
         return;
       }
