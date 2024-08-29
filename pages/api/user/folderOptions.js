@@ -31,6 +31,7 @@ const folderActions = {
   createFolder: 'createFolder',
 };
 
+ // WORK ON THIS NEXT ASA !!! new create folder option is making a file and not a folder
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         // grab the userId and folderAction and all the other possible data that could be passed in such as folderPath, newFolderPath, sourceFolderPath, destinationFolderPath
@@ -43,10 +44,12 @@ export default async function handler(req, res) {
             // now based on the folderAction passed in, we will do the appropriate action
             switch (folderAction) {
               case folderActions.delete:
+                console.log('Deleting folder:', folderPath);
                 const folder = bucket.file(`${userId}/${folderPath}`);
                 await folder.delete();
                 break;
               case folderActions.rename:
+                console.log('Renaming folder:', oldFolderPath, 'to', newFolderPath);
                 const oldFolder = bucket.file(`${userId}/${oldFolderPath}`);
                 const newFolder = bucket.file(`${userId}/${newFolderPath}`);
                 await oldFolder.move(newFolder);
@@ -57,11 +60,13 @@ export default async function handler(req, res) {
                 await sourceFolder.copy(destinationFolder);
                 break;
               case folderActions.move:
+                console.log('Moving folder:', sourceFolderPath, 'to', destinationFolderPath);
                 const sourceFolder2 = bucket.file(`${userId}/${sourceFolderPath}`);
                 const destinationFolder2 = bucket.file(`${userId}/${destinationFolderPath}`);
                 await sourceFolder2.move(destinationFolder2);
                 break;
-              case folderActions.createFolder:
+              case folderActions.createFolder: 
+                console.log('Creating folder:', newFolderPath);
                 const newFolder2 = bucket.file(`${userId}/${newFolderPath}`);
                 await newFolder2.save('');
                 break;
@@ -71,6 +76,7 @@ export default async function handler(req, res) {
                 return;
             }
     
+            console.log('Action completed successfully');
           res.status(200).json({ message: 'Action completed successfully' });
             
         } catch (error) {
