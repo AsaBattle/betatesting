@@ -997,6 +997,10 @@ useEffect(() => {
       }
     };
 
+    const goToDiscord = () => {
+      window.location.href = "https://discord.gg/kukNqTv7jA";
+    };
+
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
@@ -1036,6 +1040,15 @@ useEffect(() => {
       //alogger("Generation request Body is: ", body);  
     
       setCurrentPredictionStatus("Processing...");
+
+      // If the user attempted to use a loracreate in the prompt, then display a message to them telling them to go to our
+      // discord server "To use loras and other great features join us on Discord"
+      // make sure the check is not case sensitive
+      if (body.prompt.toLowerCase().includes('loracreate')) {
+        setErrorMessage(`To use Loras and other great features, <a href="https://discord.gg/kukNqTv7jA" target="_blank">join us on Discord</a>`);
+        setIsLoading(false);
+        return;
+      }  
 
       let response = null;
       let attempts = 0;
