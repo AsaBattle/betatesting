@@ -31,6 +31,8 @@ const folderActions = {
   createFolder: 'createFolder',
 };
 
+const change = true;
+
  // WORK ON THIS NEXT ASA !!! new create folder option is making a file and not a folder
 export default async function handler(req, res) {
     if (req.method === 'POST') {
