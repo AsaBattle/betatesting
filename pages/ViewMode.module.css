@@ -146,3 +146,8 @@
     max-width: 100%;
   }
 }
+
+.compactPaper {
+  padding: 0.25rem !important;
+  margin: 0.25rem !important;
+}

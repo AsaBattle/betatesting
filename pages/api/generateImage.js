@@ -48,14 +48,14 @@ export default async function handler(req, res) {
       // Log the sanitized requestBody
       console.log("Request body without image or mask:", JSON.stringify(sanitizedBody, null, 2));
 
-      if (requestBody.noCheck === false) {
+      //if (requestBody.noCheck === false) {
         const details = await CheckAndSubtractCredits(requestBody.userid, requestBody.ipUser, 1);
         if (details.worked === false) {
           console.log("Credit check failed:", details);
           const status = details.reasonCode === 7 ? 402 : details.reasonCode === 6 ? 403 : 404;
           return res.status(200).json({ status: status, detail: details.reason, thecode: 5001 });
         }
-      }
+      //}
       console.log("Made it past the credit check.");
 
       const isInpainting = requestBody.image && requestBody.mask;
