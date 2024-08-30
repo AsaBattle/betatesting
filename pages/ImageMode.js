@@ -1045,7 +1045,7 @@ useEffect(() => {
       // discord server "To use loras and other great features join us on Discord"
       // make sure the check is not case sensitive
       if (body.prompt.toLowerCase().includes('loracreate')) {
-        setErrorMessage(`Loras are coming soon to Studio! But for now to use Loras and other great features visit our discord at this clickable link, <a href="https://discord.gg/kukNqTv7jA" target="_blank" class="${styles.clickableLink}">join us on Discord</a>`);
+        setErrorMessage(`To use Loras and other great features, <a href="https://discord.gg/kukNqTv7jA" target="_blank" class="${styles.clickableLink}">join us on Discord</a>`);
         setIsLoading(false);
         return;
       }
@@ -1170,7 +1170,7 @@ useEffect(() => {
 
 
   const ModeButton = () => {
-    if (!IPUser || 1) {
+    if (!IPUser) {
       return (
         <button onClick={handleViewModePush} 
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -1225,27 +1225,35 @@ useEffect(() => {
           <strong>CraftFul a.i Studio</strong>
         </p>
         <div className="flex flex-col items-center">
-        <p className="text-white text-center font-helvetica">
-          <button onClick={handleViewModePush} 
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              View My Images
-          </button>
-          {theUserData.userData ? (
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-              Logout
+          <p className="text-white text-center font-helvetica">
+            <button onClick={handleViewModePush} 
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                View My Images
             </button>
-          ) : (
+            {theUserData.userData ? (
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={handleLogin}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Login
+              </button>
+            )}
+            {userLoginNameAndCredits}
+          </p>
+          <div className="mt-4">
             <button
-              onClick={handleLogin}
+              onClick={handleNewButtonClick}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
             >
-              Login
+              New Button
             </button>
-          )}
-          {userLoginNameAndCredits}
-        </p>
+          </div>
         </div>
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
