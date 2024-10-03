@@ -242,7 +242,7 @@ export default function ViewMode(theUserData) {
               /> 
             </Paper>
           </Grid>
-         
+         {/*
           <Grid item xs={12} md={4}>
             <Paper elevation={3} className={`${styles.controlPanel} ${styles.compactPaper}`}>
               <FolderOptions
@@ -264,6 +264,7 @@ export default function ViewMode(theUserData) {
               }}
             />
           </Grid>
+          */}
           <Grid item xs={12} md={4}>
             <Typography gutterBottom>Max Images Per Page: {maxImagesPerPage}</Typography>
             <Slider
@@ -372,6 +373,8 @@ export async function getServerSideProps(context) {
   }
   return { props: {} };
 }
+
+
 /* Old viewmode before adding the folderoptionsmodal stuff
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';

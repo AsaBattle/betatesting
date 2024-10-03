@@ -1083,8 +1083,13 @@ useEffect(() => {
             setIsLoading(false);
             return;
           } else if (response.data.status === 403) {
-            setErrorMessage("You have run out of credits, please subscribe or buy more credits");
-            setErrorRoute('/Subscribe');
+            // old way of doing it, before I modified the Subscription page to handle it's message via query
+            //setErrorMessage("You have run out of credits, please subscribe or buy more credits");
+            //setErrorRoute('/Subscribe');
+              router.push({
+              pathname: '/Subscribe',
+              query: { message: 'Oops, You are out of credits! Please purchase more or subscribe.' }
+            });
             setIsLoading(false);
             return;
           } else if (response.data.status === 402) {
@@ -1224,8 +1229,19 @@ useEffect(() => {
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>CraftFul a.i Studio</strong>
         </p>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center">        
           <p className="text-white text-center font-helvetica">
+            <button
+              onClick={()=>{ 
+                router.push({
+                  pathname: '/Subscribe',
+                  query: { message: 'Click to Subscribe or Purchase credits' }
+                });
+              }}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Subscribe
+            </button>
             <button onClick={handleViewModePush} 
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 View My Images
@@ -1245,15 +1261,7 @@ useEffect(() => {
               </button>
             )}
             {userLoginNameAndCredits}
-          </p>
-          <div className="mt-4">
-            <button
-              onClick={handleNewButtonClick}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-            >
-              New Button
-            </button>
-          </div>
+          </p>          
         </div>
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
