@@ -262,6 +262,7 @@ useEffect(() => {
    
       alogger("CLEAR - clearMaskImage is being called");
       await canvasRef.current.clearCombinedMask();
+      await canvasRef.current.ClearMagicWandResult();
 
       setMaskImage(null); // or setMaskImage('');
       setClearMask(true); // Set clearMask to true when clearing the mask
