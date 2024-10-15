@@ -255,7 +255,7 @@ useEffect(() => {
     alogger("Can draw to canvas is: ", canDrawToCanvas);
     }, [canDrawToCanvas]);
     
-
+    
 
     // Function to clear the mask
     const clearMaskImage = async () => {
@@ -1233,7 +1233,7 @@ useEffect(() => {
         <div className="flex flex-col items-center">        
           <p className="text-white text-center font-helvetica">
             <button
-              onClick={()=>{ 
+              onClick={() => { 
                 router.push({
                   pathname: '/Subscribe',
                   query: { message: 'Click to Subscribe or Purchase credits' }
@@ -1241,7 +1241,11 @@ useEffect(() => {
               }}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
             >
-              Subscribe
+              {theUserData.userData ? (
+                <p>Buy Credits</p>
+              ) : (
+                <p>Subscribe</p>
+              )}
             </button>
             <button onClick={handleViewModePush} 
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
