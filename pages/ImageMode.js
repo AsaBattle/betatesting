@@ -204,6 +204,8 @@ useEffect(() => {
 
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
+        console.log("theUserData.userData is: ", theUserData.userData);
+
         if (parseInt(theUserData.userData.credits) > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
         else
