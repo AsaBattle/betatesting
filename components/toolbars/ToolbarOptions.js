@@ -106,23 +106,24 @@ function ToolbarOptions (props)  {
   // Add this useEffect hook to fetch LoRas when the component mounts
   useEffect(() => {
     const fetchLoras = async () => {
+      if (!props.userId) return;
+
       try {
-        const response = await axios.get(`http://3.19.250.209:36734/getloras/${props.userId}`);
+        const response = await axios.post('/api/user/getLoras', { userId: props.userId });
         setLoras(response.data);
       } catch (error) {
         console.error("Error fetching LoRas:", error);
       }
     };
 
-    if (props.userId) {
-      fetchLoras();
-    }
+    fetchLoras();
   }, [props.userId]);
 
   // Add this function to handle LoRa selection
   const handleLoraChange = (event) => {
     setSelectedLora(event.target.value);
   };
+
 
   // This function is called when the aspect ratio button is clicked
   const handleGenAIMask = async () => {
@@ -149,6 +150,7 @@ function ToolbarOptions (props)  {
   setViewMaskRadioButton(true);
 };
 
+
 useEffect(() => {
   const updatedCounter = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].fsamGenerationCounter
@@ -168,6 +170,7 @@ useEffect(() => {
   }, [currentPredictionImageMask]);
 
 
+
   const formatFileUrl = (url) => {
     if (!url.includes('https://storage.googleapis.com/fjusers/')) {
       const fullStorageUrl = `https://storage.googleapis.com/fjusers/${url.split('imagePath=')[1]}`;
@@ -175,6 +178,8 @@ useEffect(() => {
     }
     return url;
   };
+
+
 
   const dIt = (url) => {
   
@@ -213,11 +218,11 @@ useEffect(() => {
       prediction.output[0] = dIt(prediction.output[0]);
     });
 
-   
-
     setSelectedAspectRatio(aspectRatio);
       dispatch(setAspectRatio(aspectRatio)); 
   };
+
+
 
 // make an async function called testcall
   const testcall = async () => {
