@@ -99,6 +99,31 @@ function ToolbarOptions (props)  {
 
   const currentPredictionAvailable = props.predictions && props.predictions[index] !== null && props.predictions.length > 0;
 
+  // Add these new state variables
+  const [loras, setLoras] = useState([]);
+  const [selectedLora, setSelectedLora] = useState('');
+
+  // Add this useEffect hook to fetch LoRas when the component mounts
+  useEffect(() => {
+    const fetchLoras = async () => {
+      if (!props.userId) return;
+
+      try {
+        const response = await axios.post('/api/user/getLoras', { userId: props.userId });
+        setLoras(response.data);
+      } catch (error) {
+        console.error("Error fetching LoRas:", error);
+      }
+    };
+
+    fetchLoras();
+  }, [props.userId]);
+
+  // Add this function to handle LoRa selection
+  const handleLoraChange = (event) => {
+    setSelectedLora(event.target.value);
+  };
+
 
   // This function is called when the aspect ratio button is clicked
   const handleGenAIMask = async () => {
@@ -125,6 +150,7 @@ function ToolbarOptions (props)  {
   setViewMaskRadioButton(true);
 };
 
+
 useEffect(() => {
   const updatedCounter = props.predictions && props.predictions.length > index && props.predictions[index]
     ? props.predictions[index].fsamGenerationCounter
@@ -144,6 +170,7 @@ useEffect(() => {
   }, [currentPredictionImageMask]);
 
 
+
   const formatFileUrl = (url) => {
     if (!url.includes('https://storage.googleapis.com/fjusers/')) {
       const fullStorageUrl = `https://storage.googleapis.com/fjusers/${url.split('imagePath=')[1]}`;
@@ -151,6 +178,8 @@ useEffect(() => {
     }
     return url;
   };
+
+
 
   const dIt = (url) => {
   
@@ -189,11 +218,11 @@ useEffect(() => {
       prediction.output[0] = dIt(prediction.output[0]);
     });
 
-   
-
     setSelectedAspectRatio(aspectRatio);
       dispatch(setAspectRatio(aspectRatio)); 
   };
+
+
 
 // make an async function called testcall
   const testcall = async () => {
@@ -374,6 +403,9 @@ useEffect(() => {
         </div>
       )}
   
+
+      {/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
+
       {currentTool?.name === 'Zoom' && (
         <div className={styles.toolbarContainer}>
           <div className="styles.zoomContainer text-black flex items-center justify-center mx-auto">
@@ -392,6 +424,9 @@ useEffect(() => {
           </div>
         </div>
       )}
+
+       {/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
+
   
         {currentTool?.name === 'Wand' && (
         <div className={styles.wandContainer}>
@@ -491,6 +526,10 @@ useEffect(() => {
           </div>
         </div>
       )}
+
+        {/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
+
+
       {currentTool?.name === 'AspectRatio' && (
         <div className={styles.toolbarContainer}>
           <div className={styles.aspectRatioContainer + ' text-white flex flex-wrap justify-center mx-auto'}
@@ -558,6 +597,10 @@ useEffect(() => {
           </div>
         </div>
       )}
+
+
+      {/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
+
       {currentTool?.name === 'NoTool' && (
         <div className={styles.toolbarContainer}>
               <Typography className="text-center mt-2">
@@ -565,31 +608,60 @@ useEffect(() => {
               </Typography>
         </div>
       )}
+
+
+      {/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
+
        {currentTool?.name === 'ModelSelector' && (
        <div className={styles.toolbarContainer}>
         <div className={styles.aspectRatioContainer + ' text-white flex flex-wrap justify-center mx-auto'}
           style={{ width: '100%', padding: '0 20px' }}
         >
-          <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
-          <Typography className="text-center mt-2">Current Model: {currentImageModel}</Typography>
-            <Select
+          <div className="flex flex-row items-start justify-center space-x-8"> {/* Changed to flex-row and added space-x-8 for horizontal spacing */}
+            {/* Model Selector */}
+            <div className="flex flex-col items-center">
+              <Typography className="text-center mt-2">Current Model: {currentImageModel}</Typography>
+              <Select
                 value={currentModel}
                 onChange={(event) => handleModelClick(event.target.value)}
                 variant="outlined"
-                style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center' }}
+                style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center', width: '200px' }}
                 className={styles.select}
               >
                 {options.map((option) => (
                   <MenuItem key={option.value} value={option.value} className={styles.menuItem}>
-                    {/*option.icon*/}
                     <Typography style={{ fontSize: '16px', marginLeft: '8px' }}>{option.label}</Typography>
                   </MenuItem>
                 ))}
-            </Select>
+              </Select>
+            </div>
+
+            {/* LoRa Selector */}
+            <div className="flex flex-col items-center">
+              <Typography className="text-center mt-2">Select A LoRa</Typography>
+              <Select
+                value={selectedLora}
+                onChange={handleLoraChange}
+                variant="outlined"
+                style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center', width: '200px' }} 
+                className={styles.select}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {loras.map((lora) => (
+                  <MenuItem key={lora} value={lora} className={styles.menuItem}>
+                    <Typography style={{ fontSize: '16px', marginLeft: '8px' }}>{lora}</Typography>
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
           </div>
         </div>
       </div>
       )}
+
+      {/*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
     </div>
   );
 };

@@ -204,6 +204,8 @@ useEffect(() => {
 
     function checkUserLoginAndCreditsForChange() {
       if (theUserData.userData) {
+        console.log("theUserData.userData is: ", theUserData.userData);
+
         if (parseInt(theUserData.userData.credits) > 100)
           setUserLoginNameAndCredits(`Username: ${theUserData.userData.discordname}`);
         else
@@ -255,13 +257,14 @@ useEffect(() => {
     alogger("Can draw to canvas is: ", canDrawToCanvas);
     }, [canDrawToCanvas]);
     
-
+    
 
     // Function to clear the mask
     const clearMaskImage = async () => {
    
       alogger("CLEAR - clearMaskImage is being called");
       await canvasRef.current.clearCombinedMask();
+      await canvasRef.current.ClearMagicWandResult();
 
       setMaskImage(null); // or setMaskImage('');
       setClearMask(true); // Set clearMask to true when clearing the mask
@@ -997,6 +1000,10 @@ useEffect(() => {
       }
     };
 
+    const goToDiscord = () => {
+      window.location.href = "https://discord.gg/kukNqTv7jA";
+    };
+
     const handleSubmit = async (e) => {
       setIsLoading(true);
       e.preventDefault();
@@ -1037,6 +1044,15 @@ useEffect(() => {
     
       setCurrentPredictionStatus("Processing...");
 
+      // If the user attempted to use a loracreate in the prompt, then display a message to them telling them to go to our
+      // discord server "To use loras and other great features join us on Discord"
+      // make sure the check is not case sensitive
+      if (body.prompt.toLowerCase().includes('loracreate')) {
+        setErrorMessage(`To use Loras and other great features, <a href="https://discord.gg/kukNqTv7jA" target="_blank" class="${styles.clickableLink}">join us on Discord</a>`);
+        setIsLoading(false);
+        return;
+      }
+
       let response = null;
       let attempts = 0;
       let fileName = null;
@@ -1070,8 +1086,13 @@ useEffect(() => {
             setIsLoading(false);
             return;
           } else if (response.data.status === 403) {
-            setErrorMessage("You have run out of credits, please subscribe or buy more credits");
-            setErrorRoute('/Subscribe');
+            // old way of doing it, before I modified the Subscription page to handle it's message via query
+            //setErrorMessage("You have run out of credits, please subscribe or buy more credits");
+            //setErrorRoute('/Subscribe');
+              router.push({
+              pathname: '/Subscribe',
+              query: { message: 'Oops, You are out of credits! Please purchase more or subscribe.' }
+            });
             setIsLoading(false);
             return;
           } else if (response.data.status === 402) {
@@ -1157,7 +1178,7 @@ useEffect(() => {
 
 
   const ModeButton = () => {
-    if (!IPUser || 1) {
+    if (!IPUser) {
       return (
         <button onClick={handleViewModePush} 
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -1211,32 +1232,47 @@ useEffect(() => {
         <p className="pb-5 text-xl text-white text-center font-helvetica">
           <strong>CraftFul a.i Studio</strong>
         </p>
-        <div className="flex flex-col items-center">
-        <p className="text-white text-center font-helvetica">
-          <button onClick={handleViewModePush} 
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              View My Images
-          </button>
-          {theUserData.userData ? (
+        <div className="flex flex-col items-center">        
+          <p className="text-white text-center font-helvetica">
             <button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={handleLogin}
+              onClick={() => { 
+                router.push({
+                  pathname: '/Subscribe',
+                  query: { message: 'Click to Subscribe or Purchase credits' }
+                });
+              }}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
             >
-              Login
+              {theUserData.userData ? (
+                <p>Buy Credits</p>
+              ) : (
+                <p>Subscribe</p>
+              )}
             </button>
-          )}
-          {userLoginNameAndCredits}
-        </p>
+            <button onClick={handleViewModePush} 
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                View My Images
+            </button>
+            {theUserData.userData ? (
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={handleLogin}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Login
+              </button>
+            )}
+            {userLoginNameAndCredits}
+          </p>          
         </div>
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
-            <ToolbarOptions predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
+            <ToolbarOptions userId={theUserData.userData ? theUserData.userData.user_id : null} predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
           </div>
           <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
             <Dropzone 

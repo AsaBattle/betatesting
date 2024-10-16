@@ -40,3 +40,9 @@
     left: 0; /* Align to the left */
     width: 100%; /* Take the full width */
   }
+
+
+  .clickableLink {
+    color: blue;
+    text-decoration: underline;
+  }
