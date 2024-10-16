@@ -32,7 +32,9 @@ export default async function handler(req, res) {
     }
   
     try {
-      const response = await axios.get(`https://3.19.250.209:36734/getloras/${userId}`);
+        console.log("Getting loras for user: ", userId);
+        const response = await axios.get(`https://3.19.250.209:36734/getloras/${userId}`);
+
       return res.status(200).json(response.data);
     } catch (error) {
       console.error('Error fetching LoRas:', error);
