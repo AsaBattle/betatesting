@@ -109,7 +109,7 @@ function ToolbarOptions (props)  {
       if (!props.userId) return;
 
       try {
-        const response = await axios.post('/api/user/getLoras', { userId: props.userId });
+        const response = await axios.get('/api/user/getLoras', { userId: props.userId });
         setLoras(response.data);
       } catch (error) {
         console.error("Error fetching LoRas:", error);
