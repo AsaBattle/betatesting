@@ -1272,7 +1272,7 @@ useEffect(() => {
         </div>
         <main className="container mx-auto p-2">
           <div ref={toolbaroptionsRef}>
-            <ToolbarOptions predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
+            <ToolbarOptions userId={theUserData.userData ? theUserData.userData.user_id : null} predictions={predictions} setPredictions={setPredictions} canvasRef={canvasRef} />
           </div>
           <div className={`border-hairline mx-auto relative`} style={{ width: `${zoomWidth < displayWidth ? displayWidth : zoomWidth}px` }} ref={canvasContainerRef}>
             <Dropzone 

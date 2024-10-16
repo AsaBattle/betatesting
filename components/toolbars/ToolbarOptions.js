@@ -107,15 +107,17 @@ function ToolbarOptions (props)  {
   useEffect(() => {
     const fetchLoras = async () => {
       try {
-        const response = await axios.get("http://3.19.250.209:36734/getloras/userId");
+        const response = await axios.get(`http://3.19.250.209:36734/getloras/${props.userId}`);
         setLoras(response.data);
       } catch (error) {
         console.error("Error fetching LoRas:", error);
       }
     };
 
-    fetchLoras();
-  }, []);
+    if (props.userId) {
+      fetchLoras();
+    }
+  }, [props.userId]);
 
   // Add this function to handle LoRa selection
   const handleLoraChange = (event) => {
