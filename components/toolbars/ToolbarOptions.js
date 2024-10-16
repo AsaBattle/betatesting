@@ -612,41 +612,45 @@ useEffect(() => {
         <div className={styles.aspectRatioContainer + ' text-white flex flex-wrap justify-center mx-auto'}
           style={{ width: '100%', padding: '0 20px' }}
         >
-          <div className="flex flex-col items-center" style={{ marginLeft: '20px', marginRight: '20px' }}>
-          <Typography className="text-center mt-2">Current Model: {currentImageModel}</Typography>
-            <Select
+          <div className="flex flex-row items-start justify-center space-x-8"> {/* Changed to flex-row and added space-x-8 for horizontal spacing */}
+            {/* Model Selector */}
+            <div className="flex flex-col items-center">
+              <Typography className="text-center mt-2">Current Model: {currentImageModel}</Typography>
+              <Select
                 value={currentModel}
                 onChange={(event) => handleModelClick(event.target.value)}
                 variant="outlined"
-                style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center' }}
+                style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center', width: '200px' }}
                 className={styles.select}
               >
                 {options.map((option) => (
                   <MenuItem key={option.value} value={option.value} className={styles.menuItem}>
-                    {/*option.icon*/}
                     <Typography style={{ fontSize: '16px', marginLeft: '8px' }}>{option.label}</Typography>
                   </MenuItem>
                 ))}
-            </Select>
+              </Select>
+            </div>
 
-            {/* New LoRa dropdown */}
-            <Typography className="text-center mt-2">Select A LoRa</Typography>
-            <Select
-              value={selectedLora}
-              onChange={handleLoraChange}
-              variant="outlined"
-              style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center' }}
-              className={styles.select}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {loras.map((lora) => (
-                <MenuItem key={lora} value={lora} className={styles.menuItem}>
-                  <Typography style={{ fontSize: '16px', marginLeft: '8px' }}>{lora}</Typography>
+            {/* LoRa Selector */}
+            <div className="flex flex-col items-center">
+              <Typography className="text-center mt-2">Select A LoRa</Typography>
+              <Select
+                value={selectedLora}
+                onChange={handleLoraChange}
+                variant="outlined"
+                style={{ margin: '5px', padding: '8px 16px', display: 'flex', alignItems: 'center', width: '200px' }} 
+                className={styles.select}
+              >
+                <MenuItem value="">
+                  <em>None</em>
                 </MenuItem>
-              ))}
-            </Select>
+                {loras.map((lora) => (
+                  <MenuItem key={lora} value={lora} className={styles.menuItem}>
+                    <Typography style={{ fontSize: '16px', marginLeft: '8px' }}>{lora}</Typography>
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
           </div>
         </div>
       </div>
